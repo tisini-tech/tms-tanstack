@@ -3,6 +3,10 @@ import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 
 import appCss from '../styles.css?url'
+import { Toaster } from '#/components/ui/toast'
+import { ErrorPage } from '#/components/general/errors/error'
+import { Loading } from '#/components/general/errors/loading'
+import { NotFound } from '#/components/general/errors/not-found'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -15,7 +19,7 @@ export const Route = createRootRoute({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'TanStack Start Starter',
+        title: 'Tisini Management System',
       },
     ],
     links: [
@@ -25,17 +29,23 @@ export const Route = createRootRoute({
       },
     ],
   }),
+  pendingMs: 100,
+  pendingComponent: Loading,
+  errorComponent: ErrorPage,
+  notFoundComponent: NotFound,
   shellComponent: RootDocument,
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <head>
         <HeadContent />
       </head>
       <body>
         {children}
+
+        <Toaster />
         <TanStackDevtools
           config={{
             position: 'bottom-right',
