@@ -7,6 +7,7 @@ import { Toaster } from '#/components/ui/toast'
 import { ErrorPage } from '#/components/general/errors/error'
 import { Loading } from '#/components/general/errors/loading'
 import { NotFound } from '#/components/general/errors/not-found'
+import { TooltipProvider } from '#/components/ui/tooltip'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -42,8 +43,8 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <head>
         <HeadContent />
       </head>
-      <body>
-        {children}
+      <body className="font-merriweather antialiased">
+        <TooltipProvider>{children}</TooltipProvider>
 
         <Toaster />
         <TanStackDevtools

@@ -1,4 +1,5 @@
-import type { ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
+import { EyeIcon, EyeOffIcon } from 'lucide-react'
 
 import { Field, FieldError, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
@@ -73,6 +74,8 @@ export function InputField<T extends string | number = string>({
 }: InputFieldProps<T>) {
   const id = idProp ?? field.name
   const isInvalid = field.state.meta.errors.length > 0
+  const isPassword = type === 'password'
+  const [showPassword, setShowPassword] = useState(false)
 
   const defaultAutoComplete =
     type === 'email'
@@ -84,6 +87,7 @@ export function InputField<T extends string | number = string>({
           : undefined
 
   const isNumber = type === 'number'
+  const inputType = isPassword && showPassword ? 'text' : type
 
   return (
     <Field
@@ -98,33 +102,50 @@ export function InputField<T extends string | number = string>({
       ) : (
         <FieldLabel htmlFor={id}>{label}</FieldLabel>
       )}
-      <Input
-        id={id}
-        name={field.name}
-        type={type}
-        min={min}
-        max={max}
-        step={step}
-        autoComplete={autoComplete ?? defaultAutoComplete}
-        placeholder={placeholder}
-        value={
-          isNumber
-            ? (field.state.value as number)
-            : (field.state.value as string)
-        }
-        onBlur={field.handleBlur}
-        onChange={(e) => {
-          if (isNumber) {
-            const raw = e.target.value
-            const next = raw === '' ? (0 as T) : (Number(raw) as T)
-            field.handleChange(next)
-            return
+      <div className={cn(isPassword && 'relative')}>
+        <Input
+          id={id}
+          name={field.name}
+          type={inputType}
+          min={min}
+          max={max}
+          step={step}
+          autoComplete={autoComplete ?? defaultAutoComplete}
+          placeholder={placeholder}
+          value={
+            isNumber
+              ? (field.state.value as number)
+              : (field.state.value as string)
           }
-          field.handleChange(e.target.value as T)
-        }}
-        data-invalid={isInvalid}
-        className={inputClassName}
-      />
+          onBlur={field.handleBlur}
+          onChange={(e) => {
+            if (isNumber) {
+              const raw = e.target.value
+              const next = raw === '' ? (0 as T) : (Number(raw) as T)
+              field.handleChange(next)
+              return
+            }
+            field.handleChange(e.target.value as T)
+          }}
+          data-invalid={isInvalid}
+          className={cn(isPassword && 'pr-11', inputClassName)}
+        />
+        {isPassword ? (
+          <button
+            type="button"
+            onClick={() => setShowPassword((prev) => !prev)}
+            className="absolute top-1/2 right-3 -translate-y-1/2 rounded-md p-1 text-muted-foreground transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:outline-none"
+            aria-label={showPassword ? 'Hide password' : 'Show password'}
+            aria-pressed={showPassword}
+          >
+            {showPassword ? (
+              <EyeOffIcon className="size-4" />
+            ) : (
+              <EyeIcon className="size-4" />
+            )}
+          </button>
+        ) : null}
+      </div>
 
       {isInvalid && (
         <FieldError

@@ -5,7 +5,7 @@ import { createFileRoute, useNavigate, useRouter } from '@tanstack/react-router'
 import { Button } from '#/components/ui/button'
 import { getUserFn, logoutFn } from '#/data/auth'
 
-export const Route = createFileRoute('/dashboard/')({
+export const Route = createFileRoute('/home/')({
   loader: () => getUserFn(),
   component: DashboardWelcome,
 })

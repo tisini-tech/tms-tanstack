@@ -1,14 +1,17 @@
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
+import type { EventSequence, TeamStats } from './types'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function safeInternalPath(
-  path: string | undefined,
-  fallback = '/dashboard',
-) {
+export function normalizePath(pathname: string) {
+  if (pathname === '/') return '/'
+  return pathname.replace(/\/$/, '')
+}
+
+export function safeInternalPath(path: string | undefined, fallback = '/home') {
   if (!path || !path.startsWith('/') || path.startsWith('//')) {
     return fallback
   }
@@ -65,4 +68,70 @@ export function formatApiError(error: unknown, fallback: string): string {
   if (fieldMessages.length) return fieldMessages.join(' ')
 
   return fallback
+}
+
+export function getInitials(name: string) {
+  return name
+    .split(' ')
+    .slice(0, 2)
+    .map((word) => word[0])
+    .join('')
+    .toUpperCase()
+}
+
+export function getPercent(total: number, stat: number) {
+  if (total === 0) {
+    return 0
+  }
+
+  return Math.round((stat / total) * 100)
+}
+
+export const getEventCount = (
+  id: string,
+  stats: TeamStats[],
+  isHome: boolean,
+) => {
+  return (
+    stats.find((event) => event.event_id === Number(id))?.[
+      isHome ? 'home_count' : 'away_count'
+    ] || 0
+  )
+}
+
+export const getSubEventCount = (
+  id: string,
+  subId: string,
+  stats: TeamStats[],
+  isHome: boolean,
+) => {
+  return (
+    stats
+      .find((event) => event.event_id === Number(id))
+      ?.sub_events.find((subEvent) => subEvent.subevent_id === Number(subId))?.[
+      isHome ? 'home_count' : 'away_count'
+    ] || 0
+  )
+}
+
+export const getPassSeqs = (sequences: EventSequence[]) => {
+  const sequencesOver10 = sequences.filter(
+    (item) => item.pass_count >= 10,
+  ).length
+  const sequences7to9 = sequences.filter(
+    (item) => item.pass_count >= 7 && item.pass_count <= 9,
+  ).length
+  const sequences4to6 = sequences.filter(
+    (item) => item.pass_count >= 4 && item.pass_count <= 6,
+  ).length
+  const sequencesBelow3 = sequences.filter((item) => item.pass_count < 4).length
+
+  return {
+    title: 'Passing Sequences',
+    below3: sequencesBelow3,
+    btwn4to6: sequences4to6,
+    btwn7to9: sequences7to9,
+    over10: sequencesOver10,
+    total: sequences.length,
+  }
 }

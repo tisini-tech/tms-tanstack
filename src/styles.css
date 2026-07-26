@@ -25,6 +25,7 @@ body {
   /* Broadcast Navy — light mode (landing, blog) */
   --background: oklch(0.99 0.005 250);
   --foreground: oklch(0.2 0.04 260);
+  --heading: oklch(0.16 0.04 260);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.2 0.04 260);
   --popover: oklch(1 0 0);
@@ -61,17 +62,19 @@ body {
 }
 
 .dark {
-  /* Broadcast Navy — dark mode (livescore, stats) */
+  /* Broadcast Navy — dark mode (livescore, stats)
+     Body text stays soft (~0.82); titles use --heading (~0.95). */
   --background: oklch(0.18 0.04 260);
-  --foreground: oklch(0.95 0.01 250);
+  --foreground: oklch(0.82 0.015 250);
+  --heading: oklch(0.95 0.01 250);
   --card: oklch(0.22 0.04 260);
-  --card-foreground: oklch(0.95 0.01 250);
+  --card-foreground: oklch(0.82 0.015 250);
   --popover: oklch(0.22 0.04 260);
-  --popover-foreground: oklch(0.95 0.01 250);
+  --popover-foreground: oklch(0.82 0.015 250);
   --primary: oklch(0.99 0 0);
   --primary-foreground: oklch(0.22 0.06 260);
   --secondary: oklch(0.26 0.04 260);
-  --secondary-foreground: oklch(0.95 0.01 250);
+  --secondary-foreground: oklch(0.82 0.015 250);
   --muted: oklch(0.26 0.035 260);
   --muted-foreground: oklch(0.68 0.02 250);
   --accent: oklch(0.3 0.06 145);
@@ -89,7 +92,7 @@ body {
   --chart-4: oklch(0.75 0.08 85);
   --chart-5: oklch(0.55 0.06 260);
   --sidebar: oklch(0.16 0.04 260);
-  --sidebar-foreground: oklch(0.95 0.01 250);
+  --sidebar-foreground: oklch(0.82 0.015 250);
   --sidebar-primary: oklch(0.99 0 0);
   --sidebar-primary-foreground: oklch(0.22 0.06 260);
   --sidebar-accent: oklch(0.26 0.04 260);
@@ -134,6 +137,7 @@ body {
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
   --color-foreground: var(--foreground);
+  --color-heading: var(--heading);
   --color-background: var(--background);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
@@ -163,6 +167,6 @@ body {
   h4,
   h5,
   h6 {
-    @apply font-heading;
+    @apply font-heading text-heading;
   }
 }
