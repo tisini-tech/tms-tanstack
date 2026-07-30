@@ -1,10 +1,8 @@
 import { Download } from 'lucide-react'
-import { useEffect, useState } from 'react'
-import { PDFDownloadLink } from '@react-pdf/renderer'
+import { useEffect, useState, type ReactElement } from 'react'
 
 import { Button } from '#/components/ui/button'
 import { ensurePdfPolyfills } from '#/lib/pdf-polyfills'
-import { AgentsReviewPDF } from '#/components/pdf-reports/agents/agents-review'
 import { type ReviewTableData } from '#/components/fixtures/review/transform-review-stats'
 
 interface AgentsReviewButtonProps {
@@ -16,27 +14,52 @@ export function AgentsReviewButton({
   tableData,
   teamName,
 }: AgentsReviewButtonProps) {
-  const [isClient, setIsClient] = useState(false)
-  const [polyfillsReady, setPolyfillsReady] = useState(false)
+  const [pdfLink, setPdfLink] = useState<ReactElement | null>(null)
 
   useEffect(() => {
     let cancelled = false
 
-    void ensurePdfPolyfills().then(() => {
-      if (!cancelled) {
-        setPolyfillsReady(true)
-        setIsClient(true)
+    async function loadPdfLink() {
+      if (!tableData || !teamName) {
+        setPdfLink(null)
+        return
       }
-    })
+
+      await ensurePdfPolyfills()
+
+      const [{ PDFDownloadLink }, { AgentsReviewPDF }] = await Promise.all([
+        import('@react-pdf/renderer'),
+        import('#/components/pdf-reports/agents/agents-review'),
+      ])
+
+      if (cancelled) return
+
+      const fileName = `${teamName.replace(/\s+/g, '_')}_agents_review.pdf`
+
+      setPdfLink(
+        <PDFDownloadLink
+          document={<AgentsReviewPDF tableData={tableData} />}
+          fileName={fileName}
+          style={{ textDecoration: 'none' }}
+        >
+          {({ loading }) => (
+            <Button variant="outline" size="sm" disabled={loading}>
+              <Download size={16} />
+              {loading ? 'Generating...' : 'Download PDF'}
+            </Button>
+          )}
+        </PDFDownloadLink>,
+      )
+    }
+
+    void loadPdfLink()
 
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [tableData, teamName])
 
-  const fileName = `${teamName.replace(/\s+/g, '_')}_agents_review.pdf`
-
-  if (!tableData || !isClient || !polyfillsReady) {
+  if (!tableData || !pdfLink) {
     return (
       <Button variant="outline" size="sm" disabled>
         <Download size={16} />
@@ -45,18 +68,5 @@ export function AgentsReviewButton({
     )
   }
 
-  return (
-    <PDFDownloadLink
-      document={<AgentsReviewPDF tableData={tableData} />}
-      fileName={fileName}
-      style={{ textDecoration: 'none' }}
-    >
-      {({ loading }) => (
-        <Button variant="outline" size="sm" disabled={loading}>
-          <Download size={16} />
-          {loading ? 'Generating...' : 'Download PDF'}
-        </Button>
-      )}
-    </PDFDownloadLink>
-  )
+  return pdfLink
 }
