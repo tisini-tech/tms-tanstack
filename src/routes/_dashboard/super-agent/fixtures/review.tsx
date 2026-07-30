@@ -32,7 +32,9 @@ export const Route = createFileRoute('/_dashboard/super-agent/fixtures/review')(
           .filter((id) => Number.isFinite(id) && id > 0) ?? []
 
       const reviewStats = await Promise.all(
-        parsedIds.map((id) => getFixtureReviewStatsFn({ data: { id } })),
+        parsedIds.map((id) =>
+          getFixtureReviewStatsFn({ data: { id: String(id) } }),
+        ),
       )
 
       return {
@@ -62,7 +64,7 @@ function RouteComponent() {
 
   const tableData = useMemo(() => {
     if (!selectedTeam || reviewStats.length === 0) return null
-    return transformReviewStats(reviewStats[0], selectedTeam)
+    return transformReviewStats(reviewStats, selectedTeam)
   }, [reviewStats, selectedTeam])
 
   return (
@@ -71,7 +73,10 @@ function RouteComponent() {
         <h1 className="text-2xl font-semibold">Fixture Review</h1>
 
         <div className="flex flex-wrap items-center gap-3">
-          <Select value={selectedTeam} onValueChange={setSelectedTeam}>
+          <Select
+            value={selectedTeam}
+            onValueChange={(value) => setSelectedTeam(value ?? '')}
+          >
             <SelectTrigger className="w-[200px]">
               <SelectValue placeholder="Select team" />
             </SelectTrigger>

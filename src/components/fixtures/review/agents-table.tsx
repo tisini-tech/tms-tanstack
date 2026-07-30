@@ -61,7 +61,7 @@ export function AgentsReviewTable({
       </div>
 
       <div className="overflow-hidden rounded-lg border">
-        <div className="max-h-[600px] overflow-auto">
+        <div className="max-h-[calc(100dvh-14rem)] overflow-auto">
           <Table className="w-full table-fixed">
             <colgroup>
               <col className="w-10" />
