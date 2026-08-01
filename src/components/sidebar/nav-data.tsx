@@ -1,5 +1,6 @@
 import {
   AudioLinesIcon,
+  BarChartIcon,
   CalendarIcon,
   GalleryVerticalEndIcon,
   GroupIcon,
@@ -71,6 +72,12 @@ export const superAgentNavItems: NavItem[] = linkOptions([
     to: '/super-agent/players',
     label: 'Players',
     icon: UserIcon,
+    activeOptions: { exact: false },
+  },
+  {
+    to: '/super-agent/stats',
+    label: 'Stats',
+    icon: BarChartIcon,
     activeOptions: { exact: false },
   },
 ])

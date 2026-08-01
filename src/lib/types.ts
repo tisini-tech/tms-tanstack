@@ -28,6 +28,36 @@ export interface PaginatedResponse<T> {
   results: T[]
 }
 
+export interface Country {
+  id: number
+  name: string
+  iso_code2: string
+  iso_code3: string
+  telephone_code: string
+  nationality: string
+}
+
+export interface Season {
+  id: number
+  name: string
+}
+
+export interface Division {
+  id: number
+  name: string
+}
+
+export interface Competition {
+  id: number
+  name: string
+  country: Country
+  logo: string
+  description: string
+  status: number
+  seasons: Season[]
+  divisions: Division[]
+}
+
 export interface Fixture {
   home_team: {
     id: number
@@ -161,6 +191,21 @@ export interface AgentCounts {
   agent_name: string
   agent_id: number
   total: number
+}
+
+export interface TopPlayerStats {
+  player_id: number
+  name: string
+  passportphoto: string
+  current_position: string
+  jersey_no: number
+  team_id: number
+  team_name: string
+  team_logo: string
+  avg_rating: number
+  matches_played: number
+  total_minutes_played: number
+  stats: PlayerStats[]
 }
 
 export interface PlayerStats {
