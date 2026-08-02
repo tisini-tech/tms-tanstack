@@ -28,7 +28,7 @@ export const getTopPlayersStatsFn = createServerFn({ method: 'GET' })
     }
 
     const query = params.toString()
-    const path = `/competitions/${data.competitionId}/seasons/${data.seasonId}/top-rated-players`
+    const path = `/competitions/${data.competitionId}/seasons/${data.seasonId}/top-rated-players&page_size=100`
 
     const playersStats = await apiService.get<
       PaginatedResponse<TopPlayerStats>
