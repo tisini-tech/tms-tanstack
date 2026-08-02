@@ -17,6 +17,8 @@ export const getTopPlayersStatsFn = createServerFn({ method: 'GET' })
   .handler(async ({ data }) => {
     const params = new URLSearchParams()
 
+    params.set('page_size', '100')
+
     if (data.divisionId != null) {
       params.set('division_id', String(data.divisionId))
     }
@@ -27,12 +29,11 @@ export const getTopPlayersStatsFn = createServerFn({ method: 'GET' })
       params.set('month', data.month)
     }
 
-    const query = params.toString()
-    const path = `/competitions/${data.competitionId}/seasons/${data.seasonId}/top-rated-players?page_size=100`
-
     const playersStats = await apiService.get<
       PaginatedResponse<TopPlayerStats>
-    >(query ? `${path}?${query}` : path)
+    >(
+      `/competitions/${data.competitionId}/seasons/${data.seasonId}/top-rated-players?${params.toString()}`,
+    )
 
     return playersStats
   })
