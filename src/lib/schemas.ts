@@ -100,6 +100,26 @@ export type ResetPasswordSchema = z.infer<typeof resetPasswordSchema>
 
 export type RegisterSchema = z.infer<typeof registerSchema>
 
+export const articleSchema = z.object({
+  title: z.string().min(1, 'Title is required'),
+  slug: z
+    .string()
+    .min(1, 'Slug is required')
+    .regex(
+      /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
+      'Use lowercase letters, numbers, and hyphens',
+    ),
+  authorId: z.string().min(1, 'Author is required'),
+  categoryIds: z.array(z.string()),
+  tags: z.string(),
+  excerpt: z.string(),
+  visibility: z.enum(['public', 'private']),
+  status: z.enum(['draft', 'published']),
+  featuredImage: z.string().nullable(),
+})
+
+export type ArticleSchema = z.infer<typeof articleSchema>
+
 export type RequestPasswordMethod = 'phone' | 'email'
 
 export function requestPasswordSchema(method: RequestPasswordMethod) {

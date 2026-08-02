@@ -4,9 +4,10 @@ import { createFileRoute, Outlet } from '@tanstack/react-router'
 
 import { cn } from '#/lib/utils'
 import { Combobox } from '@base-ui/react/combobox'
-import { getCompetitionsFn } from '#/data/competitions'
+import { getCompetitionRoundsFn, getCompetitionsFn } from '#/data/competitions'
 import type { Competition } from '#/lib/types'
 import { MonthPicker } from '#/components/stats/month-picker'
+import { RoundMultiSelect } from '#/components/stats/round-multi-select'
 import {
   Select,
   SelectContent,
@@ -15,32 +16,54 @@ import {
   SelectValue,
 } from '#/components/ui/select'
 
-const ROUNDS = Array.from({ length: 38 }, (_, i) => `Round ${i + 1}`)
+const roundsSearchSchema = z.preprocess((value) => {
+  if (value == null || value === '') return undefined
+  return Array.isArray(value) ? value : [value]
+}, z.array(z.string()).optional())
 
 export const Route = createFileRoute('/_dashboard/super-agent/stats')({
   validateSearch: z.object({
     competitionId: z.coerce.number().optional(),
     divisionId: z.coerce.number().optional(),
     seasonId: z.coerce.number().optional(),
-    round: z.string().optional(),
+    rounds: roundsSearchSchema,
     month: z.string().optional(),
   }),
-  loader: async () => {
+  loaderDeps: ({ search: { competitionId, seasonId, divisionId } }) => ({
+    competitionId,
+    seasonId,
+    divisionId,
+  }),
+  loader: async ({ deps: { competitionId, seasonId, divisionId } }) => {
     const competitions = await getCompetitionsFn()
-    return { competitions }
+
+    const rounds =
+      competitionId && seasonId
+        ? await getCompetitionRoundsFn({
+            data: {
+              competitionId: String(competitionId),
+              seasonId: String(seasonId),
+              ...(divisionId && { divisionId: String(divisionId) }),
+            },
+          })
+        : []
+
+    return { competitions, rounds }
   },
   component: RouteComponent,
 })
 
 function RouteComponent() {
-  const { competitions } = Route.useLoaderData()
-  const { competitionId, divisionId, seasonId, round, month } = Route.useSearch()
+  const { competitions, rounds } = Route.useLoaderData()
+  const { competitionId, divisionId, seasonId, rounds: selectedRounds, month } =
+    Route.useSearch()
   const navigate = Route.useNavigate()
 
   const competition = competitions.find((c) => c.id === competitionId) ?? null
   const division =
     competition?.divisions.find((d) => d.id === divisionId) ?? null
   const season = competition?.seasons.find((s) => s.id === seasonId) ?? null
+  const selected = selectedRounds ?? []
 
   return (
     <div>
@@ -54,7 +77,7 @@ function RouteComponent() {
                 competitionId: value?.id,
                 divisionId: value?.divisions[0]?.id,
                 seasonId: value?.seasons[0]?.id,
-                round: undefined,
+                rounds: undefined,
                 month: undefined,
               }),
               replace: true,
@@ -143,6 +166,7 @@ function RouteComponent() {
               search: (prev) => ({
                 ...prev,
                 divisionId: Number(value),
+                rounds: undefined,
               }),
               replace: true,
             })
@@ -170,6 +194,7 @@ function RouteComponent() {
               search: (prev) => ({
                 ...prev,
                 seasonId: Number(value),
+                rounds: undefined,
               }),
               replace: true,
             })
@@ -190,29 +215,20 @@ function RouteComponent() {
           </SelectContent>
         </Select>
 
-        <Select
-          value={round ?? null}
-          onValueChange={(value) =>
+        <RoundMultiSelect
+          options={rounds}
+          value={selected}
+          disabled={!competitionId || !seasonId}
+          onChange={(nextRounds) =>
             navigate({
               search: (prev) => ({
                 ...prev,
-                round: value ?? undefined,
+                rounds: nextRounds.length > 0 ? nextRounds : undefined,
               }),
               replace: true,
             })
           }
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Select a round">{round}</SelectValue>
-          </SelectTrigger>
-          <SelectContent>
-            {ROUNDS.map((roundOption) => (
-              <SelectItem key={roundOption} value={roundOption}>
-                {roundOption}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        />
 
         <MonthPicker
           value={month}

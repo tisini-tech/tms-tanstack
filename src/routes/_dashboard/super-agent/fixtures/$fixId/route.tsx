@@ -109,7 +109,7 @@ function RouteComponent() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 border-t border-border">
+        <div className="grid grid-cols-3 border-t border-border">
           <Link
             to="/super-agent/fixtures/$fixId"
             params={{ fixId }}
@@ -122,6 +122,7 @@ function RouteComponent() {
           >
             Overview
           </Link>
+
           <Link
             to="/super-agent/fixtures/$fixId/review"
             params={{ fixId }}
@@ -133,6 +134,19 @@ function RouteComponent() {
             )}
           >
             Event Review
+          </Link>
+
+          <Link
+            to="/super-agent/fixtures/$fixId/raw-events"
+            params={{ fixId }}
+            className={cn(
+              'border-l border-border px-4 py-3 text-center text-sm font-medium transition-colors',
+              isReview
+                ? 'bg-muted/50 text-foreground'
+                : 'text-muted-foreground hover:bg-muted/30 hover:text-foreground',
+            )}
+          >
+            Raw Events
           </Link>
         </div>
       </section>

@@ -10,7 +10,7 @@ export const getTopPlayersStatsFn = createServerFn({ method: 'GET' })
       competitionId: number
       seasonId: number
       divisionId?: number
-      round?: string
+      rounds?: string[]
       month?: string
     }) => data,
   )
@@ -20,8 +20,8 @@ export const getTopPlayersStatsFn = createServerFn({ method: 'GET' })
     if (data.divisionId != null) {
       params.set('division_id', String(data.divisionId))
     }
-    if (data.round) {
-      params.set('round', data.round)
+    for (const round of data.rounds ?? []) {
+      params.append('round', round)
     }
     if (data.month) {
       params.set('month', data.month)

@@ -13,6 +13,7 @@ import { Route as DashboardRouteRouteImport } from './routes/_dashboard/route'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as HomeIndexRouteImport } from './routes/home/index'
+import { Route as ArticlesIndexRouteImport } from './routes/articles/index'
 import { Route as AuthVerifyRouteImport } from './routes/_auth/verify'
 import { Route as AuthResetPasswordRouteImport } from './routes/_auth/reset-password'
 import { Route as AuthRegisterRouteImport } from './routes/_auth/register'
@@ -38,6 +39,7 @@ import { Route as DashboardSuperAgentFixturesReviewRouteImport } from './routes/
 import { Route as DashboardSuperAgentFixturesFixIdRouteRouteImport } from './routes/_dashboard/super-agent/fixtures/$fixId/route'
 import { Route as DashboardSuperAgentFixturesFixIdIndexRouteImport } from './routes/_dashboard/super-agent/fixtures/$fixId/index'
 import { Route as DashboardSuperAgentFixturesFixIdReviewRouteImport } from './routes/_dashboard/super-agent/fixtures/$fixId/review'
+import { Route as DashboardSuperAgentFixturesFixIdRawEventsRouteImport } from './routes/_dashboard/super-agent/fixtures/$fixId/raw-events'
 
 const DashboardRouteRoute = DashboardRouteRouteImport.update({
   id: '/_dashboard',
@@ -55,6 +57,11 @@ const IndexRoute = IndexRouteImport.update({
 const HomeIndexRoute = HomeIndexRouteImport.update({
   id: '/home/',
   path: '/home/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ArticlesIndexRoute = ArticlesIndexRouteImport.update({
+  id: '/articles/',
+  path: '/articles/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthVerifyRoute = AuthVerifyRouteImport.update({
@@ -195,6 +202,12 @@ const DashboardSuperAgentFixturesFixIdReviewRoute =
     path: '/review',
     getParentRoute: () => DashboardSuperAgentFixturesFixIdRouteRoute,
   } as any)
+const DashboardSuperAgentFixturesFixIdRawEventsRoute =
+  DashboardSuperAgentFixturesFixIdRawEventsRouteImport.update({
+    id: '/raw-events',
+    path: '/raw-events',
+    getParentRoute: () => DashboardSuperAgentFixturesFixIdRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -203,6 +216,7 @@ export interface FileRoutesByFullPath {
   '/register': typeof AuthRegisterRoute
   '/reset-password': typeof AuthResetPasswordRoute
   '/verify': typeof AuthVerifyRoute
+  '/articles/': typeof ArticlesIndexRoute
   '/home/': typeof HomeIndexRoute
   '/super-agent/stats': typeof DashboardSuperAgentStatsRouteRouteWithChildren
   '/agents/fixtures': typeof DashboardAgentsFixturesRoute
@@ -222,6 +236,7 @@ export interface FileRoutesByFullPath {
   '/super-agent/players/': typeof DashboardSuperAgentPlayersIndexRoute
   '/super-agent/stats/': typeof DashboardSuperAgentStatsIndexRoute
   '/super-agent/teams/': typeof DashboardSuperAgentTeamsIndexRoute
+  '/super-agent/fixtures/$fixId/raw-events': typeof DashboardSuperAgentFixturesFixIdRawEventsRoute
   '/super-agent/fixtures/$fixId/review': typeof DashboardSuperAgentFixturesFixIdReviewRoute
   '/super-agent/fixtures/$fixId/': typeof DashboardSuperAgentFixturesFixIdIndexRoute
 }
@@ -232,6 +247,7 @@ export interface FileRoutesByTo {
   '/register': typeof AuthRegisterRoute
   '/reset-password': typeof AuthResetPasswordRoute
   '/verify': typeof AuthVerifyRoute
+  '/articles': typeof ArticlesIndexRoute
   '/home': typeof HomeIndexRoute
   '/agents/fixtures': typeof DashboardAgentsFixturesRoute
   '/admin': typeof DashboardAdminIndexRoute
@@ -249,6 +265,7 @@ export interface FileRoutesByTo {
   '/super-agent/players': typeof DashboardSuperAgentPlayersIndexRoute
   '/super-agent/stats': typeof DashboardSuperAgentStatsIndexRoute
   '/super-agent/teams': typeof DashboardSuperAgentTeamsIndexRoute
+  '/super-agent/fixtures/$fixId/raw-events': typeof DashboardSuperAgentFixturesFixIdRawEventsRoute
   '/super-agent/fixtures/$fixId/review': typeof DashboardSuperAgentFixturesFixIdReviewRoute
   '/super-agent/fixtures/$fixId': typeof DashboardSuperAgentFixturesFixIdIndexRoute
 }
@@ -262,6 +279,7 @@ export interface FileRoutesById {
   '/_auth/register': typeof AuthRegisterRoute
   '/_auth/reset-password': typeof AuthResetPasswordRoute
   '/_auth/verify': typeof AuthVerifyRoute
+  '/articles/': typeof ArticlesIndexRoute
   '/home/': typeof HomeIndexRoute
   '/_dashboard/super-agent/stats': typeof DashboardSuperAgentStatsRouteRouteWithChildren
   '/_dashboard/agents/fixtures': typeof DashboardAgentsFixturesRoute
@@ -281,6 +299,7 @@ export interface FileRoutesById {
   '/_dashboard/super-agent/players/': typeof DashboardSuperAgentPlayersIndexRoute
   '/_dashboard/super-agent/stats/': typeof DashboardSuperAgentStatsIndexRoute
   '/_dashboard/super-agent/teams/': typeof DashboardSuperAgentTeamsIndexRoute
+  '/_dashboard/super-agent/fixtures/$fixId/raw-events': typeof DashboardSuperAgentFixturesFixIdRawEventsRoute
   '/_dashboard/super-agent/fixtures/$fixId/review': typeof DashboardSuperAgentFixturesFixIdReviewRoute
   '/_dashboard/super-agent/fixtures/$fixId/': typeof DashboardSuperAgentFixturesFixIdIndexRoute
 }
@@ -293,6 +312,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/reset-password'
     | '/verify'
+    | '/articles/'
     | '/home/'
     | '/super-agent/stats'
     | '/agents/fixtures'
@@ -312,6 +332,7 @@ export interface FileRouteTypes {
     | '/super-agent/players/'
     | '/super-agent/stats/'
     | '/super-agent/teams/'
+    | '/super-agent/fixtures/$fixId/raw-events'
     | '/super-agent/fixtures/$fixId/review'
     | '/super-agent/fixtures/$fixId/'
   fileRoutesByTo: FileRoutesByTo
@@ -322,6 +343,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/reset-password'
     | '/verify'
+    | '/articles'
     | '/home'
     | '/agents/fixtures'
     | '/admin'
@@ -339,6 +361,7 @@ export interface FileRouteTypes {
     | '/super-agent/players'
     | '/super-agent/stats'
     | '/super-agent/teams'
+    | '/super-agent/fixtures/$fixId/raw-events'
     | '/super-agent/fixtures/$fixId/review'
     | '/super-agent/fixtures/$fixId'
   id:
@@ -351,6 +374,7 @@ export interface FileRouteTypes {
     | '/_auth/register'
     | '/_auth/reset-password'
     | '/_auth/verify'
+    | '/articles/'
     | '/home/'
     | '/_dashboard/super-agent/stats'
     | '/_dashboard/agents/fixtures'
@@ -370,6 +394,7 @@ export interface FileRouteTypes {
     | '/_dashboard/super-agent/players/'
     | '/_dashboard/super-agent/stats/'
     | '/_dashboard/super-agent/teams/'
+    | '/_dashboard/super-agent/fixtures/$fixId/raw-events'
     | '/_dashboard/super-agent/fixtures/$fixId/review'
     | '/_dashboard/super-agent/fixtures/$fixId/'
   fileRoutesById: FileRoutesById
@@ -378,6 +403,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRouteRoute: typeof AuthRouteRouteWithChildren
   DashboardRouteRoute: typeof DashboardRouteRouteWithChildren
+  ArticlesIndexRoute: typeof ArticlesIndexRoute
   HomeIndexRoute: typeof HomeIndexRoute
 }
 
@@ -409,6 +435,13 @@ declare module '@tanstack/react-router' {
       path: '/home'
       fullPath: '/home/'
       preLoaderRoute: typeof HomeIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/articles/': {
+      id: '/articles/'
+      path: '/articles'
+      fullPath: '/articles/'
+      preLoaderRoute: typeof ArticlesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_auth/verify': {
@@ -586,6 +619,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardSuperAgentFixturesFixIdReviewRouteImport
       parentRoute: typeof DashboardSuperAgentFixturesFixIdRouteRoute
     }
+    '/_dashboard/super-agent/fixtures/$fixId/raw-events': {
+      id: '/_dashboard/super-agent/fixtures/$fixId/raw-events'
+      path: '/raw-events'
+      fullPath: '/super-agent/fixtures/$fixId/raw-events'
+      preLoaderRoute: typeof DashboardSuperAgentFixturesFixIdRawEventsRouteImport
+      parentRoute: typeof DashboardSuperAgentFixturesFixIdRouteRoute
+    }
   }
 }
 
@@ -626,12 +666,15 @@ const DashboardSuperAgentStatsRouteRouteWithChildren =
   )
 
 interface DashboardSuperAgentFixturesFixIdRouteRouteChildren {
+  DashboardSuperAgentFixturesFixIdRawEventsRoute: typeof DashboardSuperAgentFixturesFixIdRawEventsRoute
   DashboardSuperAgentFixturesFixIdReviewRoute: typeof DashboardSuperAgentFixturesFixIdReviewRoute
   DashboardSuperAgentFixturesFixIdIndexRoute: typeof DashboardSuperAgentFixturesFixIdIndexRoute
 }
 
 const DashboardSuperAgentFixturesFixIdRouteRouteChildren: DashboardSuperAgentFixturesFixIdRouteRouteChildren =
   {
+    DashboardSuperAgentFixturesFixIdRawEventsRoute:
+      DashboardSuperAgentFixturesFixIdRawEventsRoute,
     DashboardSuperAgentFixturesFixIdReviewRoute:
       DashboardSuperAgentFixturesFixIdReviewRoute,
     DashboardSuperAgentFixturesFixIdIndexRoute:
@@ -693,6 +736,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRouteRoute: AuthRouteRouteWithChildren,
   DashboardRouteRoute: DashboardRouteRouteWithChildren,
+  ArticlesIndexRoute: ArticlesIndexRoute,
   HomeIndexRoute: HomeIndexRoute,
 }
 export const routeTree = rootRouteImport
