@@ -1,7 +1,11 @@
 import { authFnMiddleware } from '#/middlewares/auth'
 import { createServerFn } from '@tanstack/react-start'
 import { apiService } from '#/lib/api'
-import type { PaginatedResponse, TopPlayerStats } from '#/lib/types'
+import type {
+  FixturePlayerStats,
+  PaginatedResponse,
+  TopPlayerStats,
+} from '#/lib/types'
 
 export const getTopPlayersStatsFn = createServerFn({ method: 'GET' })
   .middleware([authFnMiddleware])
@@ -36,4 +40,14 @@ export const getTopPlayersStatsFn = createServerFn({ method: 'GET' })
     )
 
     return playersStats
+  })
+
+export const getFixturePlayerStatsFn = createServerFn({ method: 'GET' })
+  .middleware([authFnMiddleware])
+  .validator((data: { id: string }) => data)
+  .handler(async ({ data }) => {
+    const playerStats = await apiService.get<FixturePlayerStats[]>(
+      `/fixtures/${data.id}/player-stats`,
+    )
+    return playerStats
   })

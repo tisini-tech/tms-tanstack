@@ -10,6 +10,7 @@ import type {
   FixturePassMatrix,
   ReviewStats,
   ReviewComment,
+  RawFixtureEvent,
 } from '#/lib/types'
 
 export const getFixturesFn = createServerFn({ method: 'GET' })
@@ -39,16 +40,6 @@ export const getFixtureTeamStatsFn = createServerFn({ method: 'GET' })
       `/fixtures/${data.id}/team-stats`,
     )
     return teamStats
-  })
-
-export const getFixturePlayerStatsFn = createServerFn({ method: 'GET' })
-  .middleware([authFnMiddleware])
-  .validator((data: { id: string }) => data)
-  .handler(async ({ data }) => {
-    const playerStats = await apiService.get<FixturePlayerStats[]>(
-      `/fixtures/${data.id}/player-stats`,
-    )
-    return playerStats
   })
 
 export const getFixtureQuarterStatsFn = createServerFn({ method: 'GET' })
@@ -130,4 +121,15 @@ export const getReviewCommentsFn = createServerFn({ method: 'GET' })
       `/fixtures/${data.id}/reviews`,
     )
     return reviewComments
+  })
+
+export const getFixtureRawEventsFn = createServerFn({ method: 'GET' })
+  .middleware([authFnMiddleware])
+  .validator((data: { id: string }) => data)
+  .handler(async ({ data }) => {
+    const rawEvents = await apiService.get<RawFixtureEvent[]>(
+      `/fixtures/${data.id}/match-events`,
+    )
+
+    return rawEvents
   })

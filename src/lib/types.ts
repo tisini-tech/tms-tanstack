@@ -308,3 +308,39 @@ export interface ReviewComment {
   agent: number
   review: string[]
 }
+
+export interface TypeObject {
+  id: number
+  name: string
+}
+
+export interface RawFixtureEvent {
+  metric: TypeObject
+  metric_detail: TypeObject | null
+  metric_sub_detail: TypeObject | null
+  player: TypeObject | null
+  subplayer: TypeObject | null
+  agent: TypeObject | null
+  id: number
+  match: number
+  team: number
+  minute: number
+  second: number
+  moment: string
+  quarter: string
+  narration: string
+  zone_id: number
+  xper: string
+  yper: string
+  video_timestamp: number
+  no_ruck: string
+  no_lineout: string
+  meter_gain: string
+  kickfrom: string
+  kickland: string
+  defender: string
+  strength: number
+  localid: string
+  app_timelog: string
+  sync_status: number
+}

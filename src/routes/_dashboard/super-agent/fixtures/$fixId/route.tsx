@@ -1,18 +1,36 @@
-import { cn } from '#/lib/utils'
-import {
-  Link,
-  Outlet,
-  createFileRoute,
-  useRouterState,
-} from '@tanstack/react-router'
+import { Link, Outlet, createFileRoute } from '@tanstack/react-router'
 
+import { getFixturePlayerStatsFn } from '#/data/stats'
+import { Loading } from '#/components/general/errors/loading'
 import {
   getFixturePassMatrixFn,
-  getFixturePlayerStatsFn,
   getFixtureQuarterStatsFn,
   getFixtureReviewStatsFn,
   getFixtureTeamStatsFn,
 } from '#/data/fixtures'
+
+const navItems = [
+  {
+    label: 'Overview',
+    to: '/super-agent/fixtures/$fixId',
+    exact: true,
+  },
+  {
+    label: 'Player Stats',
+    to: '/super-agent/fixtures/$fixId/player-stats',
+    exact: true,
+  },
+  {
+    label: 'Event Review',
+    to: '/super-agent/fixtures/$fixId/review',
+    exact: true,
+  },
+  {
+    label: 'Raw Events',
+    to: '/super-agent/fixtures/$fixId/raw-events',
+    exact: true,
+  },
+] as const
 
 export const Route = createFileRoute('/_dashboard/super-agent/fixtures/$fixId')(
   {
@@ -35,16 +53,12 @@ export const Route = createFileRoute('/_dashboard/super-agent/fixtures/$fixId')(
       }
     },
     component: RouteComponent,
-    pendingComponent: () => <div>Loading...</div>,
+    pendingComponent: Loading,
   },
 )
 
 function RouteComponent() {
   const { reviewStats, fixId } = Route.useLoaderData()
-  const pathname = useRouterState({
-    select: (state) => state.location.pathname,
-  })
-  const isReview = pathname.endsWith('/review')
   const { fixture } = reviewStats
 
   const homeAgent = reviewStats.agents.find(
@@ -109,45 +123,25 @@ function RouteComponent() {
           </div>
         </div>
 
-        <div className="grid grid-cols-3 border-t border-border">
-          <Link
-            to="/super-agent/fixtures/$fixId"
-            params={{ fixId }}
-            className={cn(
-              'px-4 py-3 text-center text-sm font-medium transition-colors',
-              !isReview
-                ? 'bg-muted/50 text-foreground'
-                : 'text-muted-foreground hover:bg-muted/30 hover:text-foreground',
-            )}
-          >
-            Overview
-          </Link>
-
-          <Link
-            to="/super-agent/fixtures/$fixId/review"
-            params={{ fixId }}
-            className={cn(
-              'border-l border-border px-4 py-3 text-center text-sm font-medium transition-colors',
-              isReview
-                ? 'bg-muted/50 text-foreground'
-                : 'text-muted-foreground hover:bg-muted/30 hover:text-foreground',
-            )}
-          >
-            Event Review
-          </Link>
-
-          <Link
-            to="/super-agent/fixtures/$fixId/raw-events"
-            params={{ fixId }}
-            className={cn(
-              'border-l border-border px-4 py-3 text-center text-sm font-medium transition-colors',
-              isReview
-                ? 'bg-muted/50 text-foreground'
-                : 'text-muted-foreground hover:bg-muted/30 hover:text-foreground',
-            )}
-          >
-            Raw Events
-          </Link>
+        <div className="grid grid-cols-4 border-t border-border">
+          {navItems.map((item) => (
+            <Link
+              key={item.to}
+              to={item.to}
+              params={{ fixId }}
+              activeOptions={{ exact: item.exact }}
+              className="border-l border-border px-4 py-3 text-center text-sm font-medium transition-colors first:border-l-0"
+              activeProps={{
+                className: 'bg-muted/50 text-foreground',
+              }}
+              inactiveProps={{
+                className:
+                  'text-muted-foreground hover:bg-muted/30 hover:text-foreground',
+              }}
+            >
+              {item.label}
+            </Link>
+          ))}
         </div>
       </section>
 

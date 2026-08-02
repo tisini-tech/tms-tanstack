@@ -1,6 +1,7 @@
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
+import { HeadContent, Scripts, createRootRouteWithContext } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
+import type { QueryClient } from '@tanstack/react-query'
 
 import appCss from '../styles.css?url'
 import { Toaster } from '#/components/ui/toast'
@@ -9,7 +10,11 @@ import { Loading } from '#/components/general/errors/loading'
 import { NotFound } from '#/components/general/errors/not-found'
 import { TooltipProvider } from '#/components/ui/tooltip'
 
-export const Route = createRootRoute({
+export interface RouterContext {
+  queryClient: QueryClient
+}
+
+export const Route = createRootRouteWithContext<RouterContext>()({
   head: () => ({
     meta: [
       {
