@@ -39,6 +39,8 @@ export const loginFn = createServerFn({ method: 'POST' })
     await session.update({
       accessToken: user.access_token,
       refreshToken: user.refresh_token,
+      role: user.role.id,
+      modules: user.modules,
       user: {
         id: user.id,
         name: user.first_name + ' ' + user.last_name,
@@ -47,7 +49,7 @@ export const loginFn = createServerFn({ method: 'POST' })
       },
     })
 
-    return { success: true }
+    return { success: true, modules: user.modules }
   })
 
 // get access token
@@ -68,6 +70,22 @@ export const getUserFn = createServerFn({ method: 'GET' }).handler(async () => {
 
   return session.data.user
 })
+
+/** User + allowed modules from session (for dashboard shell). */
+export const getAuthContextFn = createServerFn({ method: 'GET' }).handler(
+  async () => {
+    const session = await useAppSession()
+
+    if (!session.data.user) {
+      throw redirect({ to: '/login' })
+    }
+
+    return {
+      user: session.data.user,
+      modules: session.data.modules ?? [],
+    }
+  },
+)
 
 // logout
 export const logoutFn = createServerFn({ method: 'POST' }).handler(async () => {

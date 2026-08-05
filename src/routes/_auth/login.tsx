@@ -11,7 +11,8 @@ import {
 
 import { loginFn } from '#/data/auth'
 import { Button } from '#/components/ui/button'
-import { cn, safeInternalPath } from '@/lib/utils'
+import { cn, resolvePostLoginPath } from '@/lib/utils'
+import { getLastModulePath } from '#/lib/last-module'
 import { InputField } from '#/components/general/forms/input-field'
 import { createLoginSchema, type LoginMethod } from '#/lib/schemas'
 import {
@@ -36,7 +37,6 @@ function Login() {
 
   const navigate = useNavigate()
   const { redirect } = Route.useSearch()
-  const redirectTo = safeInternalPath(redirect)
 
   const form = useForm({
     defaultValues: {
@@ -54,13 +54,17 @@ function Login() {
         method === 'email' ? value.email.trim() : value.phone.trim()
 
       try {
-        await loginFn({
+        const { modules } = await loginFn({
           data: {
             identifier,
             password: value.password,
           },
         })
-        await navigate({ to: redirectTo, replace: true })
+
+        await navigate({
+          to: resolvePostLoginPath(redirect, modules, getLastModulePath()),
+          replace: true,
+        })
       } catch (error) {
         if (isRedirect(error)) throw error
 

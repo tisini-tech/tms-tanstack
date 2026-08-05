@@ -1,4 +1,5 @@
 import { useSession } from '@tanstack/react-start/server'
+import type { Module } from './types'
 
 type SessionData = {
   user: {
@@ -9,6 +10,8 @@ type SessionData = {
   }
   accessToken: string
   refreshToken: string
+  role: string
+  modules: Module[]
   /** Email or E.164 phone awaiting OTP verification after register. */
   pendingVerification?: string
 }

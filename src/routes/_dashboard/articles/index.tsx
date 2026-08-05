@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { Editor } from '@tiptap/core'
 import { useForm } from '@tanstack/react-form'
 import { createFileRoute } from '@tanstack/react-router'
@@ -11,8 +11,9 @@ import {
 } from '#/components/articles/editor-shell'
 import { SimpleEditor } from '#/components/tiptap-templates/simple/simple-editor'
 import { articleSchema, type ArticleSchema } from '#/lib/schemas'
+import { rememberLastModulePath } from '#/lib/last-module'
 
-export const Route = createFileRoute('/articles/')({
+export const Route = createFileRoute('/_dashboard/articles/')({
   component: RouteComponent,
 })
 
@@ -31,6 +32,10 @@ const defaultValues: ArticleSchema = {
 function RouteComponent() {
   const [editor, setEditor] = useState<Editor | null>(null)
   const submitIntent = useRef<'draft' | 'publish'>('publish')
+
+  useEffect(() => {
+    rememberLastModulePath('/articles')
+  }, [])
 
   const form = useForm({
     defaultValues,
@@ -61,8 +66,9 @@ function RouteComponent() {
   })
 
   return (
-    <div className="min-h-dvh bg-muted/40">
+    <div className="flex min-h-0 flex-1 flex-col bg-muted/40">
       <form
+        className="flex min-h-0 flex-1 flex-col"
         onSubmit={(e) => {
           e.preventDefault()
           e.stopPropagation()
@@ -84,7 +90,7 @@ function RouteComponent() {
           )}
         </form.Subscribe>
 
-        <div className="mx-auto grid max-w-[1400px] gap-4 p-4 lg:grid-cols-[minmax(0,1fr)_280px] xl:grid-cols-[minmax(0,1fr)_300px]">
+        <div className="mx-auto grid w-full max-w-[1400px] flex-1 gap-4 p-4 lg:grid-cols-[minmax(0,1fr)_280px] xl:grid-cols-[minmax(0,1fr)_300px]">
           <main className="min-w-0 overflow-hidden rounded-xl border border-border bg-card shadow-sm">
             <form.Field name="title">
               {(titleField) => (
@@ -104,7 +110,7 @@ function RouteComponent() {
             </div>
           </main>
 
-          <div className="lg:sticky lg:top-[4.5rem] lg:self-start">
+          <div className="lg:sticky lg:top-4 lg:self-start">
             <form.Field name="authorId">
               {(authorField) => (
                 <form.Field name="categoryIds">

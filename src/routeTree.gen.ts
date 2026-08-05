@@ -13,7 +13,6 @@ import { Route as DashboardRouteRouteImport } from './routes/_dashboard/route'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as HomeIndexRouteImport } from './routes/home/index'
-import { Route as ArticlesIndexRouteImport } from './routes/articles/index'
 import { Route as AuthVerifyRouteImport } from './routes/_auth/verify'
 import { Route as AuthResetPasswordRouteImport } from './routes/_auth/reset-password'
 import { Route as AuthRegisterRouteImport } from './routes/_auth/register'
@@ -25,6 +24,7 @@ import { Route as DashboardTeamsIndexRouteImport } from './routes/_dashboard/tea
 import { Route as DashboardSuperAgentIndexRouteImport } from './routes/_dashboard/super-agent/index'
 import { Route as DashboardPlayersIndexRouteImport } from './routes/_dashboard/players/index'
 import { Route as DashboardCompetitionsIndexRouteImport } from './routes/_dashboard/competitions/index'
+import { Route as DashboardArticlesIndexRouteImport } from './routes/_dashboard/articles/index'
 import { Route as DashboardAgentsIndexRouteImport } from './routes/_dashboard/agents/index'
 import { Route as DashboardAdminIndexRouteImport } from './routes/_dashboard/admin/index'
 import { Route as DashboardAgentsFixturesRouteImport } from './routes/_dashboard/agents/fixtures'
@@ -58,11 +58,6 @@ const IndexRoute = IndexRouteImport.update({
 const HomeIndexRoute = HomeIndexRouteImport.update({
   id: '/home/',
   path: '/home/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ArticlesIndexRoute = ArticlesIndexRouteImport.update({
-  id: '/articles/',
-  path: '/articles/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthVerifyRoute = AuthVerifyRouteImport.update({
@@ -122,6 +117,11 @@ const DashboardCompetitionsIndexRoute =
     path: '/competitions/',
     getParentRoute: () => DashboardRouteRoute,
   } as any)
+const DashboardArticlesIndexRoute = DashboardArticlesIndexRouteImport.update({
+  id: '/articles/',
+  path: '/articles/',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
 const DashboardAgentsIndexRoute = DashboardAgentsIndexRouteImport.update({
   id: '/agents/',
   path: '/agents/',
@@ -223,12 +223,12 @@ export interface FileRoutesByFullPath {
   '/register': typeof AuthRegisterRoute
   '/reset-password': typeof AuthResetPasswordRoute
   '/verify': typeof AuthVerifyRoute
-  '/articles/': typeof ArticlesIndexRoute
   '/home/': typeof HomeIndexRoute
   '/super-agent/stats': typeof DashboardSuperAgentStatsRouteRouteWithChildren
   '/agents/fixtures': typeof DashboardAgentsFixturesRoute
   '/admin/': typeof DashboardAdminIndexRoute
   '/agents/': typeof DashboardAgentsIndexRoute
+  '/articles/': typeof DashboardArticlesIndexRoute
   '/competitions/': typeof DashboardCompetitionsIndexRoute
   '/players/': typeof DashboardPlayersIndexRoute
   '/super-agent/': typeof DashboardSuperAgentIndexRoute
@@ -255,11 +255,11 @@ export interface FileRoutesByTo {
   '/register': typeof AuthRegisterRoute
   '/reset-password': typeof AuthResetPasswordRoute
   '/verify': typeof AuthVerifyRoute
-  '/articles': typeof ArticlesIndexRoute
   '/home': typeof HomeIndexRoute
   '/agents/fixtures': typeof DashboardAgentsFixturesRoute
   '/admin': typeof DashboardAdminIndexRoute
   '/agents': typeof DashboardAgentsIndexRoute
+  '/articles': typeof DashboardArticlesIndexRoute
   '/competitions': typeof DashboardCompetitionsIndexRoute
   '/players': typeof DashboardPlayersIndexRoute
   '/super-agent': typeof DashboardSuperAgentIndexRoute
@@ -288,12 +288,12 @@ export interface FileRoutesById {
   '/_auth/register': typeof AuthRegisterRoute
   '/_auth/reset-password': typeof AuthResetPasswordRoute
   '/_auth/verify': typeof AuthVerifyRoute
-  '/articles/': typeof ArticlesIndexRoute
   '/home/': typeof HomeIndexRoute
   '/_dashboard/super-agent/stats': typeof DashboardSuperAgentStatsRouteRouteWithChildren
   '/_dashboard/agents/fixtures': typeof DashboardAgentsFixturesRoute
   '/_dashboard/admin/': typeof DashboardAdminIndexRoute
   '/_dashboard/agents/': typeof DashboardAgentsIndexRoute
+  '/_dashboard/articles/': typeof DashboardArticlesIndexRoute
   '/_dashboard/competitions/': typeof DashboardCompetitionsIndexRoute
   '/_dashboard/players/': typeof DashboardPlayersIndexRoute
   '/_dashboard/super-agent/': typeof DashboardSuperAgentIndexRoute
@@ -322,12 +322,12 @@ export interface FileRouteTypes {
     | '/register'
     | '/reset-password'
     | '/verify'
-    | '/articles/'
     | '/home/'
     | '/super-agent/stats'
     | '/agents/fixtures'
     | '/admin/'
     | '/agents/'
+    | '/articles/'
     | '/competitions/'
     | '/players/'
     | '/super-agent/'
@@ -354,11 +354,11 @@ export interface FileRouteTypes {
     | '/register'
     | '/reset-password'
     | '/verify'
-    | '/articles'
     | '/home'
     | '/agents/fixtures'
     | '/admin'
     | '/agents'
+    | '/articles'
     | '/competitions'
     | '/players'
     | '/super-agent'
@@ -386,12 +386,12 @@ export interface FileRouteTypes {
     | '/_auth/register'
     | '/_auth/reset-password'
     | '/_auth/verify'
-    | '/articles/'
     | '/home/'
     | '/_dashboard/super-agent/stats'
     | '/_dashboard/agents/fixtures'
     | '/_dashboard/admin/'
     | '/_dashboard/agents/'
+    | '/_dashboard/articles/'
     | '/_dashboard/competitions/'
     | '/_dashboard/players/'
     | '/_dashboard/super-agent/'
@@ -416,7 +416,6 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRouteRoute: typeof AuthRouteRouteWithChildren
   DashboardRouteRoute: typeof DashboardRouteRouteWithChildren
-  ArticlesIndexRoute: typeof ArticlesIndexRoute
   HomeIndexRoute: typeof HomeIndexRoute
 }
 
@@ -448,13 +447,6 @@ declare module '@tanstack/react-router' {
       path: '/home'
       fullPath: '/home/'
       preLoaderRoute: typeof HomeIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/articles/': {
-      id: '/articles/'
-      path: '/articles'
-      fullPath: '/articles/'
-      preLoaderRoute: typeof ArticlesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_auth/verify': {
@@ -532,6 +524,13 @@ declare module '@tanstack/react-router' {
       path: '/competitions'
       fullPath: '/competitions/'
       preLoaderRoute: typeof DashboardCompetitionsIndexRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/_dashboard/articles/': {
+      id: '/_dashboard/articles/'
+      path: '/articles'
+      fullPath: '/articles/'
+      preLoaderRoute: typeof DashboardArticlesIndexRouteImport
       parentRoute: typeof DashboardRouteRoute
     }
     '/_dashboard/agents/': {
@@ -714,6 +713,7 @@ interface DashboardRouteRouteChildren {
   DashboardAgentsFixturesRoute: typeof DashboardAgentsFixturesRoute
   DashboardAdminIndexRoute: typeof DashboardAdminIndexRoute
   DashboardAgentsIndexRoute: typeof DashboardAgentsIndexRoute
+  DashboardArticlesIndexRoute: typeof DashboardArticlesIndexRoute
   DashboardCompetitionsIndexRoute: typeof DashboardCompetitionsIndexRoute
   DashboardPlayersIndexRoute: typeof DashboardPlayersIndexRoute
   DashboardSuperAgentIndexRoute: typeof DashboardSuperAgentIndexRoute
@@ -734,6 +734,7 @@ const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
   DashboardAgentsFixturesRoute: DashboardAgentsFixturesRoute,
   DashboardAdminIndexRoute: DashboardAdminIndexRoute,
   DashboardAgentsIndexRoute: DashboardAgentsIndexRoute,
+  DashboardArticlesIndexRoute: DashboardArticlesIndexRoute,
   DashboardCompetitionsIndexRoute: DashboardCompetitionsIndexRoute,
   DashboardPlayersIndexRoute: DashboardPlayersIndexRoute,
   DashboardSuperAgentIndexRoute: DashboardSuperAgentIndexRoute,
@@ -759,7 +760,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRouteRoute: AuthRouteRouteWithChildren,
   DashboardRouteRoute: DashboardRouteRouteWithChildren,
-  ArticlesIndexRoute: ArticlesIndexRoute,
   HomeIndexRoute: HomeIndexRoute,
 }
 export const routeTree = rootRouteImport

@@ -24,12 +24,14 @@ import {
 import { useNavigate } from '@tanstack/react-router'
 import type { User } from '@/lib/types'
 import { logoutFn } from '#/data/auth'
+import { rememberLastModulePath } from '#/lib/last-module'
 
 export function NavUser({ user }: { user: User }) {
   const { isMobile } = useSidebar()
   const navigate = useNavigate()
 
   async function handleLogout() {
+    rememberLastModulePath(window.location.pathname)
     await logoutFn()
     navigate({ to: '/', replace: true })
   }

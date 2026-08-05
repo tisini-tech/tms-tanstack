@@ -17,6 +17,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '#/components/ui/select'
+import { Separator } from '#/components/ui/separator'
+import { SidebarTrigger } from '#/components/ui/sidebar'
 import { Textarea } from '#/components/ui/textarea'
 import { cn } from '#/lib/utils'
 
@@ -302,6 +304,11 @@ export function ArticleEditorHeader({
     <header className="sticky top-0 z-20 border-b border-border bg-card/95 backdrop-blur">
       <div className="mx-auto flex h-14 max-w-[1400px] items-center justify-between gap-4 px-4">
         <div className="flex min-w-0 items-center gap-3">
+          <SidebarTrigger className="-ml-1" />
+          <Separator
+            orientation="vertical"
+            className="hidden h-4 sm:block data-[orientation=vertical]:h-4"
+          />
           <p className="truncate text-sm font-medium text-heading">
             Add New Post
           </p>

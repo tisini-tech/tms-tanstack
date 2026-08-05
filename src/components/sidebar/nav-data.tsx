@@ -1,38 +1,59 @@
 import {
-  AudioLinesIcon,
   BarChartIcon,
   CalendarIcon,
+  FileTextIcon,
   GalleryVerticalEndIcon,
   GroupIcon,
   HomeIcon,
-  TerminalIcon,
   TrophyIcon,
   UserIcon,
   WalletIcon,
 } from 'lucide-react'
 import { linkOptions } from '@tanstack/react-router'
-import type { Module, NavItem } from '#/lib/types'
 
-export const siteModules: Module[] = [
-  {
-    name: 'Super Agent',
+import { MODULE_ROUTES } from '#/lib/module-routes'
+import type { Module, NavItem, SiteModule } from '#/lib/types'
+
+const moduleMeta: Record<
+  string,
+  { logo: React.ReactNode; nav: 'administration' | 'competition' | 'content' }
+> = {
+  Competition: {
+    logo: <TrophyIcon />,
+    nav: 'competition',
+  },
+  Content: {
+    logo: <FileTextIcon />,
+    nav: 'content',
+  },
+  Administration: {
     logo: <GalleryVerticalEndIcon />,
-    plan: 'Enterprise',
-    url: '/super-agent',
+    nav: 'administration',
   },
-  {
-    name: 'Teams',
-    logo: <AudioLinesIcon />,
-    plan: 'Startup',
-    url: '/teams',
-  },
-  {
-    name: 'Admin',
-    logo: <TerminalIcon />,
-    plan: 'Free',
-    url: '/admin',
-  },
-]
+}
+
+/** Map session/API modules → sidebar modules (drop unknown names). */
+export function getSiteModules(allowed: Module[]): SiteModule[] {
+  return allowed.flatMap((mod) => {
+    const meta = moduleMeta[mod.name]
+    const url = MODULE_ROUTES[mod.name]
+    if (!meta || !url) return []
+
+    return [
+      {
+        id: mod.id,
+        name: mod.name,
+        displayName: mod.display_name || mod.name,
+        logo: meta.logo,
+        url,
+      },
+    ]
+  })
+}
+
+export function getModuleNavKey(name: string) {
+  return moduleMeta[name]?.nav
+}
 
 export const navItems: NavItem[] = [
   {
@@ -78,6 +99,24 @@ export const superAgentNavItems: NavItem[] = linkOptions([
     to: '/super-agent/stats',
     label: 'Stats',
     icon: BarChartIcon,
+    activeOptions: { exact: false },
+  },
+])
+
+export const competitionNavItems: NavItem[] = linkOptions([
+  {
+    to: '/competitions',
+    label: 'Competitions',
+    icon: TrophyIcon,
+    activeOptions: { exact: false },
+  },
+])
+
+export const contentNavItems: NavItem[] = linkOptions([
+  {
+    to: '/articles',
+    label: 'Articles',
+    icon: FileTextIcon,
     activeOptions: { exact: false },
   },
 ])

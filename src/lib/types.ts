@@ -8,10 +8,20 @@ export interface NavItem {
   activeOptions: ActiveOptions
 }
 
-export interface Module {
+/** Module as returned by the auth API / stored in session */
+export type Module = {
+  id: number
   name: string
+  display_name: string
+  js: string
+}
+
+/** Module shaped for sidebar UI (filtered + enriched from catalog) */
+export type SiteModule = {
+  id: number
+  name: string
+  displayName: string
   logo: React.ReactNode
-  plan: string
   url: string
 }
 

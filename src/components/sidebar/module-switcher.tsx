@@ -1,7 +1,7 @@
 import { Link } from '@tanstack/react-router'
-import { ChevronsUpDownIcon, PlusIcon } from 'lucide-react'
+import { ChevronsUpDownIcon } from 'lucide-react'
 
-import type { Module } from '#/lib/types'
+import type { SiteModule } from '#/lib/types'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,9 +20,9 @@ import {
 } from '@/components/ui/sidebar'
 
 interface ModuleSwitcherProps {
-  modules: Module[]
-  activeModule: Module
-  setActiveModule: (module: Module) => void
+  modules: SiteModule[]
+  activeModule: SiteModule
+  setActiveModule: (module: SiteModule) => void
 }
 
 export function ModuleSwitcher({
@@ -32,7 +32,7 @@ export function ModuleSwitcher({
 }: ModuleSwitcherProps) {
   const { isMobile } = useSidebar()
 
-  if (!activeModule) {
+  if (!activeModule || modules.length === 0) {
     return null
   }
 
@@ -56,9 +56,9 @@ export function ModuleSwitcher({
               />
             </div>
             <div className="grid min-w-0 flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
-                <span className="truncate font-semibold text-heading">
-                  {activeModule.name}
-                </span>
+              <span className="truncate font-semibold text-heading">
+                {activeModule.displayName}
+              </span>
               <span className="truncate text-xs text-muted-foreground">
                 Improving African Lives
               </span>
@@ -77,7 +77,7 @@ export function ModuleSwitcher({
               </DropdownMenuLabel>
               {modules.map((module, index) => (
                 <DropdownMenuItem
-                  key={module.name}
+                  key={module.id}
                   onClick={() => setActiveModule(module)}
                   className="gap-2 p-2"
                   render={<Link to={module.url} />}
@@ -85,20 +85,12 @@ export function ModuleSwitcher({
                   <div className="flex size-6 items-center justify-center rounded-md border">
                     {module.logo}
                   </div>
-                  {module.name}
+                  {module.displayName}
                   <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
                 </DropdownMenuItem>
               ))}
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="gap-2 p-2">
-              <div className="flex size-6 items-center justify-center rounded-md border bg-transparent">
-                <PlusIcon className="size-4" />
-              </div>
-              <div className="font-medium text-muted-foreground">
-                Add module
-              </div>
-            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>

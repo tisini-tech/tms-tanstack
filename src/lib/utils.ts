@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
-import type { EventSequence, TeamStats } from './types'
+import { MODULE_ROUTES } from './module-routes'
+import type { EventSequence, Module, TeamStats } from './types'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -16,6 +17,31 @@ export function safeInternalPath(path: string | undefined, fallback = '/home') {
     return fallback
   }
   return path
+}
+
+export function resolvePostLoginPath(
+  redirect: string | undefined,
+  modules: Module[],
+  lastPath?: string,
+) {
+  const homes = modules
+    .map((m) => MODULE_ROUTES[m.name])
+    .filter(Boolean)
+  const defaultHome = homes[0] ?? '/home'
+
+  const pickAllowed = (path: string | undefined) => {
+    const safe = safeInternalPath(path, '')
+    if (!safe) return undefined
+    const allowed = homes.some(
+      (home) => safe === home || safe.startsWith(`${home}/`),
+    )
+    return allowed ? safe : undefined
+  }
+
+  // 1) ?redirect= (session expiry / deep link)
+  // 2) last module the user was in before logout
+  // 3) first allowed module
+  return pickAllowed(redirect) ?? pickAllowed(lastPath) ?? defaultHome
 }
 
 export function formatE164Phone(
