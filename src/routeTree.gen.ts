@@ -13,6 +13,7 @@ import { Route as DashboardRouteRouteImport } from './routes/_dashboard/route'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as HomeIndexRouteImport } from './routes/home/index'
+import { Route as ApiUploadthingRouteImport } from './routes/api/uploadthing'
 import { Route as AuthVerifyRouteImport } from './routes/_auth/verify'
 import { Route as AuthResetPasswordRouteImport } from './routes/_auth/reset-password'
 import { Route as AuthRegisterRouteImport } from './routes/_auth/register'
@@ -36,6 +37,7 @@ import { Route as DashboardCompetitionsFixturesIndexRouteImport } from './routes
 import { Route as DashboardArticlesCreateIndexRouteImport } from './routes/_dashboard/articles/create/index'
 import { Route as DashboardCompetitionsStatsTeamsRouteImport } from './routes/_dashboard/competitions/stats/teams'
 import { Route as DashboardCompetitionsFixturesReviewRouteImport } from './routes/_dashboard/competitions/fixtures/review'
+import { Route as DashboardArticlesArticleIdEditRouteImport } from './routes/_dashboard/articles/$articleId/edit'
 import { Route as DashboardCompetitionsFixturesFixIdRouteRouteImport } from './routes/_dashboard/competitions/fixtures/$fixId/route'
 import { Route as DashboardCompetitionsFixturesFixIdIndexRouteImport } from './routes/_dashboard/competitions/fixtures/$fixId/index'
 import { Route as DashboardCompetitionsFixturesFixIdReviewRouteImport } from './routes/_dashboard/competitions/fixtures/$fixId/review'
@@ -58,6 +60,11 @@ const IndexRoute = IndexRouteImport.update({
 const HomeIndexRoute = HomeIndexRouteImport.update({
   id: '/home/',
   path: '/home/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiUploadthingRoute = ApiUploadthingRouteImport.update({
+  id: '/api/uploadthing',
+  path: '/api/uploadthing',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthVerifyRoute = AuthVerifyRouteImport.update({
@@ -185,6 +192,12 @@ const DashboardCompetitionsFixturesReviewRoute =
     path: '/competitions/fixtures/review',
     getParentRoute: () => DashboardRouteRoute,
   } as any)
+const DashboardArticlesArticleIdEditRoute =
+  DashboardArticlesArticleIdEditRouteImport.update({
+    id: '/articles/$articleId/edit',
+    path: '/articles/$articleId/edit',
+    getParentRoute: () => DashboardRouteRoute,
+  } as any)
 const DashboardCompetitionsFixturesFixIdRouteRoute =
   DashboardCompetitionsFixturesFixIdRouteRouteImport.update({
     id: '/competitions/fixtures/$fixId',
@@ -223,6 +236,7 @@ export interface FileRoutesByFullPath {
   '/register': typeof AuthRegisterRoute
   '/reset-password': typeof AuthResetPasswordRoute
   '/verify': typeof AuthVerifyRoute
+  '/api/uploadthing': typeof ApiUploadthingRoute
   '/home/': typeof HomeIndexRoute
   '/competitions/stats': typeof DashboardCompetitionsStatsRouteRouteWithChildren
   '/agents/fixtures': typeof DashboardAgentsFixturesRoute
@@ -235,6 +249,7 @@ export interface FileRoutesByFullPath {
   '/tickets/': typeof DashboardTicketsIndexRoute
   '/wallet/': typeof DashboardWalletIndexRoute
   '/competitions/fixtures/$fixId': typeof DashboardCompetitionsFixturesFixIdRouteRouteWithChildren
+  '/articles/$articleId/edit': typeof DashboardArticlesArticleIdEditRoute
   '/competitions/fixtures/review': typeof DashboardCompetitionsFixturesReviewRoute
   '/competitions/stats/teams': typeof DashboardCompetitionsStatsTeamsRoute
   '/articles/create/': typeof DashboardArticlesCreateIndexRoute
@@ -255,6 +270,7 @@ export interface FileRoutesByTo {
   '/register': typeof AuthRegisterRoute
   '/reset-password': typeof AuthResetPasswordRoute
   '/verify': typeof AuthVerifyRoute
+  '/api/uploadthing': typeof ApiUploadthingRoute
   '/home': typeof HomeIndexRoute
   '/agents/fixtures': typeof DashboardAgentsFixturesRoute
   '/admin': typeof DashboardAdminIndexRoute
@@ -265,6 +281,7 @@ export interface FileRoutesByTo {
   '/teams': typeof DashboardTeamsIndexRoute
   '/tickets': typeof DashboardTicketsIndexRoute
   '/wallet': typeof DashboardWalletIndexRoute
+  '/articles/$articleId/edit': typeof DashboardArticlesArticleIdEditRoute
   '/competitions/fixtures/review': typeof DashboardCompetitionsFixturesReviewRoute
   '/competitions/stats/teams': typeof DashboardCompetitionsStatsTeamsRoute
   '/articles/create': typeof DashboardArticlesCreateIndexRoute
@@ -288,6 +305,7 @@ export interface FileRoutesById {
   '/_auth/register': typeof AuthRegisterRoute
   '/_auth/reset-password': typeof AuthResetPasswordRoute
   '/_auth/verify': typeof AuthVerifyRoute
+  '/api/uploadthing': typeof ApiUploadthingRoute
   '/home/': typeof HomeIndexRoute
   '/_dashboard/competitions/stats': typeof DashboardCompetitionsStatsRouteRouteWithChildren
   '/_dashboard/agents/fixtures': typeof DashboardAgentsFixturesRoute
@@ -300,6 +318,7 @@ export interface FileRoutesById {
   '/_dashboard/tickets/': typeof DashboardTicketsIndexRoute
   '/_dashboard/wallet/': typeof DashboardWalletIndexRoute
   '/_dashboard/competitions/fixtures/$fixId': typeof DashboardCompetitionsFixturesFixIdRouteRouteWithChildren
+  '/_dashboard/articles/$articleId/edit': typeof DashboardArticlesArticleIdEditRoute
   '/_dashboard/competitions/fixtures/review': typeof DashboardCompetitionsFixturesReviewRoute
   '/_dashboard/competitions/stats/teams': typeof DashboardCompetitionsStatsTeamsRoute
   '/_dashboard/articles/create/': typeof DashboardArticlesCreateIndexRoute
@@ -322,6 +341,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/reset-password'
     | '/verify'
+    | '/api/uploadthing'
     | '/home/'
     | '/competitions/stats'
     | '/agents/fixtures'
@@ -334,6 +354,7 @@ export interface FileRouteTypes {
     | '/tickets/'
     | '/wallet/'
     | '/competitions/fixtures/$fixId'
+    | '/articles/$articleId/edit'
     | '/competitions/fixtures/review'
     | '/competitions/stats/teams'
     | '/articles/create/'
@@ -354,6 +375,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/reset-password'
     | '/verify'
+    | '/api/uploadthing'
     | '/home'
     | '/agents/fixtures'
     | '/admin'
@@ -364,6 +386,7 @@ export interface FileRouteTypes {
     | '/teams'
     | '/tickets'
     | '/wallet'
+    | '/articles/$articleId/edit'
     | '/competitions/fixtures/review'
     | '/competitions/stats/teams'
     | '/articles/create'
@@ -386,6 +409,7 @@ export interface FileRouteTypes {
     | '/_auth/register'
     | '/_auth/reset-password'
     | '/_auth/verify'
+    | '/api/uploadthing'
     | '/home/'
     | '/_dashboard/competitions/stats'
     | '/_dashboard/agents/fixtures'
@@ -398,6 +422,7 @@ export interface FileRouteTypes {
     | '/_dashboard/tickets/'
     | '/_dashboard/wallet/'
     | '/_dashboard/competitions/fixtures/$fixId'
+    | '/_dashboard/articles/$articleId/edit'
     | '/_dashboard/competitions/fixtures/review'
     | '/_dashboard/competitions/stats/teams'
     | '/_dashboard/articles/create/'
@@ -416,6 +441,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRouteRoute: typeof AuthRouteRouteWithChildren
   DashboardRouteRoute: typeof DashboardRouteRouteWithChildren
+  ApiUploadthingRoute: typeof ApiUploadthingRoute
   HomeIndexRoute: typeof HomeIndexRoute
 }
 
@@ -447,6 +473,13 @@ declare module '@tanstack/react-router' {
       path: '/home'
       fullPath: '/home/'
       preLoaderRoute: typeof HomeIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/uploadthing': {
+      id: '/api/uploadthing'
+      path: '/api/uploadthing'
+      fullPath: '/api/uploadthing'
+      preLoaderRoute: typeof ApiUploadthingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_auth/verify': {
@@ -610,6 +643,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardCompetitionsFixturesReviewRouteImport
       parentRoute: typeof DashboardRouteRoute
     }
+    '/_dashboard/articles/$articleId/edit': {
+      id: '/_dashboard/articles/$articleId/edit'
+      path: '/articles/$articleId/edit'
+      fullPath: '/articles/$articleId/edit'
+      preLoaderRoute: typeof DashboardArticlesArticleIdEditRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
     '/_dashboard/competitions/fixtures/$fixId': {
       id: '/_dashboard/competitions/fixtures/$fixId'
       path: '/competitions/fixtures/$fixId'
@@ -720,6 +760,7 @@ interface DashboardRouteRouteChildren {
   DashboardTicketsIndexRoute: typeof DashboardTicketsIndexRoute
   DashboardWalletIndexRoute: typeof DashboardWalletIndexRoute
   DashboardCompetitionsFixturesFixIdRouteRoute: typeof DashboardCompetitionsFixturesFixIdRouteRouteWithChildren
+  DashboardArticlesArticleIdEditRoute: typeof DashboardArticlesArticleIdEditRoute
   DashboardCompetitionsFixturesReviewRoute: typeof DashboardCompetitionsFixturesReviewRoute
   DashboardArticlesCreateIndexRoute: typeof DashboardArticlesCreateIndexRoute
   DashboardCompetitionsFixturesIndexRoute: typeof DashboardCompetitionsFixturesIndexRoute
@@ -742,6 +783,7 @@ const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
   DashboardWalletIndexRoute: DashboardWalletIndexRoute,
   DashboardCompetitionsFixturesFixIdRouteRoute:
     DashboardCompetitionsFixturesFixIdRouteRouteWithChildren,
+  DashboardArticlesArticleIdEditRoute: DashboardArticlesArticleIdEditRoute,
   DashboardCompetitionsFixturesReviewRoute:
     DashboardCompetitionsFixturesReviewRoute,
   DashboardArticlesCreateIndexRoute: DashboardArticlesCreateIndexRoute,
@@ -762,6 +804,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRouteRoute: AuthRouteRouteWithChildren,
   DashboardRouteRoute: DashboardRouteRouteWithChildren,
+  ApiUploadthingRoute: ApiUploadthingRoute,
   HomeIndexRoute: HomeIndexRoute,
 }
 export const routeTree = rootRouteImport

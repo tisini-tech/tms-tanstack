@@ -83,6 +83,7 @@ export const getAuthContextFn = createServerFn({ method: 'GET' }).handler(
     return {
       user: session.data.user,
       modules: session.data.modules ?? [],
+      role: session.data.role,
     }
   },
 )

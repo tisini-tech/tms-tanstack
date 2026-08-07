@@ -1,5 +1,9 @@
-import { getArticlesFn } from '#/data/articles'
+import { useEffect } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
+
+import { getArticlesFn } from '#/data/articles'
+import { ArticlesList } from '#/components/articles/articles-list'
+import { rememberLastModulePath } from '#/lib/last-module'
 
 export const Route = createFileRoute('/_dashboard/articles/')({
   loader: async () => {
@@ -12,6 +16,14 @@ export const Route = createFileRoute('/_dashboard/articles/')({
 function RouteComponent() {
   const { articles } = Route.useLoaderData()
 
-  console.log(articles)
-  return <div>Hello "/_dashboard/articles/"!</div>
+  useEffect(() => {
+    rememberLastModulePath('/articles')
+  }, [])
+
+  return (
+    <ArticlesList
+      articles={articles.results ?? []}
+      totalItems={articles.total_items}
+    />
+  )
 }

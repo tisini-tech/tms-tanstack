@@ -374,6 +374,7 @@ export interface ArticleUser {
   id: number
   username: string
 }
+
 export interface Article {
   id: number
   title: string
@@ -393,4 +394,17 @@ export interface Article {
   published_at: string
   is_locked: boolean
   is_mine: boolean
+}
+
+export interface Author {
+  id: number
+  user_id?: number
+  display_name: string
+  bio: string
+  website: string
+  twitter: string
+  facebook: string
+  instagram: string
+  linkedin: string
+  youtube: string
 }

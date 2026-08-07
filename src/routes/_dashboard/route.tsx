@@ -14,14 +14,18 @@ import { cn } from '#/lib/utils'
 
 export const Route = createFileRoute('/_dashboard')({
   beforeLoad: async () => {
-    const { user, modules } = await getAuthContextFn()
-    return { user, modules }
+    const { user, modules, role } = await getAuthContextFn()
+    return { user, modules, role }
   },
   component: RouteComponent,
 })
 
 function isFocusLayoutPath(pathname: string) {
-  return pathname === '/articles' || pathname.startsWith('/articles/')
+  return (
+    pathname === '/articles/create' ||
+    pathname.startsWith('/articles/create/') ||
+    /\/articles\/[^/]+\/edit\/?$/.test(pathname)
+  )
 }
 
 /** Collapse the app sidebar when entering immersive editor routes. */
@@ -47,7 +51,11 @@ function RouteComponent() {
       <FocusLayoutSidebarSync active={focusLayout} />
       <AppSidebar user={user} modules={modules} />
 
-      <SidebarInset className={cn(focusLayout && 'min-h-svh overflow-hidden')}>
+      <SidebarInset
+        className={cn(
+          focusLayout && 'min-h-svh lg:h-svh lg:overflow-hidden',
+        )}
+      >
         {!focusLayout ? (
           <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
             <div className="flex items-center gap-2 px-4">
@@ -62,8 +70,10 @@ function RouteComponent() {
 
         <div
           className={cn(
-            'flex min-h-0 flex-1 flex-col',
-            focusLayout ? 'overflow-auto' : 'gap-4 p-4 pt-0',
+            'flex min-h-0 min-w-0 flex-1 flex-col',
+            focusLayout
+              ? 'overflow-y-auto lg:overflow-hidden'
+              : 'gap-4 overflow-x-hidden p-4 pt-0',
           )}
         >
           <Outlet />

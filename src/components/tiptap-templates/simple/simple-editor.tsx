@@ -5,7 +5,6 @@ import { Editor, EditorContent, EditorContext, useEditor } from '@tiptap/react'
 
 // --- Tiptap Core Extensions ---
 import { StarterKit } from '@tiptap/starter-kit'
-import { Image } from '@tiptap/extension-image'
 import { TaskItem, TaskList } from '@tiptap/extension-list'
 import { TextAlign } from '@tiptap/extension-text-align'
 import { Typography } from '@tiptap/extension-typography'
@@ -26,6 +25,7 @@ import {
 
 // --- Tiptap Node ---
 import { ImageUploadNode } from '#/components/tiptap-node/image-upload-node/image-upload-node-extension'
+import { ImageWithCaption } from '#/components/tiptap-node/image-node/image-with-caption-extension'
 import { HorizontalRule } from '#/components/tiptap-node/horizontal-rule-node/horizontal-rule-node-extension'
 import '#/components/tiptap-node/blockquote-node/blockquote-node.scss'
 import '#/components/tiptap-node/code-block-node/code-block-node.scss'
@@ -246,7 +246,7 @@ export function SimpleEditor({
       TaskList,
       TaskItem.configure({ nested: true }),
       Highlight.configure({ multicolor: true }),
-      Image,
+      ImageWithCaption,
       Typography,
       Superscript,
       Subscript,
@@ -263,7 +263,7 @@ export function SimpleEditor({
         onError: (error) => console.error('Upload failed:', error),
       }),
     ],
-    content,
+    content: '',
   })
 
   const rect = useCursorVisibility({

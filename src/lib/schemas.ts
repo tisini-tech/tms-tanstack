@@ -100,25 +100,98 @@ export type ResetPasswordSchema = z.infer<typeof resetPasswordSchema>
 
 export type RegisterSchema = z.infer<typeof registerSchema>
 
-export const articleSchema = z.object({
+export const ARTICLE_EXCERPT_MAX_CHARS = 500
+
+export const articleFormSchema = z.object({
   title: z.string().min(1, 'Title is required'),
-  slug: z
+  excerpt: z
     .string()
-    .min(1, 'Slug is required')
-    .regex(
-      /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
-      'Use lowercase letters, numbers, and hyphens',
+    .trim()
+    .min(1, 'Excerpt is required')
+    .max(
+      ARTICLE_EXCERPT_MAX_CHARS,
+      `Excerpt must be ${ARTICLE_EXCERPT_MAX_CHARS} characters or fewer`,
     ),
-  authorId: z.string().min(1, 'Author is required'),
-  categoryIds: z.array(z.string()),
-  tags: z.string(),
-  excerpt: z.string(),
-  visibility: z.enum(['public', 'private']),
-  status: z.enum(['draft', 'published']),
-  featuredImage: z.string().nullable(),
+  accessType: z.string().min(1, 'Access type is required'),
+  featuredImage: z
+    .string()
+    .nullable()
+    .refine((value) => Boolean(value?.trim()), {
+      message: 'Featured image is required',
+    }),
+  categoryId: z.string().min(1, 'Category is required'),
+  keywords: z.string().trim().min(1, 'Keywords are required'),
+  /** Edit-only — optional on create */
+  slug: z.string().optional(),
+  authorId: z.string().optional(),
+  status: z.enum(['draft', 'published']).optional(),
 })
 
-export type ArticleSchema = z.infer<typeof articleSchema>
+export type ArticleFormValues = z.infer<typeof articleFormSchema>
+
+export function getArticleFormSchema(mode: 'create' | 'edit') {
+  if (mode === 'create') {
+    return articleFormSchema
+  }
+
+  return articleFormSchema.extend({
+    slug: z
+      .string()
+      .min(1, 'Slug is required')
+      .regex(
+        /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
+        'Use lowercase letters, numbers, and hyphens',
+      ),
+    authorId: z.string().min(1, 'Author is required'),
+    status: z.enum(['draft', 'published']),
+  })
+}
+
+/** @deprecated Use ArticleFormValues */
+export type ArticleSchema = ArticleFormValues
+
+export type CreateArticlePayload = {
+  id?: string
+  title: string
+  excerpt: string
+  content: string
+  access_type: string
+  featured_image: string
+  category_id: number
+  keywords: string
+}
+
+export function toCreateArticlePayload(
+  values: ArticleFormValues,
+  content: string,
+): CreateArticlePayload {
+  return {
+    title: values.title.trim(),
+    excerpt: values.excerpt.trim(),
+    content,
+    access_type: values.accessType,
+    featured_image: values.featuredImage ?? '',
+    category_id: Number(values.categoryId),
+    keywords: values.keywords.trim(),
+  }
+}
+
+export function toUpdateArticlePayload(
+  values: ArticleFormValues,
+  content: string,
+  id: string,
+): CreateArticlePayload {
+  return {
+    id,
+    title: values.title.trim(),
+    excerpt: values.excerpt.trim(),
+    content,
+    access_type: values.accessType,
+    featured_image: values.featuredImage ?? '',
+    category_id: Number(values.categoryId),
+    keywords: values.keywords.trim(),
+  }
+}
 
 export type RequestPasswordMethod = 'phone' | 'email'
 
@@ -164,3 +237,10 @@ export function requestPasswordSchema(method: RequestPasswordMethod) {
       }
     })
 }
+
+export const createCategorySchema = z.object({
+  name: z.string().trim().min(1, 'Name is required'),
+  description: z.string().trim().optional(),
+})
+
+export type CreateCategorySchema = z.infer<typeof createCategorySchema>

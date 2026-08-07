@@ -61,23 +61,58 @@ body,
 }
 
 .simple-editor-wrapper.simple-editor-embedded {
+  position: relative;
+  display: flex;
   width: 100%;
-  height: auto;
-  min-height: 28rem;
-  overflow: visible;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  background: var(--card);
+  height: 100%;
+  min-height: 0;
+  flex-direction: column;
+  overflow: hidden;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+
+  /* Keep TipTap chrome on the app card surface */
+  --tt-toolbar-bg-color: var(--card);
+  --tt-toolbar-border-color: var(--border);
+  --tt-bg-color: var(--card);
+  --tt-card-bg-color: var(--card);
+  --tt-card-border-color: var(--border);
+  --tt-border-color: var(--border);
+
+  .tiptap-toolbar {
+    flex-shrink: 0;
+    background: var(--card);
+    border-bottom-color: var(--border);
+  }
 }
 
 .simple-editor-wrapper.simple-editor-embedded .simple-editor-content {
   max-width: none;
+  min-height: 0;
+  flex: 1;
+  overflow-y: auto;
 }
 
 .simple-editor-wrapper.simple-editor-embedded
   .simple-editor-content
   .tiptap.ProseMirror.simple-editor {
-  padding: 1.25rem 1.5rem 8rem;
+  padding: 1rem 1rem 3rem;
+}
+
+@media screen and (min-width: 640px) {
+  .simple-editor-wrapper.simple-editor-embedded
+    .simple-editor-content
+    .tiptap.ProseMirror.simple-editor {
+    padding: 1.25rem 1.5rem 4rem;
+  }
+}
+
+.simple-editor-wrapper.simple-editor-embedded .simple-editor-search-and-replace {
+  position: absolute;
+  top: calc(var(--tt-toolbar-height) + 0.5rem);
+  right: 0.5rem;
+  max-height: calc(100% - var(--tt-toolbar-height) - 1rem);
 }
 
 .simple-editor-search-and-replace {

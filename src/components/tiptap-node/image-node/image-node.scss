@@ -1,25 +1,69 @@
 .tiptap.ProseMirror {
-  img {
-    max-width: 100%;
-    height: auto;
-    display: block;
-  }
-
-  p > img {
-    display: inline-block;
-  }
-
-  > img:not([data-type="emoji"] img) {
+  .tiptap-image-figure {
     margin: 2rem 0;
     outline: 0.125rem solid transparent;
     border-radius: var(--tt-radius-xs, 0.25rem);
   }
 
-  img:not([data-type="emoji"] img).ProseMirror-selectednode {
+  .tiptap-image-figure--selected,
+  .tiptap-image-figure.ProseMirror-selectednode {
     outline-color: var(--tt-brand-color-500);
   }
 
-  // Thread image handling
+  .tiptap-image-figure__img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    border-radius: var(--tt-radius-xs, 0.25rem);
+  }
+
+  .tiptap-image-caption {
+    margin-top: 0.625rem;
+    padding: 0.5rem 0.75rem;
+    text-align: center;
+    font-size: 0.875rem;
+    font-style: italic;
+    line-height: 1.45;
+    min-height: 2.5rem;
+    color: var(--foreground, #e5e7eb);
+    background: color-mix(in oklab, var(--muted, #1f2937) 70%, transparent);
+    border: 1px dashed color-mix(in oklab, var(--border, #4b5563) 90%, transparent);
+    border-radius: 0.5rem;
+    transition:
+      border-color 0.15s ease,
+      background-color 0.15s ease;
+  }
+
+  .tiptap-image-caption:focus,
+  .tiptap-image-caption:focus-within {
+    outline: none;
+    border-style: solid;
+    border-color: var(--ring, var(--tt-brand-color-500, #6366f1));
+    background: color-mix(in oklab, var(--muted, #1f2937) 90%, transparent);
+  }
+
+  .tiptap-image-caption:has(br.ProseMirror-trailingBreak:only-child)::before,
+  .tiptap-image-caption:empty::before {
+    content: attr(data-placeholder);
+    color: var(--muted-foreground, #9ca3af);
+    font-style: italic;
+    pointer-events: none;
+    float: left;
+    height: 0;
+    opacity: 0.95;
+  }
+
+  // Legacy bare images (if any still appear outside figures)
+  > img:not([data-type='emoji'] img) {
+    margin: 2rem 0;
+    outline: 0.125rem solid transparent;
+    border-radius: var(--tt-radius-xs, 0.25rem);
+  }
+
+  img:not([data-type='emoji'] img).ProseMirror-selectednode {
+    outline-color: var(--tt-brand-color-500);
+  }
+
   .tiptap-thread:has(> img) {
     margin: 2rem 0;
 
