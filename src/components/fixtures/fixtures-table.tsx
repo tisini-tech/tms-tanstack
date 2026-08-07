@@ -72,7 +72,7 @@ export function DataTable<TData, TValue>({
           disabled={getReviewableFixtureIds().length === 0}
           render={
             <Link
-              to="/super-agent/fixtures/review"
+              to="/competitions/fixtures/review"
               search={{
                 ids: getReviewableFixtureIds().join(','),
               }}
