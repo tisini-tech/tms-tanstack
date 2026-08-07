@@ -11,8 +11,7 @@ export const columns: ColumnDef<Fixture>[] = [
       <Checkbox
         checked={table.getIsAllPageRowsSelected()}
         indeterminate={
-          table.getIsSomePageRowsSelected() &&
-          !table.getIsAllPageRowsSelected()
+          table.getIsSomePageRowsSelected() && !table.getIsAllPageRowsSelected()
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
@@ -66,7 +65,7 @@ export const columns: ColumnDef<Fixture>[] = [
           variant="outline"
           render={
             <Link
-              to={`/super-agent/fixtures/$fixId`}
+              to={`/competitions/fixtures/$fixId`}
               params={{ fixId: fixture.id.toString() }}
             />
           }

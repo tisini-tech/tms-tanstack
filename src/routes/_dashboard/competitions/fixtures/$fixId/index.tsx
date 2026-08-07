@@ -3,7 +3,7 @@ import { createFileRoute, getRouteApi } from '@tanstack/react-router'
 import { MatchReportDownload } from '#/components/fixtures/match-report-download'
 import { PlayerReportDownload } from '#/components/fixtures/player-report-download'
 
-const fixIdRoute = getRouteApi('/_dashboard/super-agent/fixtures/$fixId')
+const fixIdRoute = getRouteApi('/_dashboard/competitions/fixtures/$fixId')
 
 export const Route = createFileRoute(
   '/_dashboard/competitions/fixtures/$fixId/',

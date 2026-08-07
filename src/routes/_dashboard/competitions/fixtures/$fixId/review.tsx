@@ -3,7 +3,7 @@ import { ReviewCommentsList } from '#/components/fixtures/review/review-comments
 import { createFileRoute, getRouteApi } from '@tanstack/react-router'
 import { getReviewCommentsFn } from '#/data/fixtures'
 
-const fixIdRoute = getRouteApi('/_dashboard/super-agent/fixtures/$fixId')
+const fixIdRoute = getRouteApi('/_dashboard/competitions/fixtures/$fixId')
 
 export const Route = createFileRoute(
   '/_dashboard/competitions/fixtures/$fixId/review',

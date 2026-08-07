@@ -5,5 +5,5 @@ export const Route = createFileRoute('/_dashboard/competitions/stats/teams')({
 })
 
 function RouteComponent() {
-  return <div>Hello "/_dashboard/super-agent/stats/teams"!</div>
+  return <div>Hello "/_dashboard/competitions/stats/teams"!</div>
 }

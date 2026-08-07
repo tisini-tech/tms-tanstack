@@ -3,7 +3,7 @@ import { createFileRoute, getRouteApi } from '@tanstack/react-router'
 import { PlayerStatsTable } from '#/components/stats/player-stats-table'
 import type { FixturePlayerStats } from '#/lib/types'
 
-const fixIdRoute = getRouteApi('/_dashboard/super-agent/fixtures/$fixId')
+const fixIdRoute = getRouteApi('/_dashboard/competitions/fixtures/$fixId')
 
 export const Route = createFileRoute(
   '/_dashboard/competitions/fixtures/$fixId/player-stats',

@@ -12,50 +12,50 @@ import {
 const navItems = [
   {
     label: 'Overview',
-    to: '/super-agent/fixtures/$fixId',
+    to: '/competitions/fixtures/$fixId',
     exact: true,
   },
   {
     label: 'Player Stats',
-    to: '/super-agent/fixtures/$fixId/player-stats',
+    to: '/competitions/fixtures/$fixId/player-stats',
     exact: true,
   },
   {
     label: 'Event Review',
-    to: '/super-agent/fixtures/$fixId/review',
+    to: '/competitions/fixtures/$fixId/review',
     exact: true,
   },
   {
     label: 'Raw Events',
-    to: '/super-agent/fixtures/$fixId/raw-events',
+    to: '/competitions/fixtures/$fixId/raw-events',
     exact: true,
   },
 ] as const
 
-export const Route = createFileRoute('/_dashboard/competitions/fixtures/$fixId')(
-  {
-    loader: async ({ params: { fixId } }) => {
-      const teamStats = await getFixtureTeamStatsFn({ data: { id: fixId } })
-      const playerStats = await getFixturePlayerStatsFn({ data: { id: fixId } })
-      const quarterStats = await getFixtureQuarterStatsFn({
-        data: { id: fixId },
-      })
-      const passMatrix = await getFixturePassMatrixFn({ data: { id: fixId } })
-      const reviewStats = await getFixtureReviewStatsFn({ data: { id: fixId } })
+export const Route = createFileRoute(
+  '/_dashboard/competitions/fixtures/$fixId',
+)({
+  loader: async ({ params: { fixId } }) => {
+    const teamStats = await getFixtureTeamStatsFn({ data: { id: fixId } })
+    const playerStats = await getFixturePlayerStatsFn({ data: { id: fixId } })
+    const quarterStats = await getFixtureQuarterStatsFn({
+      data: { id: fixId },
+    })
+    const passMatrix = await getFixturePassMatrixFn({ data: { id: fixId } })
+    const reviewStats = await getFixtureReviewStatsFn({ data: { id: fixId } })
 
-      return {
-        teamStats,
-        playerStats,
-        quarterStats,
-        passMatrix,
-        reviewStats,
-        fixId,
-      }
-    },
-    component: RouteComponent,
-    pendingComponent: Loading,
+    return {
+      teamStats,
+      playerStats,
+      quarterStats,
+      passMatrix,
+      reviewStats,
+      fixId,
+    }
   },
-)
+  component: RouteComponent,
+  pendingComponent: Loading,
+})
 
 function RouteComponent() {
   const { reviewStats, fixId } = Route.useLoaderData()
