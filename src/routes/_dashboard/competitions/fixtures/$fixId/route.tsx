@@ -32,7 +32,7 @@ const navItems = [
   },
 ] as const
 
-export const Route = createFileRoute('/_dashboard/super-agent/fixtures/$fixId')(
+export const Route = createFileRoute('/_dashboard/competitions/fixtures/$fixId')(
   {
     loader: async ({ params: { fixId } }) => {
       const teamStats = await getFixtureTeamStatsFn({ data: { id: fixId } })

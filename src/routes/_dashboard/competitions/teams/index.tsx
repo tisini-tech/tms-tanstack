@@ -8,7 +8,7 @@ import { getTeamsFn, searchTeamsFn } from '#/data/teams'
 import { EditTeamModal } from '#/components/teams/edit-team'
 import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar'
 
-export const Route = createFileRoute('/_dashboard/super-agent/teams/')({
+export const Route = createFileRoute('/_dashboard/competitions/teams/')({
   loader: async () => {
     const teamData = await getTeamsFn()
     return { teamData }

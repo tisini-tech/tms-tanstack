@@ -38,6 +38,14 @@ export interface PaginatedResponse<T> {
   results: T[]
 }
 
+export interface PagePaginatedResponse<T> {
+  page: number
+  page_size: number
+  total_pages: number
+  total_items: number
+  results: T[]
+}
+
 export interface Country {
   id: number
   name: string
@@ -353,4 +361,36 @@ export interface RawFixtureEvent {
   localid: string
   app_timelog: string
   sync_status: number
+}
+
+export interface ArticleCategory {
+  id: number
+  name: string
+  slug: string
+  description: string
+}
+
+export interface ArticleUser {
+  id: number
+  username: string
+}
+export interface Article {
+  id: number
+  title: string
+  slug: string
+  excerpt: string
+  content: string
+  featured_image: string
+  access_type: string
+  status: string
+  category: ArticleCategory
+  keywords: string[]
+  author: ArticleUser
+  reviewed_by: ArticleUser
+  rejection_reason: string
+  created_at: string
+  updated_at: string
+  published_at: string
+  is_locked: boolean
+  is_mine: boolean
 }

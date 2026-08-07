@@ -19,7 +19,6 @@ import {
   getModuleNavKey,
   getSiteModules,
   navItems,
-  superAgentNavItems,
 } from './nav-data'
 import { NavPrimary } from './nav-primary'
 
@@ -60,9 +59,7 @@ export function AppSidebar({
     if (!resolvedActive) return navItems
 
     const navKey = getModuleNavKey(resolvedActive.name)
-    if (navKey === 'administration') {
-      return [...superAgentNavItems, ...navItems]
-    }
+
     if (navKey === 'competition') {
       return [...competitionNavItems, ...navItems]
     }

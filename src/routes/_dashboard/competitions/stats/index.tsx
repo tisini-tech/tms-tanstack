@@ -9,7 +9,7 @@ const roundsSearchSchema = z.preprocess((value) => {
   return Array.isArray(value) ? value : [value]
 }, z.array(z.string()).optional())
 
-export const Route = createFileRoute('/_dashboard/super-agent/stats/')({
+export const Route = createFileRoute('/_dashboard/competitions/stats/')({
   validateSearch: z.object({
     competitionId: z.coerce.number().optional(),
     divisionId: z.coerce.number().optional(),

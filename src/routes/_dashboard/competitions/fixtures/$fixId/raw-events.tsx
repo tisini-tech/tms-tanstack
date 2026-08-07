@@ -12,7 +12,7 @@ const rawEventsQuery = (id: string) =>
   })
 
 export const Route = createFileRoute(
-  '/_dashboard/super-agent/fixtures/$fixId/raw-events',
+  '/_dashboard/competitions/fixtures/$fixId/raw-events',
 )({
   loader: async ({ params, context }) => {
     await context.queryClient.prefetchQuery(rawEventsQuery(params.fixId))

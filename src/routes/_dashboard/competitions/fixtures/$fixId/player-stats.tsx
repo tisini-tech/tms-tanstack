@@ -6,7 +6,7 @@ import type { FixturePlayerStats } from '#/lib/types'
 const fixIdRoute = getRouteApi('/_dashboard/super-agent/fixtures/$fixId')
 
 export const Route = createFileRoute(
-  '/_dashboard/super-agent/fixtures/$fixId/player-stats',
+  '/_dashboard/competitions/fixtures/$fixId/player-stats',
 )({
   component: RouteComponent,
 })

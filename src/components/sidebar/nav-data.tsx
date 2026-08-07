@@ -64,50 +64,41 @@ export const navItems: NavItem[] = [
   },
 ]
 
-export const superAgentNavItems: NavItem[] = linkOptions([
+export const competitionNavItems: NavItem[] = linkOptions([
   {
-    to: '/super-agent',
+    to: '/competitions',
     label: 'Overview',
     icon: HomeIcon,
     activeOptions: { exact: true },
   },
   {
-    to: '/super-agent/competitions',
+    to: '/competitions/leagues',
     label: 'Competitions',
     icon: TrophyIcon,
     activeOptions: { exact: false },
   },
   {
-    to: '/super-agent/fixtures',
+    to: '/competitions/fixtures',
     label: 'Fixtures',
     icon: CalendarIcon,
     activeOptions: { exact: false },
   },
   {
-    to: '/super-agent/teams',
+    to: '/competitions/teams',
     label: 'Teams',
     icon: GroupIcon,
     activeOptions: { exact: false },
   },
   {
-    to: '/super-agent/players',
+    to: '/competitions/players',
     label: 'Players',
     icon: UserIcon,
     activeOptions: { exact: false },
   },
   {
-    to: '/super-agent/stats',
+    to: '/competitions/stats',
     label: 'Stats',
     icon: BarChartIcon,
-    activeOptions: { exact: false },
-  },
-])
-
-export const competitionNavItems: NavItem[] = linkOptions([
-  {
-    to: '/competitions',
-    label: 'Competitions',
-    icon: TrophyIcon,
     activeOptions: { exact: false },
   },
 ])

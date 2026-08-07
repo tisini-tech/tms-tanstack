@@ -7,7 +7,7 @@ import { columns } from '#/components/fixtures/columns'
 import { DataTable } from '#/components/fixtures/fixtures-table'
 import { getFixturesFn, searchFixturesFn } from '#/data/fixtures'
 
-export const Route = createFileRoute('/_dashboard/super-agent/fixtures/')({
+export const Route = createFileRoute('/_dashboard/competitions/fixtures/')({
   loader: async () => {
     const fixturesData = await getFixturesFn()
 

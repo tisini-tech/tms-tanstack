@@ -6,7 +6,7 @@ import { getReviewCommentsFn } from '#/data/fixtures'
 const fixIdRoute = getRouteApi('/_dashboard/super-agent/fixtures/$fixId')
 
 export const Route = createFileRoute(
-  '/_dashboard/super-agent/fixtures/$fixId/review',
+  '/_dashboard/competitions/fixtures/$fixId/review',
 )({
   loader: async ({ params }) => {
     const reviewComments = await getReviewCommentsFn({

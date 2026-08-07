@@ -18,7 +18,7 @@ import {
 } from '#/components/ui/select'
 import { getFixtureReviewStatsFn } from '#/data/fixtures'
 
-export const Route = createFileRoute('/_dashboard/super-agent/fixtures/review')(
+export const Route = createFileRoute('/_dashboard/competitions/fixtures/review')(
   {
     validateSearch: z.object({
       ids: z.string().optional(),

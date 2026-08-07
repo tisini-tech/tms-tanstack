@@ -21,26 +21,26 @@ import { Route as AuthForgotPasswordRouteImport } from './routes/_auth/forgot-pa
 import { Route as DashboardWalletIndexRouteImport } from './routes/_dashboard/wallet/index'
 import { Route as DashboardTicketsIndexRouteImport } from './routes/_dashboard/tickets/index'
 import { Route as DashboardTeamsIndexRouteImport } from './routes/_dashboard/teams/index'
-import { Route as DashboardSuperAgentIndexRouteImport } from './routes/_dashboard/super-agent/index'
 import { Route as DashboardPlayersIndexRouteImport } from './routes/_dashboard/players/index'
 import { Route as DashboardCompetitionsIndexRouteImport } from './routes/_dashboard/competitions/index'
 import { Route as DashboardArticlesIndexRouteImport } from './routes/_dashboard/articles/index'
 import { Route as DashboardAgentsIndexRouteImport } from './routes/_dashboard/agents/index'
 import { Route as DashboardAdminIndexRouteImport } from './routes/_dashboard/admin/index'
 import { Route as DashboardAgentsFixturesRouteImport } from './routes/_dashboard/agents/fixtures'
-import { Route as DashboardSuperAgentStatsRouteRouteImport } from './routes/_dashboard/super-agent/stats/route'
-import { Route as DashboardSuperAgentTeamsIndexRouteImport } from './routes/_dashboard/super-agent/teams/index'
-import { Route as DashboardSuperAgentStatsIndexRouteImport } from './routes/_dashboard/super-agent/stats/index'
-import { Route as DashboardSuperAgentPlayersIndexRouteImport } from './routes/_dashboard/super-agent/players/index'
-import { Route as DashboardSuperAgentFixturesIndexRouteImport } from './routes/_dashboard/super-agent/fixtures/index'
-import { Route as DashboardSuperAgentCompetitionsIndexRouteImport } from './routes/_dashboard/super-agent/competitions/index'
-import { Route as DashboardSuperAgentStatsTeamsRouteImport } from './routes/_dashboard/super-agent/stats/teams'
-import { Route as DashboardSuperAgentFixturesReviewRouteImport } from './routes/_dashboard/super-agent/fixtures/review'
-import { Route as DashboardSuperAgentFixturesFixIdRouteRouteImport } from './routes/_dashboard/super-agent/fixtures/$fixId/route'
-import { Route as DashboardSuperAgentFixturesFixIdIndexRouteImport } from './routes/_dashboard/super-agent/fixtures/$fixId/index'
-import { Route as DashboardSuperAgentFixturesFixIdReviewRouteImport } from './routes/_dashboard/super-agent/fixtures/$fixId/review'
-import { Route as DashboardSuperAgentFixturesFixIdRawEventsRouteImport } from './routes/_dashboard/super-agent/fixtures/$fixId/raw-events'
-import { Route as DashboardSuperAgentFixturesFixIdPlayerStatsRouteImport } from './routes/_dashboard/super-agent/fixtures/$fixId/player-stats'
+import { Route as DashboardCompetitionsStatsRouteRouteImport } from './routes/_dashboard/competitions/stats/route'
+import { Route as DashboardCompetitionsTeamsIndexRouteImport } from './routes/_dashboard/competitions/teams/index'
+import { Route as DashboardCompetitionsStatsIndexRouteImport } from './routes/_dashboard/competitions/stats/index'
+import { Route as DashboardCompetitionsPlayersIndexRouteImport } from './routes/_dashboard/competitions/players/index'
+import { Route as DashboardCompetitionsLeaguesIndexRouteImport } from './routes/_dashboard/competitions/leagues/index'
+import { Route as DashboardCompetitionsFixturesIndexRouteImport } from './routes/_dashboard/competitions/fixtures/index'
+import { Route as DashboardArticlesCreateIndexRouteImport } from './routes/_dashboard/articles/create/index'
+import { Route as DashboardCompetitionsStatsTeamsRouteImport } from './routes/_dashboard/competitions/stats/teams'
+import { Route as DashboardCompetitionsFixturesReviewRouteImport } from './routes/_dashboard/competitions/fixtures/review'
+import { Route as DashboardCompetitionsFixturesFixIdRouteRouteImport } from './routes/_dashboard/competitions/fixtures/$fixId/route'
+import { Route as DashboardCompetitionsFixturesFixIdIndexRouteImport } from './routes/_dashboard/competitions/fixtures/$fixId/index'
+import { Route as DashboardCompetitionsFixturesFixIdReviewRouteImport } from './routes/_dashboard/competitions/fixtures/$fixId/review'
+import { Route as DashboardCompetitionsFixturesFixIdRawEventsRouteImport } from './routes/_dashboard/competitions/fixtures/$fixId/raw-events'
+import { Route as DashboardCompetitionsFixturesFixIdPlayerStatsRouteImport } from './routes/_dashboard/competitions/fixtures/$fixId/player-stats'
 
 const DashboardRouteRoute = DashboardRouteRouteImport.update({
   id: '/_dashboard',
@@ -100,12 +100,6 @@ const DashboardTeamsIndexRoute = DashboardTeamsIndexRouteImport.update({
   path: '/teams/',
   getParentRoute: () => DashboardRouteRoute,
 } as any)
-const DashboardSuperAgentIndexRoute =
-  DashboardSuperAgentIndexRouteImport.update({
-    id: '/super-agent/',
-    path: '/super-agent/',
-    getParentRoute: () => DashboardRouteRoute,
-  } as any)
 const DashboardPlayersIndexRoute = DashboardPlayersIndexRouteImport.update({
   id: '/players/',
   path: '/players/',
@@ -137,83 +131,89 @@ const DashboardAgentsFixturesRoute = DashboardAgentsFixturesRouteImport.update({
   path: '/agents/fixtures',
   getParentRoute: () => DashboardRouteRoute,
 } as any)
-const DashboardSuperAgentStatsRouteRoute =
-  DashboardSuperAgentStatsRouteRouteImport.update({
-    id: '/super-agent/stats',
-    path: '/super-agent/stats',
+const DashboardCompetitionsStatsRouteRoute =
+  DashboardCompetitionsStatsRouteRouteImport.update({
+    id: '/competitions/stats',
+    path: '/competitions/stats',
     getParentRoute: () => DashboardRouteRoute,
   } as any)
-const DashboardSuperAgentTeamsIndexRoute =
-  DashboardSuperAgentTeamsIndexRouteImport.update({
-    id: '/super-agent/teams/',
-    path: '/super-agent/teams/',
+const DashboardCompetitionsTeamsIndexRoute =
+  DashboardCompetitionsTeamsIndexRouteImport.update({
+    id: '/competitions/teams/',
+    path: '/competitions/teams/',
     getParentRoute: () => DashboardRouteRoute,
   } as any)
-const DashboardSuperAgentStatsIndexRoute =
-  DashboardSuperAgentStatsIndexRouteImport.update({
+const DashboardCompetitionsStatsIndexRoute =
+  DashboardCompetitionsStatsIndexRouteImport.update({
     id: '/',
     path: '/',
-    getParentRoute: () => DashboardSuperAgentStatsRouteRoute,
+    getParentRoute: () => DashboardCompetitionsStatsRouteRoute,
   } as any)
-const DashboardSuperAgentPlayersIndexRoute =
-  DashboardSuperAgentPlayersIndexRouteImport.update({
-    id: '/super-agent/players/',
-    path: '/super-agent/players/',
+const DashboardCompetitionsPlayersIndexRoute =
+  DashboardCompetitionsPlayersIndexRouteImport.update({
+    id: '/competitions/players/',
+    path: '/competitions/players/',
     getParentRoute: () => DashboardRouteRoute,
   } as any)
-const DashboardSuperAgentFixturesIndexRoute =
-  DashboardSuperAgentFixturesIndexRouteImport.update({
-    id: '/super-agent/fixtures/',
-    path: '/super-agent/fixtures/',
+const DashboardCompetitionsLeaguesIndexRoute =
+  DashboardCompetitionsLeaguesIndexRouteImport.update({
+    id: '/competitions/leagues/',
+    path: '/competitions/leagues/',
     getParentRoute: () => DashboardRouteRoute,
   } as any)
-const DashboardSuperAgentCompetitionsIndexRoute =
-  DashboardSuperAgentCompetitionsIndexRouteImport.update({
-    id: '/super-agent/competitions/',
-    path: '/super-agent/competitions/',
+const DashboardCompetitionsFixturesIndexRoute =
+  DashboardCompetitionsFixturesIndexRouteImport.update({
+    id: '/competitions/fixtures/',
+    path: '/competitions/fixtures/',
     getParentRoute: () => DashboardRouteRoute,
   } as any)
-const DashboardSuperAgentStatsTeamsRoute =
-  DashboardSuperAgentStatsTeamsRouteImport.update({
+const DashboardArticlesCreateIndexRoute =
+  DashboardArticlesCreateIndexRouteImport.update({
+    id: '/articles/create/',
+    path: '/articles/create/',
+    getParentRoute: () => DashboardRouteRoute,
+  } as any)
+const DashboardCompetitionsStatsTeamsRoute =
+  DashboardCompetitionsStatsTeamsRouteImport.update({
     id: '/teams',
     path: '/teams',
-    getParentRoute: () => DashboardSuperAgentStatsRouteRoute,
+    getParentRoute: () => DashboardCompetitionsStatsRouteRoute,
   } as any)
-const DashboardSuperAgentFixturesReviewRoute =
-  DashboardSuperAgentFixturesReviewRouteImport.update({
-    id: '/super-agent/fixtures/review',
-    path: '/super-agent/fixtures/review',
+const DashboardCompetitionsFixturesReviewRoute =
+  DashboardCompetitionsFixturesReviewRouteImport.update({
+    id: '/competitions/fixtures/review',
+    path: '/competitions/fixtures/review',
     getParentRoute: () => DashboardRouteRoute,
   } as any)
-const DashboardSuperAgentFixturesFixIdRouteRoute =
-  DashboardSuperAgentFixturesFixIdRouteRouteImport.update({
-    id: '/super-agent/fixtures/$fixId',
-    path: '/super-agent/fixtures/$fixId',
+const DashboardCompetitionsFixturesFixIdRouteRoute =
+  DashboardCompetitionsFixturesFixIdRouteRouteImport.update({
+    id: '/competitions/fixtures/$fixId',
+    path: '/competitions/fixtures/$fixId',
     getParentRoute: () => DashboardRouteRoute,
   } as any)
-const DashboardSuperAgentFixturesFixIdIndexRoute =
-  DashboardSuperAgentFixturesFixIdIndexRouteImport.update({
+const DashboardCompetitionsFixturesFixIdIndexRoute =
+  DashboardCompetitionsFixturesFixIdIndexRouteImport.update({
     id: '/',
     path: '/',
-    getParentRoute: () => DashboardSuperAgentFixturesFixIdRouteRoute,
+    getParentRoute: () => DashboardCompetitionsFixturesFixIdRouteRoute,
   } as any)
-const DashboardSuperAgentFixturesFixIdReviewRoute =
-  DashboardSuperAgentFixturesFixIdReviewRouteImport.update({
+const DashboardCompetitionsFixturesFixIdReviewRoute =
+  DashboardCompetitionsFixturesFixIdReviewRouteImport.update({
     id: '/review',
     path: '/review',
-    getParentRoute: () => DashboardSuperAgentFixturesFixIdRouteRoute,
+    getParentRoute: () => DashboardCompetitionsFixturesFixIdRouteRoute,
   } as any)
-const DashboardSuperAgentFixturesFixIdRawEventsRoute =
-  DashboardSuperAgentFixturesFixIdRawEventsRouteImport.update({
+const DashboardCompetitionsFixturesFixIdRawEventsRoute =
+  DashboardCompetitionsFixturesFixIdRawEventsRouteImport.update({
     id: '/raw-events',
     path: '/raw-events',
-    getParentRoute: () => DashboardSuperAgentFixturesFixIdRouteRoute,
+    getParentRoute: () => DashboardCompetitionsFixturesFixIdRouteRoute,
   } as any)
-const DashboardSuperAgentFixturesFixIdPlayerStatsRoute =
-  DashboardSuperAgentFixturesFixIdPlayerStatsRouteImport.update({
+const DashboardCompetitionsFixturesFixIdPlayerStatsRoute =
+  DashboardCompetitionsFixturesFixIdPlayerStatsRouteImport.update({
     id: '/player-stats',
     path: '/player-stats',
-    getParentRoute: () => DashboardSuperAgentFixturesFixIdRouteRoute,
+    getParentRoute: () => DashboardCompetitionsFixturesFixIdRouteRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -224,29 +224,29 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof AuthResetPasswordRoute
   '/verify': typeof AuthVerifyRoute
   '/home/': typeof HomeIndexRoute
-  '/super-agent/stats': typeof DashboardSuperAgentStatsRouteRouteWithChildren
+  '/competitions/stats': typeof DashboardCompetitionsStatsRouteRouteWithChildren
   '/agents/fixtures': typeof DashboardAgentsFixturesRoute
   '/admin/': typeof DashboardAdminIndexRoute
   '/agents/': typeof DashboardAgentsIndexRoute
   '/articles/': typeof DashboardArticlesIndexRoute
   '/competitions/': typeof DashboardCompetitionsIndexRoute
   '/players/': typeof DashboardPlayersIndexRoute
-  '/super-agent/': typeof DashboardSuperAgentIndexRoute
   '/teams/': typeof DashboardTeamsIndexRoute
   '/tickets/': typeof DashboardTicketsIndexRoute
   '/wallet/': typeof DashboardWalletIndexRoute
-  '/super-agent/fixtures/$fixId': typeof DashboardSuperAgentFixturesFixIdRouteRouteWithChildren
-  '/super-agent/fixtures/review': typeof DashboardSuperAgentFixturesReviewRoute
-  '/super-agent/stats/teams': typeof DashboardSuperAgentStatsTeamsRoute
-  '/super-agent/competitions/': typeof DashboardSuperAgentCompetitionsIndexRoute
-  '/super-agent/fixtures/': typeof DashboardSuperAgentFixturesIndexRoute
-  '/super-agent/players/': typeof DashboardSuperAgentPlayersIndexRoute
-  '/super-agent/stats/': typeof DashboardSuperAgentStatsIndexRoute
-  '/super-agent/teams/': typeof DashboardSuperAgentTeamsIndexRoute
-  '/super-agent/fixtures/$fixId/player-stats': typeof DashboardSuperAgentFixturesFixIdPlayerStatsRoute
-  '/super-agent/fixtures/$fixId/raw-events': typeof DashboardSuperAgentFixturesFixIdRawEventsRoute
-  '/super-agent/fixtures/$fixId/review': typeof DashboardSuperAgentFixturesFixIdReviewRoute
-  '/super-agent/fixtures/$fixId/': typeof DashboardSuperAgentFixturesFixIdIndexRoute
+  '/competitions/fixtures/$fixId': typeof DashboardCompetitionsFixturesFixIdRouteRouteWithChildren
+  '/competitions/fixtures/review': typeof DashboardCompetitionsFixturesReviewRoute
+  '/competitions/stats/teams': typeof DashboardCompetitionsStatsTeamsRoute
+  '/articles/create/': typeof DashboardArticlesCreateIndexRoute
+  '/competitions/fixtures/': typeof DashboardCompetitionsFixturesIndexRoute
+  '/competitions/leagues/': typeof DashboardCompetitionsLeaguesIndexRoute
+  '/competitions/players/': typeof DashboardCompetitionsPlayersIndexRoute
+  '/competitions/stats/': typeof DashboardCompetitionsStatsIndexRoute
+  '/competitions/teams/': typeof DashboardCompetitionsTeamsIndexRoute
+  '/competitions/fixtures/$fixId/player-stats': typeof DashboardCompetitionsFixturesFixIdPlayerStatsRoute
+  '/competitions/fixtures/$fixId/raw-events': typeof DashboardCompetitionsFixturesFixIdRawEventsRoute
+  '/competitions/fixtures/$fixId/review': typeof DashboardCompetitionsFixturesFixIdReviewRoute
+  '/competitions/fixtures/$fixId/': typeof DashboardCompetitionsFixturesFixIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -262,21 +262,21 @@ export interface FileRoutesByTo {
   '/articles': typeof DashboardArticlesIndexRoute
   '/competitions': typeof DashboardCompetitionsIndexRoute
   '/players': typeof DashboardPlayersIndexRoute
-  '/super-agent': typeof DashboardSuperAgentIndexRoute
   '/teams': typeof DashboardTeamsIndexRoute
   '/tickets': typeof DashboardTicketsIndexRoute
   '/wallet': typeof DashboardWalletIndexRoute
-  '/super-agent/fixtures/review': typeof DashboardSuperAgentFixturesReviewRoute
-  '/super-agent/stats/teams': typeof DashboardSuperAgentStatsTeamsRoute
-  '/super-agent/competitions': typeof DashboardSuperAgentCompetitionsIndexRoute
-  '/super-agent/fixtures': typeof DashboardSuperAgentFixturesIndexRoute
-  '/super-agent/players': typeof DashboardSuperAgentPlayersIndexRoute
-  '/super-agent/stats': typeof DashboardSuperAgentStatsIndexRoute
-  '/super-agent/teams': typeof DashboardSuperAgentTeamsIndexRoute
-  '/super-agent/fixtures/$fixId/player-stats': typeof DashboardSuperAgentFixturesFixIdPlayerStatsRoute
-  '/super-agent/fixtures/$fixId/raw-events': typeof DashboardSuperAgentFixturesFixIdRawEventsRoute
-  '/super-agent/fixtures/$fixId/review': typeof DashboardSuperAgentFixturesFixIdReviewRoute
-  '/super-agent/fixtures/$fixId': typeof DashboardSuperAgentFixturesFixIdIndexRoute
+  '/competitions/fixtures/review': typeof DashboardCompetitionsFixturesReviewRoute
+  '/competitions/stats/teams': typeof DashboardCompetitionsStatsTeamsRoute
+  '/articles/create': typeof DashboardArticlesCreateIndexRoute
+  '/competitions/fixtures': typeof DashboardCompetitionsFixturesIndexRoute
+  '/competitions/leagues': typeof DashboardCompetitionsLeaguesIndexRoute
+  '/competitions/players': typeof DashboardCompetitionsPlayersIndexRoute
+  '/competitions/stats': typeof DashboardCompetitionsStatsIndexRoute
+  '/competitions/teams': typeof DashboardCompetitionsTeamsIndexRoute
+  '/competitions/fixtures/$fixId/player-stats': typeof DashboardCompetitionsFixturesFixIdPlayerStatsRoute
+  '/competitions/fixtures/$fixId/raw-events': typeof DashboardCompetitionsFixturesFixIdRawEventsRoute
+  '/competitions/fixtures/$fixId/review': typeof DashboardCompetitionsFixturesFixIdReviewRoute
+  '/competitions/fixtures/$fixId': typeof DashboardCompetitionsFixturesFixIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -289,29 +289,29 @@ export interface FileRoutesById {
   '/_auth/reset-password': typeof AuthResetPasswordRoute
   '/_auth/verify': typeof AuthVerifyRoute
   '/home/': typeof HomeIndexRoute
-  '/_dashboard/super-agent/stats': typeof DashboardSuperAgentStatsRouteRouteWithChildren
+  '/_dashboard/competitions/stats': typeof DashboardCompetitionsStatsRouteRouteWithChildren
   '/_dashboard/agents/fixtures': typeof DashboardAgentsFixturesRoute
   '/_dashboard/admin/': typeof DashboardAdminIndexRoute
   '/_dashboard/agents/': typeof DashboardAgentsIndexRoute
   '/_dashboard/articles/': typeof DashboardArticlesIndexRoute
   '/_dashboard/competitions/': typeof DashboardCompetitionsIndexRoute
   '/_dashboard/players/': typeof DashboardPlayersIndexRoute
-  '/_dashboard/super-agent/': typeof DashboardSuperAgentIndexRoute
   '/_dashboard/teams/': typeof DashboardTeamsIndexRoute
   '/_dashboard/tickets/': typeof DashboardTicketsIndexRoute
   '/_dashboard/wallet/': typeof DashboardWalletIndexRoute
-  '/_dashboard/super-agent/fixtures/$fixId': typeof DashboardSuperAgentFixturesFixIdRouteRouteWithChildren
-  '/_dashboard/super-agent/fixtures/review': typeof DashboardSuperAgentFixturesReviewRoute
-  '/_dashboard/super-agent/stats/teams': typeof DashboardSuperAgentStatsTeamsRoute
-  '/_dashboard/super-agent/competitions/': typeof DashboardSuperAgentCompetitionsIndexRoute
-  '/_dashboard/super-agent/fixtures/': typeof DashboardSuperAgentFixturesIndexRoute
-  '/_dashboard/super-agent/players/': typeof DashboardSuperAgentPlayersIndexRoute
-  '/_dashboard/super-agent/stats/': typeof DashboardSuperAgentStatsIndexRoute
-  '/_dashboard/super-agent/teams/': typeof DashboardSuperAgentTeamsIndexRoute
-  '/_dashboard/super-agent/fixtures/$fixId/player-stats': typeof DashboardSuperAgentFixturesFixIdPlayerStatsRoute
-  '/_dashboard/super-agent/fixtures/$fixId/raw-events': typeof DashboardSuperAgentFixturesFixIdRawEventsRoute
-  '/_dashboard/super-agent/fixtures/$fixId/review': typeof DashboardSuperAgentFixturesFixIdReviewRoute
-  '/_dashboard/super-agent/fixtures/$fixId/': typeof DashboardSuperAgentFixturesFixIdIndexRoute
+  '/_dashboard/competitions/fixtures/$fixId': typeof DashboardCompetitionsFixturesFixIdRouteRouteWithChildren
+  '/_dashboard/competitions/fixtures/review': typeof DashboardCompetitionsFixturesReviewRoute
+  '/_dashboard/competitions/stats/teams': typeof DashboardCompetitionsStatsTeamsRoute
+  '/_dashboard/articles/create/': typeof DashboardArticlesCreateIndexRoute
+  '/_dashboard/competitions/fixtures/': typeof DashboardCompetitionsFixturesIndexRoute
+  '/_dashboard/competitions/leagues/': typeof DashboardCompetitionsLeaguesIndexRoute
+  '/_dashboard/competitions/players/': typeof DashboardCompetitionsPlayersIndexRoute
+  '/_dashboard/competitions/stats/': typeof DashboardCompetitionsStatsIndexRoute
+  '/_dashboard/competitions/teams/': typeof DashboardCompetitionsTeamsIndexRoute
+  '/_dashboard/competitions/fixtures/$fixId/player-stats': typeof DashboardCompetitionsFixturesFixIdPlayerStatsRoute
+  '/_dashboard/competitions/fixtures/$fixId/raw-events': typeof DashboardCompetitionsFixturesFixIdRawEventsRoute
+  '/_dashboard/competitions/fixtures/$fixId/review': typeof DashboardCompetitionsFixturesFixIdReviewRoute
+  '/_dashboard/competitions/fixtures/$fixId/': typeof DashboardCompetitionsFixturesFixIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -323,29 +323,29 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/verify'
     | '/home/'
-    | '/super-agent/stats'
+    | '/competitions/stats'
     | '/agents/fixtures'
     | '/admin/'
     | '/agents/'
     | '/articles/'
     | '/competitions/'
     | '/players/'
-    | '/super-agent/'
     | '/teams/'
     | '/tickets/'
     | '/wallet/'
-    | '/super-agent/fixtures/$fixId'
-    | '/super-agent/fixtures/review'
-    | '/super-agent/stats/teams'
-    | '/super-agent/competitions/'
-    | '/super-agent/fixtures/'
-    | '/super-agent/players/'
-    | '/super-agent/stats/'
-    | '/super-agent/teams/'
-    | '/super-agent/fixtures/$fixId/player-stats'
-    | '/super-agent/fixtures/$fixId/raw-events'
-    | '/super-agent/fixtures/$fixId/review'
-    | '/super-agent/fixtures/$fixId/'
+    | '/competitions/fixtures/$fixId'
+    | '/competitions/fixtures/review'
+    | '/competitions/stats/teams'
+    | '/articles/create/'
+    | '/competitions/fixtures/'
+    | '/competitions/leagues/'
+    | '/competitions/players/'
+    | '/competitions/stats/'
+    | '/competitions/teams/'
+    | '/competitions/fixtures/$fixId/player-stats'
+    | '/competitions/fixtures/$fixId/raw-events'
+    | '/competitions/fixtures/$fixId/review'
+    | '/competitions/fixtures/$fixId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -361,21 +361,21 @@ export interface FileRouteTypes {
     | '/articles'
     | '/competitions'
     | '/players'
-    | '/super-agent'
     | '/teams'
     | '/tickets'
     | '/wallet'
-    | '/super-agent/fixtures/review'
-    | '/super-agent/stats/teams'
-    | '/super-agent/competitions'
-    | '/super-agent/fixtures'
-    | '/super-agent/players'
-    | '/super-agent/stats'
-    | '/super-agent/teams'
-    | '/super-agent/fixtures/$fixId/player-stats'
-    | '/super-agent/fixtures/$fixId/raw-events'
-    | '/super-agent/fixtures/$fixId/review'
-    | '/super-agent/fixtures/$fixId'
+    | '/competitions/fixtures/review'
+    | '/competitions/stats/teams'
+    | '/articles/create'
+    | '/competitions/fixtures'
+    | '/competitions/leagues'
+    | '/competitions/players'
+    | '/competitions/stats'
+    | '/competitions/teams'
+    | '/competitions/fixtures/$fixId/player-stats'
+    | '/competitions/fixtures/$fixId/raw-events'
+    | '/competitions/fixtures/$fixId/review'
+    | '/competitions/fixtures/$fixId'
   id:
     | '__root__'
     | '/'
@@ -387,29 +387,29 @@ export interface FileRouteTypes {
     | '/_auth/reset-password'
     | '/_auth/verify'
     | '/home/'
-    | '/_dashboard/super-agent/stats'
+    | '/_dashboard/competitions/stats'
     | '/_dashboard/agents/fixtures'
     | '/_dashboard/admin/'
     | '/_dashboard/agents/'
     | '/_dashboard/articles/'
     | '/_dashboard/competitions/'
     | '/_dashboard/players/'
-    | '/_dashboard/super-agent/'
     | '/_dashboard/teams/'
     | '/_dashboard/tickets/'
     | '/_dashboard/wallet/'
-    | '/_dashboard/super-agent/fixtures/$fixId'
-    | '/_dashboard/super-agent/fixtures/review'
-    | '/_dashboard/super-agent/stats/teams'
-    | '/_dashboard/super-agent/competitions/'
-    | '/_dashboard/super-agent/fixtures/'
-    | '/_dashboard/super-agent/players/'
-    | '/_dashboard/super-agent/stats/'
-    | '/_dashboard/super-agent/teams/'
-    | '/_dashboard/super-agent/fixtures/$fixId/player-stats'
-    | '/_dashboard/super-agent/fixtures/$fixId/raw-events'
-    | '/_dashboard/super-agent/fixtures/$fixId/review'
-    | '/_dashboard/super-agent/fixtures/$fixId/'
+    | '/_dashboard/competitions/fixtures/$fixId'
+    | '/_dashboard/competitions/fixtures/review'
+    | '/_dashboard/competitions/stats/teams'
+    | '/_dashboard/articles/create/'
+    | '/_dashboard/competitions/fixtures/'
+    | '/_dashboard/competitions/leagues/'
+    | '/_dashboard/competitions/players/'
+    | '/_dashboard/competitions/stats/'
+    | '/_dashboard/competitions/teams/'
+    | '/_dashboard/competitions/fixtures/$fixId/player-stats'
+    | '/_dashboard/competitions/fixtures/$fixId/raw-events'
+    | '/_dashboard/competitions/fixtures/$fixId/review'
+    | '/_dashboard/competitions/fixtures/$fixId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -505,13 +505,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardTeamsIndexRouteImport
       parentRoute: typeof DashboardRouteRoute
     }
-    '/_dashboard/super-agent/': {
-      id: '/_dashboard/super-agent/'
-      path: '/super-agent'
-      fullPath: '/super-agent/'
-      preLoaderRoute: typeof DashboardSuperAgentIndexRouteImport
-      parentRoute: typeof DashboardRouteRoute
-    }
     '/_dashboard/players/': {
       id: '/_dashboard/players/'
       path: '/players'
@@ -554,96 +547,103 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAgentsFixturesRouteImport
       parentRoute: typeof DashboardRouteRoute
     }
-    '/_dashboard/super-agent/stats': {
-      id: '/_dashboard/super-agent/stats'
-      path: '/super-agent/stats'
-      fullPath: '/super-agent/stats'
-      preLoaderRoute: typeof DashboardSuperAgentStatsRouteRouteImport
+    '/_dashboard/competitions/stats': {
+      id: '/_dashboard/competitions/stats'
+      path: '/competitions/stats'
+      fullPath: '/competitions/stats'
+      preLoaderRoute: typeof DashboardCompetitionsStatsRouteRouteImport
       parentRoute: typeof DashboardRouteRoute
     }
-    '/_dashboard/super-agent/teams/': {
-      id: '/_dashboard/super-agent/teams/'
-      path: '/super-agent/teams'
-      fullPath: '/super-agent/teams/'
-      preLoaderRoute: typeof DashboardSuperAgentTeamsIndexRouteImport
+    '/_dashboard/competitions/teams/': {
+      id: '/_dashboard/competitions/teams/'
+      path: '/competitions/teams'
+      fullPath: '/competitions/teams/'
+      preLoaderRoute: typeof DashboardCompetitionsTeamsIndexRouteImport
       parentRoute: typeof DashboardRouteRoute
     }
-    '/_dashboard/super-agent/stats/': {
-      id: '/_dashboard/super-agent/stats/'
+    '/_dashboard/competitions/stats/': {
+      id: '/_dashboard/competitions/stats/'
       path: '/'
-      fullPath: '/super-agent/stats/'
-      preLoaderRoute: typeof DashboardSuperAgentStatsIndexRouteImport
-      parentRoute: typeof DashboardSuperAgentStatsRouteRoute
+      fullPath: '/competitions/stats/'
+      preLoaderRoute: typeof DashboardCompetitionsStatsIndexRouteImport
+      parentRoute: typeof DashboardCompetitionsStatsRouteRoute
     }
-    '/_dashboard/super-agent/players/': {
-      id: '/_dashboard/super-agent/players/'
-      path: '/super-agent/players'
-      fullPath: '/super-agent/players/'
-      preLoaderRoute: typeof DashboardSuperAgentPlayersIndexRouteImport
+    '/_dashboard/competitions/players/': {
+      id: '/_dashboard/competitions/players/'
+      path: '/competitions/players'
+      fullPath: '/competitions/players/'
+      preLoaderRoute: typeof DashboardCompetitionsPlayersIndexRouteImport
       parentRoute: typeof DashboardRouteRoute
     }
-    '/_dashboard/super-agent/fixtures/': {
-      id: '/_dashboard/super-agent/fixtures/'
-      path: '/super-agent/fixtures'
-      fullPath: '/super-agent/fixtures/'
-      preLoaderRoute: typeof DashboardSuperAgentFixturesIndexRouteImport
+    '/_dashboard/competitions/leagues/': {
+      id: '/_dashboard/competitions/leagues/'
+      path: '/competitions/leagues'
+      fullPath: '/competitions/leagues/'
+      preLoaderRoute: typeof DashboardCompetitionsLeaguesIndexRouteImport
       parentRoute: typeof DashboardRouteRoute
     }
-    '/_dashboard/super-agent/competitions/': {
-      id: '/_dashboard/super-agent/competitions/'
-      path: '/super-agent/competitions'
-      fullPath: '/super-agent/competitions/'
-      preLoaderRoute: typeof DashboardSuperAgentCompetitionsIndexRouteImport
+    '/_dashboard/competitions/fixtures/': {
+      id: '/_dashboard/competitions/fixtures/'
+      path: '/competitions/fixtures'
+      fullPath: '/competitions/fixtures/'
+      preLoaderRoute: typeof DashboardCompetitionsFixturesIndexRouteImport
       parentRoute: typeof DashboardRouteRoute
     }
-    '/_dashboard/super-agent/stats/teams': {
-      id: '/_dashboard/super-agent/stats/teams'
+    '/_dashboard/articles/create/': {
+      id: '/_dashboard/articles/create/'
+      path: '/articles/create'
+      fullPath: '/articles/create/'
+      preLoaderRoute: typeof DashboardArticlesCreateIndexRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/_dashboard/competitions/stats/teams': {
+      id: '/_dashboard/competitions/stats/teams'
       path: '/teams'
-      fullPath: '/super-agent/stats/teams'
-      preLoaderRoute: typeof DashboardSuperAgentStatsTeamsRouteImport
-      parentRoute: typeof DashboardSuperAgentStatsRouteRoute
+      fullPath: '/competitions/stats/teams'
+      preLoaderRoute: typeof DashboardCompetitionsStatsTeamsRouteImport
+      parentRoute: typeof DashboardCompetitionsStatsRouteRoute
     }
-    '/_dashboard/super-agent/fixtures/review': {
-      id: '/_dashboard/super-agent/fixtures/review'
-      path: '/super-agent/fixtures/review'
-      fullPath: '/super-agent/fixtures/review'
-      preLoaderRoute: typeof DashboardSuperAgentFixturesReviewRouteImport
+    '/_dashboard/competitions/fixtures/review': {
+      id: '/_dashboard/competitions/fixtures/review'
+      path: '/competitions/fixtures/review'
+      fullPath: '/competitions/fixtures/review'
+      preLoaderRoute: typeof DashboardCompetitionsFixturesReviewRouteImport
       parentRoute: typeof DashboardRouteRoute
     }
-    '/_dashboard/super-agent/fixtures/$fixId': {
-      id: '/_dashboard/super-agent/fixtures/$fixId'
-      path: '/super-agent/fixtures/$fixId'
-      fullPath: '/super-agent/fixtures/$fixId'
-      preLoaderRoute: typeof DashboardSuperAgentFixturesFixIdRouteRouteImport
+    '/_dashboard/competitions/fixtures/$fixId': {
+      id: '/_dashboard/competitions/fixtures/$fixId'
+      path: '/competitions/fixtures/$fixId'
+      fullPath: '/competitions/fixtures/$fixId'
+      preLoaderRoute: typeof DashboardCompetitionsFixturesFixIdRouteRouteImport
       parentRoute: typeof DashboardRouteRoute
     }
-    '/_dashboard/super-agent/fixtures/$fixId/': {
-      id: '/_dashboard/super-agent/fixtures/$fixId/'
+    '/_dashboard/competitions/fixtures/$fixId/': {
+      id: '/_dashboard/competitions/fixtures/$fixId/'
       path: '/'
-      fullPath: '/super-agent/fixtures/$fixId/'
-      preLoaderRoute: typeof DashboardSuperAgentFixturesFixIdIndexRouteImport
-      parentRoute: typeof DashboardSuperAgentFixturesFixIdRouteRoute
+      fullPath: '/competitions/fixtures/$fixId/'
+      preLoaderRoute: typeof DashboardCompetitionsFixturesFixIdIndexRouteImport
+      parentRoute: typeof DashboardCompetitionsFixturesFixIdRouteRoute
     }
-    '/_dashboard/super-agent/fixtures/$fixId/review': {
-      id: '/_dashboard/super-agent/fixtures/$fixId/review'
+    '/_dashboard/competitions/fixtures/$fixId/review': {
+      id: '/_dashboard/competitions/fixtures/$fixId/review'
       path: '/review'
-      fullPath: '/super-agent/fixtures/$fixId/review'
-      preLoaderRoute: typeof DashboardSuperAgentFixturesFixIdReviewRouteImport
-      parentRoute: typeof DashboardSuperAgentFixturesFixIdRouteRoute
+      fullPath: '/competitions/fixtures/$fixId/review'
+      preLoaderRoute: typeof DashboardCompetitionsFixturesFixIdReviewRouteImport
+      parentRoute: typeof DashboardCompetitionsFixturesFixIdRouteRoute
     }
-    '/_dashboard/super-agent/fixtures/$fixId/raw-events': {
-      id: '/_dashboard/super-agent/fixtures/$fixId/raw-events'
+    '/_dashboard/competitions/fixtures/$fixId/raw-events': {
+      id: '/_dashboard/competitions/fixtures/$fixId/raw-events'
       path: '/raw-events'
-      fullPath: '/super-agent/fixtures/$fixId/raw-events'
-      preLoaderRoute: typeof DashboardSuperAgentFixturesFixIdRawEventsRouteImport
-      parentRoute: typeof DashboardSuperAgentFixturesFixIdRouteRoute
+      fullPath: '/competitions/fixtures/$fixId/raw-events'
+      preLoaderRoute: typeof DashboardCompetitionsFixturesFixIdRawEventsRouteImport
+      parentRoute: typeof DashboardCompetitionsFixturesFixIdRouteRoute
     }
-    '/_dashboard/super-agent/fixtures/$fixId/player-stats': {
-      id: '/_dashboard/super-agent/fixtures/$fixId/player-stats'
+    '/_dashboard/competitions/fixtures/$fixId/player-stats': {
+      id: '/_dashboard/competitions/fixtures/$fixId/player-stats'
       path: '/player-stats'
-      fullPath: '/super-agent/fixtures/$fixId/player-stats'
-      preLoaderRoute: typeof DashboardSuperAgentFixturesFixIdPlayerStatsRouteImport
-      parentRoute: typeof DashboardSuperAgentFixturesFixIdRouteRoute
+      fullPath: '/competitions/fixtures/$fixId/player-stats'
+      preLoaderRoute: typeof DashboardCompetitionsFixturesFixIdPlayerStatsRouteImport
+      parentRoute: typeof DashboardCompetitionsFixturesFixIdRouteRoute
     }
   }
 }
@@ -668,88 +668,90 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
   AuthRouteRouteChildren,
 )
 
-interface DashboardSuperAgentStatsRouteRouteChildren {
-  DashboardSuperAgentStatsTeamsRoute: typeof DashboardSuperAgentStatsTeamsRoute
-  DashboardSuperAgentStatsIndexRoute: typeof DashboardSuperAgentStatsIndexRoute
+interface DashboardCompetitionsStatsRouteRouteChildren {
+  DashboardCompetitionsStatsTeamsRoute: typeof DashboardCompetitionsStatsTeamsRoute
+  DashboardCompetitionsStatsIndexRoute: typeof DashboardCompetitionsStatsIndexRoute
 }
 
-const DashboardSuperAgentStatsRouteRouteChildren: DashboardSuperAgentStatsRouteRouteChildren =
+const DashboardCompetitionsStatsRouteRouteChildren: DashboardCompetitionsStatsRouteRouteChildren =
   {
-    DashboardSuperAgentStatsTeamsRoute: DashboardSuperAgentStatsTeamsRoute,
-    DashboardSuperAgentStatsIndexRoute: DashboardSuperAgentStatsIndexRoute,
+    DashboardCompetitionsStatsTeamsRoute: DashboardCompetitionsStatsTeamsRoute,
+    DashboardCompetitionsStatsIndexRoute: DashboardCompetitionsStatsIndexRoute,
   }
 
-const DashboardSuperAgentStatsRouteRouteWithChildren =
-  DashboardSuperAgentStatsRouteRoute._addFileChildren(
-    DashboardSuperAgentStatsRouteRouteChildren,
+const DashboardCompetitionsStatsRouteRouteWithChildren =
+  DashboardCompetitionsStatsRouteRoute._addFileChildren(
+    DashboardCompetitionsStatsRouteRouteChildren,
   )
 
-interface DashboardSuperAgentFixturesFixIdRouteRouteChildren {
-  DashboardSuperAgentFixturesFixIdPlayerStatsRoute: typeof DashboardSuperAgentFixturesFixIdPlayerStatsRoute
-  DashboardSuperAgentFixturesFixIdRawEventsRoute: typeof DashboardSuperAgentFixturesFixIdRawEventsRoute
-  DashboardSuperAgentFixturesFixIdReviewRoute: typeof DashboardSuperAgentFixturesFixIdReviewRoute
-  DashboardSuperAgentFixturesFixIdIndexRoute: typeof DashboardSuperAgentFixturesFixIdIndexRoute
+interface DashboardCompetitionsFixturesFixIdRouteRouteChildren {
+  DashboardCompetitionsFixturesFixIdPlayerStatsRoute: typeof DashboardCompetitionsFixturesFixIdPlayerStatsRoute
+  DashboardCompetitionsFixturesFixIdRawEventsRoute: typeof DashboardCompetitionsFixturesFixIdRawEventsRoute
+  DashboardCompetitionsFixturesFixIdReviewRoute: typeof DashboardCompetitionsFixturesFixIdReviewRoute
+  DashboardCompetitionsFixturesFixIdIndexRoute: typeof DashboardCompetitionsFixturesFixIdIndexRoute
 }
 
-const DashboardSuperAgentFixturesFixIdRouteRouteChildren: DashboardSuperAgentFixturesFixIdRouteRouteChildren =
+const DashboardCompetitionsFixturesFixIdRouteRouteChildren: DashboardCompetitionsFixturesFixIdRouteRouteChildren =
   {
-    DashboardSuperAgentFixturesFixIdPlayerStatsRoute:
-      DashboardSuperAgentFixturesFixIdPlayerStatsRoute,
-    DashboardSuperAgentFixturesFixIdRawEventsRoute:
-      DashboardSuperAgentFixturesFixIdRawEventsRoute,
-    DashboardSuperAgentFixturesFixIdReviewRoute:
-      DashboardSuperAgentFixturesFixIdReviewRoute,
-    DashboardSuperAgentFixturesFixIdIndexRoute:
-      DashboardSuperAgentFixturesFixIdIndexRoute,
+    DashboardCompetitionsFixturesFixIdPlayerStatsRoute:
+      DashboardCompetitionsFixturesFixIdPlayerStatsRoute,
+    DashboardCompetitionsFixturesFixIdRawEventsRoute:
+      DashboardCompetitionsFixturesFixIdRawEventsRoute,
+    DashboardCompetitionsFixturesFixIdReviewRoute:
+      DashboardCompetitionsFixturesFixIdReviewRoute,
+    DashboardCompetitionsFixturesFixIdIndexRoute:
+      DashboardCompetitionsFixturesFixIdIndexRoute,
   }
 
-const DashboardSuperAgentFixturesFixIdRouteRouteWithChildren =
-  DashboardSuperAgentFixturesFixIdRouteRoute._addFileChildren(
-    DashboardSuperAgentFixturesFixIdRouteRouteChildren,
+const DashboardCompetitionsFixturesFixIdRouteRouteWithChildren =
+  DashboardCompetitionsFixturesFixIdRouteRoute._addFileChildren(
+    DashboardCompetitionsFixturesFixIdRouteRouteChildren,
   )
 
 interface DashboardRouteRouteChildren {
-  DashboardSuperAgentStatsRouteRoute: typeof DashboardSuperAgentStatsRouteRouteWithChildren
+  DashboardCompetitionsStatsRouteRoute: typeof DashboardCompetitionsStatsRouteRouteWithChildren
   DashboardAgentsFixturesRoute: typeof DashboardAgentsFixturesRoute
   DashboardAdminIndexRoute: typeof DashboardAdminIndexRoute
   DashboardAgentsIndexRoute: typeof DashboardAgentsIndexRoute
   DashboardArticlesIndexRoute: typeof DashboardArticlesIndexRoute
   DashboardCompetitionsIndexRoute: typeof DashboardCompetitionsIndexRoute
   DashboardPlayersIndexRoute: typeof DashboardPlayersIndexRoute
-  DashboardSuperAgentIndexRoute: typeof DashboardSuperAgentIndexRoute
   DashboardTeamsIndexRoute: typeof DashboardTeamsIndexRoute
   DashboardTicketsIndexRoute: typeof DashboardTicketsIndexRoute
   DashboardWalletIndexRoute: typeof DashboardWalletIndexRoute
-  DashboardSuperAgentFixturesFixIdRouteRoute: typeof DashboardSuperAgentFixturesFixIdRouteRouteWithChildren
-  DashboardSuperAgentFixturesReviewRoute: typeof DashboardSuperAgentFixturesReviewRoute
-  DashboardSuperAgentCompetitionsIndexRoute: typeof DashboardSuperAgentCompetitionsIndexRoute
-  DashboardSuperAgentFixturesIndexRoute: typeof DashboardSuperAgentFixturesIndexRoute
-  DashboardSuperAgentPlayersIndexRoute: typeof DashboardSuperAgentPlayersIndexRoute
-  DashboardSuperAgentTeamsIndexRoute: typeof DashboardSuperAgentTeamsIndexRoute
+  DashboardCompetitionsFixturesFixIdRouteRoute: typeof DashboardCompetitionsFixturesFixIdRouteRouteWithChildren
+  DashboardCompetitionsFixturesReviewRoute: typeof DashboardCompetitionsFixturesReviewRoute
+  DashboardArticlesCreateIndexRoute: typeof DashboardArticlesCreateIndexRoute
+  DashboardCompetitionsFixturesIndexRoute: typeof DashboardCompetitionsFixturesIndexRoute
+  DashboardCompetitionsLeaguesIndexRoute: typeof DashboardCompetitionsLeaguesIndexRoute
+  DashboardCompetitionsPlayersIndexRoute: typeof DashboardCompetitionsPlayersIndexRoute
+  DashboardCompetitionsTeamsIndexRoute: typeof DashboardCompetitionsTeamsIndexRoute
 }
 
 const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
-  DashboardSuperAgentStatsRouteRoute:
-    DashboardSuperAgentStatsRouteRouteWithChildren,
+  DashboardCompetitionsStatsRouteRoute:
+    DashboardCompetitionsStatsRouteRouteWithChildren,
   DashboardAgentsFixturesRoute: DashboardAgentsFixturesRoute,
   DashboardAdminIndexRoute: DashboardAdminIndexRoute,
   DashboardAgentsIndexRoute: DashboardAgentsIndexRoute,
   DashboardArticlesIndexRoute: DashboardArticlesIndexRoute,
   DashboardCompetitionsIndexRoute: DashboardCompetitionsIndexRoute,
   DashboardPlayersIndexRoute: DashboardPlayersIndexRoute,
-  DashboardSuperAgentIndexRoute: DashboardSuperAgentIndexRoute,
   DashboardTeamsIndexRoute: DashboardTeamsIndexRoute,
   DashboardTicketsIndexRoute: DashboardTicketsIndexRoute,
   DashboardWalletIndexRoute: DashboardWalletIndexRoute,
-  DashboardSuperAgentFixturesFixIdRouteRoute:
-    DashboardSuperAgentFixturesFixIdRouteRouteWithChildren,
-  DashboardSuperAgentFixturesReviewRoute:
-    DashboardSuperAgentFixturesReviewRoute,
-  DashboardSuperAgentCompetitionsIndexRoute:
-    DashboardSuperAgentCompetitionsIndexRoute,
-  DashboardSuperAgentFixturesIndexRoute: DashboardSuperAgentFixturesIndexRoute,
-  DashboardSuperAgentPlayersIndexRoute: DashboardSuperAgentPlayersIndexRoute,
-  DashboardSuperAgentTeamsIndexRoute: DashboardSuperAgentTeamsIndexRoute,
+  DashboardCompetitionsFixturesFixIdRouteRoute:
+    DashboardCompetitionsFixturesFixIdRouteRouteWithChildren,
+  DashboardCompetitionsFixturesReviewRoute:
+    DashboardCompetitionsFixturesReviewRoute,
+  DashboardArticlesCreateIndexRoute: DashboardArticlesCreateIndexRoute,
+  DashboardCompetitionsFixturesIndexRoute:
+    DashboardCompetitionsFixturesIndexRoute,
+  DashboardCompetitionsLeaguesIndexRoute:
+    DashboardCompetitionsLeaguesIndexRoute,
+  DashboardCompetitionsPlayersIndexRoute:
+    DashboardCompetitionsPlayersIndexRoute,
+  DashboardCompetitionsTeamsIndexRoute: DashboardCompetitionsTeamsIndexRoute,
 }
 
 const DashboardRouteRouteWithChildren = DashboardRouteRoute._addFileChildren(

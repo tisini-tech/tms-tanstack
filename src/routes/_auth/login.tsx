@@ -60,7 +60,7 @@ function Login() {
             password: value.password,
           },
         })
-
+        console.log(modules)
         await navigate({
           to: resolvePostLoginPath(redirect, modules, getLastModulePath()),
           replace: true,

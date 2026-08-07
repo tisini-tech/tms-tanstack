@@ -6,7 +6,7 @@ import { PlayerReportDownload } from '#/components/fixtures/player-report-downlo
 const fixIdRoute = getRouteApi('/_dashboard/super-agent/fixtures/$fixId')
 
 export const Route = createFileRoute(
-  '/_dashboard/super-agent/fixtures/$fixId/',
+  '/_dashboard/competitions/fixtures/$fixId/',
 )({
   component: RouteComponent,
 })
