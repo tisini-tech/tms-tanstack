@@ -77,7 +77,8 @@ export function SelectField<T extends string = string>({
 
       <Select
         name={field.name}
-        value={field.state.value === "" ? undefined : field.state.value}
+        items={options}
+        value={field.state.value === "" ? null : field.state.value}
         onValueChange={(value) => {
           if (value != null) field.handleChange(value as T)
         }}

@@ -465,3 +465,40 @@ export interface TeamPlayer {
   current_jersey_no: number
   signed_date: string
 }
+
+export interface MetricDetail {
+  id: number
+  name: string
+  metric: number
+  position: number
+  strength: number
+  status: number
+  needs_sub_details: number
+}
+
+export interface SubMetricDetail {
+  id: number
+  name: string
+  position: number
+  strength: number
+  status: number
+}
+
+export interface Metrics {
+  details: MetricDetail[]
+  sub_details: SubMetricDetail[]
+  id: number
+  name: string
+  fixture_type: number
+  is_player: number
+  is_timeline: number
+  is_team: number
+  is_active: number
+  gke: number
+  closewindow: number
+  uploaddata: number
+  ref: number
+  order: number
+  metric_category: number
+  strength: number
+}

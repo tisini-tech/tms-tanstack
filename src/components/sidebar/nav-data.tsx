@@ -71,12 +71,12 @@ export const competitionNavItems: NavItem[] = linkOptions([
     icon: HomeIcon,
     activeOptions: { exact: true },
   },
-  {
-    to: '/competitions/leagues',
-    label: 'Competitions',
-    icon: TrophyIcon,
-    activeOptions: { exact: false },
-  },
+  // {
+  //   to: '/competitions/leagues',
+  //   label: 'Competitions',
+  //   icon: TrophyIcon,
+  //   activeOptions: { exact: false },
+  // },
   {
     to: '/competitions/fixtures',
     label: 'Fixtures',

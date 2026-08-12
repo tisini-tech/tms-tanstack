@@ -252,6 +252,44 @@ export const createCategorySchema = z.object({
 
 export type CreateCategorySchema = z.infer<typeof createCategorySchema>
 
+export const editFixtureEventSchema = z.object({
+  teamId: z.string().trim().min(1, 'Team is required'),
+  metricId: z.string().trim().min(1, 'Event is required'),
+  metricDetailId: z.string().trim(),
+  metricSubDetailId: z.string().trim(),
+  playerId: z.string().trim(),
+  subplayerId: z.string().trim(),
+  moment: z.string().trim().min(1, 'Match half is required'),
+  quarter: z.string().trim().min(1, 'Match quarter is required'),
+  minute: z
+    .union([z.string(), z.number()])
+    .transform((v) => String(v).trim())
+    .pipe(
+      z
+        .string()
+        .min(1, 'Minute is required')
+        .refine((v) => Number.isFinite(Number(v)) && Number(v) >= 0, {
+          message: 'Minute must be a number',
+        }),
+    ),
+  second: z
+    .union([z.string(), z.number()])
+    .transform((v) => String(v).trim())
+    .pipe(
+      z
+        .string()
+        .min(1, 'Second is required')
+        .refine((v) => Number.isFinite(Number(v)) && Number(v) >= 0, {
+          message: 'Second must be a number',
+        }),
+    ),
+})
+
+export type EditFixtureEventSchema = z.infer<typeof editFixtureEventSchema>
+
+export const createFixtureEventSchema = editFixtureEventSchema
+export type CreateFixtureEventSchema = EditFixtureEventSchema
+
 export const createPlayerSchema = z.object({
   fname: z.string().trim().min(1, 'First name is required'),
   oname: z.string().trim().min(1, 'Other name is required'),

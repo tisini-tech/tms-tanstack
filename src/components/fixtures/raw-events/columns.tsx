@@ -99,11 +99,11 @@ export const columns: ColumnDef<RawFixtureEvent>[] = [
   },
 ]
 
-const CleanActions = ({ event: _event }: { event: RawFixtureEvent }) => {
+const CleanActions = ({ event }: { event: RawFixtureEvent }) => {
   return (
     <div className="flex gap-1">
-      <EditEventDialog />
-      <DeleteEventDialog />
+      <EditEventDialog event={event} />
+      <DeleteEventDialog event={event} />
     </div>
   )
 }

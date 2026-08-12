@@ -133,3 +133,73 @@ export const getFixtureRawEventsFn = createServerFn({ method: 'GET' })
 
     return rawEvents
   })
+
+export type UpdateFixtureEventPayload = {
+  metric_id: number
+  metric_detail_id: number
+  metric_sub_detail_id: number
+  player_id: number
+  subplayer_id: number
+  team_id: number
+  minute: number
+  second: number
+  moment: string
+  quarter: string
+  narration: string
+  zone_id: number
+  xper: string
+  yper: string
+  video_timestamp: number
+  no_ruck: string
+  no_lineout: string
+  meter_gain: string
+  kickfrom: string
+  kickland: string
+  defender: string
+  localid: string
+  app_timelog: string
+  sync_status: number
+}
+
+export type CreateFixtureEventPayload = UpdateFixtureEventPayload
+
+export const updateFixtureEventFn = createServerFn({ method: 'POST' })
+  .middleware([authFnMiddleware])
+  .validator(
+    (data: {
+      fixtureId: string
+      eventId: number
+      body: UpdateFixtureEventPayload
+    }) => data,
+  )
+  .handler(async ({ data }) => {
+    const response = await apiService.patch<RawFixtureEvent>(
+      `/fixtures/${data.fixtureId}/match-events/${data.eventId}`,
+      data.body,
+    )
+    return response
+  })
+
+export const deleteFixtureEventFn = createServerFn({ method: 'POST' })
+  .middleware([authFnMiddleware])
+  .validator((data: { fixtureId: string; eventId: number }) => data)
+  .handler(async ({ data }) => {
+    const response = await apiService.delete<{ message: string }>(
+      `/fixtures/${data.fixtureId}/match-events/${data.eventId}`,
+    )
+
+    return response.message
+  })
+
+export const createFixtureEventFn = createServerFn({ method: 'POST' })
+  .middleware([authFnMiddleware])
+  .validator(
+    (data: { fixtureId: string; body: CreateFixtureEventPayload }) => data,
+  )
+  .handler(async ({ data }) => {
+    const response = await apiService.post<RawFixtureEvent>(
+      `/fixtures/${data.fixtureId}/match-events`,
+      data.body,
+    )
+    return response
+  })
