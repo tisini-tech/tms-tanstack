@@ -1,0 +1,450 @@
+import { useMemo, useRef, useState } from 'react'
+import { useForm } from '@tanstack/react-form'
+import { Link, useRouter } from '@tanstack/react-router'
+import { ArrowLeftIcon, Loader2Icon } from 'lucide-react'
+
+import { InputField } from '#/components/general/forms/input-field'
+import { SelectField } from '#/components/general/forms/select-field'
+import { UploadFileField } from '#/components/players/upload-file-field'
+import { Button } from '#/components/ui/button'
+import { FieldGroup } from '#/components/ui/field'
+import { getPlayerPatch, updatePlayerFn } from '#/data/players'
+import { playerToFormValues, updatePlayerSchema } from '#/lib/schemas'
+import {
+  ID_DOCUMENT_TYPE_OPTIONS,
+  type Country,
+  type TeamPlayer,
+} from '#/lib/types'
+
+export function EditPlayerForm({
+  entry,
+  countries,
+}: {
+  entry: TeamPlayer
+  countries: Country[]
+}) {
+  const router = useRouter()
+  const [submitError, setSubmitError] = useState<string | null>(null)
+  const [passportphoto, setPassportphoto] = useState(
+    entry.player.passportphoto ?? '',
+  )
+  const [idDocument, setIdDocument] = useState(entry.player.id_document ?? '')
+  const [uploadingCount, setUploadingCount] = useState(0)
+  const initialRef = useRef({
+    ...playerToFormValues(entry.player, entry),
+    passportphoto: entry.player.passportphoto ?? '',
+    id_document: entry.player.id_document ?? '',
+  })
+
+  const countryOptions = useMemo(
+    () =>
+      [...countries]
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .map((country) => ({
+          value: String(country.id),
+          label: country.name,
+        })),
+    [countries],
+  )
+
+  function handleUploadingChange(uploading: boolean) {
+    setUploadingCount((count) => count + (uploading ? 1 : -1))
+  }
+
+  const player = entry.player
+  const backSearch = { teamId: entry.team }
+
+  const form = useForm({
+    defaultValues: playerToFormValues(player, entry),
+    validators: {
+      onSubmit: updatePlayerSchema as never,
+    },
+    onSubmit: async ({ value }) => {
+      setSubmitError(null)
+      const patch = getPlayerPatch(
+        {
+          ...value,
+          passportphoto,
+          id_document: idDocument,
+        },
+        initialRef.current,
+      )
+
+      if (Object.keys(patch).length === 0) {
+        await router.navigate({
+          to: '/competitions/players',
+          search: backSearch,
+        })
+        return
+      }
+
+      try {
+        await updatePlayerFn({
+          data: {
+            team: entry.team,
+            id: entry.id,
+            patch,
+          },
+        })
+        await router.invalidate()
+        await router.navigate({
+          to: '/competitions/players',
+          search: backSearch,
+        })
+      } catch (error) {
+        setSubmitError(
+          error instanceof Error ? error.message : 'Failed to update player',
+        )
+      }
+    },
+  })
+
+  return (
+    <div className="mx-auto flex w-full max-w-4xl flex-col gap-6">
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div className="space-y-1">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            nativeButton={false}
+            render={<Link to="/competitions/players" search={backSearch} />}
+          >
+            <ArrowLeftIcon className="size-4" data-icon="inline-start" />
+            Back to players
+          </Button>
+          <h1 className="text-2xl font-semibold tracking-tight text-heading">
+            Edit player
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Update details for {player.name || 'this player'}.
+          </p>
+        </div>
+      </div>
+
+      <form
+        className="flex flex-col gap-6 rounded-2xl border border-border bg-card p-5 sm:p-8"
+        noValidate
+        onSubmit={(event) => {
+          event.preventDefault()
+          event.stopPropagation()
+          void form.handleSubmit()
+        }}
+      >
+        <FieldGroup className="gap-5">
+          <section className="space-y-4">
+            <h2 className="text-sm font-medium text-heading">Identity</h2>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+              <form.Field name="fname">
+                {(field) => (
+                  <InputField
+                    field={field}
+                    id={`player-${player.id}-fname`}
+                    label="First name"
+                    placeholder="Charles"
+                    autoComplete="off"
+                    className="gap-2"
+                    inputClassName="h-10 rounded-xl px-3"
+                  />
+                )}
+              </form.Field>
+              <form.Field name="oname">
+                {(field) => (
+                  <InputField
+                    field={field}
+                    id={`player-${player.id}-oname`}
+                    label="Last name"
+                    placeholder="Momanyi"
+                    autoComplete="off"
+                    className="gap-2"
+                    inputClassName="h-10 rounded-xl px-3"
+                  />
+                )}
+              </form.Field>
+              <form.Field name="sname">
+                {(field) => (
+                  <InputField
+                    field={field}
+                    id={`player-${player.id}-sname`}
+                    label="Surname"
+                    placeholder="Saramu"
+                    autoComplete="off"
+                    className="gap-2"
+                    inputClassName="h-10 rounded-xl px-3"
+                  />
+                )}
+              </form.Field>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <form.Field name="playerdob">
+                {(field) => (
+                  <InputField
+                    field={field}
+                    id={`player-${player.id}-dob`}
+                    label="Date of birth"
+                    type="date"
+                    autoComplete="off"
+                    className="gap-2"
+                    inputClassName="h-10 rounded-xl px-3"
+                  />
+                )}
+              </form.Field>
+              <form.Field name="position">
+                {(field) => (
+                  <InputField
+                    field={field}
+                    id={`player-${player.id}-position`}
+                    label="Position"
+                    placeholder="Forward"
+                    autoComplete="off"
+                    className="gap-2"
+                    inputClassName="h-10 rounded-xl px-3"
+                  />
+                )}
+              </form.Field>
+            </div>
+          </section>
+
+          <section className="space-y-4">
+            <h2 className="text-sm font-medium text-heading">Squad details</h2>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <form.Field name="jersey">
+                {(field) => (
+                  <InputField
+                    field={field}
+                    id={`player-${player.id}-jersey`}
+                    label="Jersey"
+                    placeholder="10"
+                    autoComplete="off"
+                    className="gap-2"
+                    inputClassName="h-10 rounded-xl px-3"
+                  />
+                )}
+              </form.Field>
+              <form.Field name="nationality">
+                {(field) => (
+                  <InputField
+                    field={field}
+                    id={`player-${player.id}-nationality`}
+                    label="Nationality"
+                    placeholder="Kenyan"
+                    autoComplete="off"
+                    className="gap-2"
+                    inputClassName="h-10 rounded-xl px-3"
+                  />
+                )}
+              </form.Field>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <form.Field name="preferred_foot">
+                {(field) => (
+                  <InputField
+                    field={field}
+                    id={`player-${player.id}-foot`}
+                    label="Preferred foot"
+                    placeholder="Right"
+                    autoComplete="off"
+                    className="gap-2"
+                    inputClassName="h-10 rounded-xl px-3"
+                  />
+                )}
+              </form.Field>
+              <form.Field name="fifa_id">
+                {(field) => (
+                  <InputField
+                    field={field}
+                    id={`player-${player.id}-fifa`}
+                    label="FIFA ID"
+                    placeholder="Optional"
+                    autoComplete="off"
+                    className="gap-2"
+                    inputClassName="h-10 rounded-xl px-3"
+                  />
+                )}
+              </form.Field>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <form.Field name="height">
+                {(field) => (
+                  <InputField
+                    field={field}
+                    id={`player-${player.id}-height`}
+                    label="Height"
+                    placeholder="180"
+                    autoComplete="off"
+                    className="gap-2"
+                    inputClassName="h-10 rounded-xl px-3"
+                  />
+                )}
+              </form.Field>
+              <form.Field name="weight">
+                {(field) => (
+                  <InputField
+                    field={field}
+                    id={`player-${player.id}-weight`}
+                    label="Weight"
+                    placeholder="75"
+                    autoComplete="off"
+                    className="gap-2"
+                    inputClassName="h-10 rounded-xl px-3"
+                  />
+                )}
+              </form.Field>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <form.Field name="country">
+                {(field) => (
+                  <SelectField
+                    field={field as never}
+                    id={`player-${player.id}-country`}
+                    label="Country"
+                    placeholder="Select country"
+                    options={countryOptions}
+                    orientation="vertical"
+                    className="gap-2"
+                    triggerClassName="h-10 rounded-xl px-3"
+                  />
+                )}
+              </form.Field>
+              <form.Field name="contract">
+                {(field) => (
+                  <InputField
+                    field={field}
+                    id={`player-${player.id}-contract`}
+                    label="Signed date"
+                    type="date"
+                    autoComplete="off"
+                    className="gap-2"
+                    inputClassName="h-10 rounded-xl px-3"
+                  />
+                )}
+              </form.Field>
+            </div>
+          </section>
+
+          <section className="space-y-4">
+            <h2 className="text-sm font-medium text-heading">Contact & ID</h2>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <form.Field name="id_no">
+                {(field) => (
+                  <InputField
+                    field={field}
+                    id={`player-${player.id}-id-no`}
+                    label="ID number"
+                    placeholder="Optional"
+                    autoComplete="off"
+                    className="gap-2"
+                    inputClassName="h-10 rounded-xl px-3"
+                  />
+                )}
+              </form.Field>
+              <form.Field name="id_document_type">
+                {(field) => (
+                  <SelectField
+                    field={field as never}
+                    id={`player-${player.id}-doc-type`}
+                    label="ID document type"
+                    placeholder="Select document type"
+                    options={ID_DOCUMENT_TYPE_OPTIONS}
+                    orientation="vertical"
+                    className="gap-2"
+                    triggerClassName="h-10 rounded-xl px-3"
+                  />
+                )}
+              </form.Field>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <form.Field name="phone">
+                {(field) => (
+                  <InputField
+                    field={field}
+                    id={`player-${player.id}-phone`}
+                    label="Phone"
+                    type="tel"
+                    placeholder="Optional"
+                    autoComplete="off"
+                    className="gap-2"
+                    inputClassName="h-10 rounded-xl px-3"
+                  />
+                )}
+              </form.Field>
+              <form.Field name="email">
+                {(field) => (
+                  <InputField
+                    field={field}
+                    id={`player-${player.id}-email`}
+                    label="Email"
+                    type="email"
+                    placeholder="Optional"
+                    autoComplete="off"
+                    className="gap-2"
+                    inputClassName="h-10 rounded-xl px-3"
+                  />
+                )}
+              </form.Field>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <UploadFileField
+                id={`player-${player.id}-passport`}
+                label="Passport photo"
+                value={passportphoto}
+                onChange={setPassportphoto}
+                onUploadingChange={handleUploadingChange}
+                preview="image"
+              />
+              <UploadFileField
+                id={`player-${player.id}-id-document`}
+                label="ID document"
+                value={idDocument}
+                onChange={setIdDocument}
+                onUploadingChange={handleUploadingChange}
+                preview="document"
+              />
+            </div>
+          </section>
+
+          {submitError ? (
+            <p className="text-sm text-destructive">{submitError}</p>
+          ) : null}
+        </FieldGroup>
+
+        <div className="flex flex-wrap justify-end gap-2 border-t border-border pt-4">
+          <Button
+            type="button"
+            variant="outline"
+            nativeButton={false}
+            render={<Link to="/competitions/players" search={backSearch} />}
+          >
+            Cancel
+          </Button>
+          <form.Subscribe selector={(state) => state.isSubmitting}>
+            {(isSubmitting) => {
+              const busy = isSubmitting || uploadingCount > 0
+              return (
+                <Button type="submit" disabled={busy}>
+                  {isSubmitting ? (
+                    <>
+                      <Loader2Icon
+                        className="size-4 animate-spin"
+                        data-icon="inline-start"
+                      />
+                      Saving…
+                    </>
+                  ) : (
+                    'Save changes'
+                  )}
+                </Button>
+              )
+            }}
+          </form.Subscribe>
+        </div>
+      </form>
+    </div>
+  )
+}

@@ -408,3 +408,60 @@ export interface Author {
   linkedin: string
   youtube: string
 }
+
+export const ID_DOCUMENT_TYPES = [
+  'passport',
+  'national_id',
+  'birth_cert',
+] as const
+
+export type IdDocumentType = (typeof ID_DOCUMENT_TYPES)[number]
+
+export const ID_DOCUMENT_TYPE_LABELS: Record<IdDocumentType, string> = {
+  passport: 'Passport',
+  national_id: 'National ID',
+  birth_cert: 'Birth Certificate',
+}
+
+export const ID_DOCUMENT_TYPE_OPTIONS = ID_DOCUMENT_TYPES.map((value) => ({
+  value,
+  label: ID_DOCUMENT_TYPE_LABELS[value],
+}))
+
+export function parseIdDocumentType(
+  value: string | null | undefined,
+): IdDocumentType | '' {
+  if (
+    value === 'passport' ||
+    value === 'national_id' ||
+    value === 'birth_cert'
+  ) {
+    return value
+  }
+  return ''
+}
+
+export interface Player {
+  name: string
+  nationality: string
+  id: number
+  current_position: string
+  passportphoto: string
+  fifa_id: string
+  preferred_foot: string
+  id_document_type: IdDocumentType | string | null
+  id_document: string | null
+  id_no: string
+  dob: string
+  country: number
+  height: string
+  weight: string
+}
+
+export interface TeamPlayer {
+  player: Player
+  id: number
+  team: number
+  current_jersey_no: number
+  signed_date: string
+}

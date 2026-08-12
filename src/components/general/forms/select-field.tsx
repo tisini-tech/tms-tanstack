@@ -23,8 +23,8 @@ export type SelectOption = {
   label: string
 }
 
-export type SelectFieldProps = {
-  field: TanStackInputFieldApi<string>
+export type SelectFieldProps<T extends string = string> = {
+  field: TanStackInputFieldApi<T>
   label: string
   options: Array<SelectOption>
   /** Helper text under the label (same pattern as shadcn responsive fields). */
@@ -38,7 +38,7 @@ export type SelectFieldProps = {
   triggerClassName?: string
 }
 
-export function SelectField({
+export function SelectField<T extends string = string>({
   field,
   label,
   options,
@@ -48,7 +48,7 @@ export function SelectField({
   orientation = "responsive",
   className,
   triggerClassName,
-}: SelectFieldProps) {
+}: SelectFieldProps<T>) {
   const id = idProp ?? field.name
   const isInvalid =
     field.state.meta.isTouched && !field.state.meta.isValid
@@ -78,7 +78,9 @@ export function SelectField({
       <Select
         name={field.name}
         value={field.state.value === "" ? undefined : field.state.value}
-        onValueChange={field.handleChange}
+        onValueChange={(value) => {
+          if (value != null) field.handleChange(value as T)
+        }}
       >
         <SelectTrigger
           id={id}
@@ -88,7 +90,7 @@ export function SelectField({
         >
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
-        <SelectContent position="item-aligned">
+        <SelectContent>
           {options.map((option) => (
             <SelectItem key={option.value} value={option.value}>
               {option.label}

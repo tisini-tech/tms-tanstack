@@ -1,5 +1,12 @@
 import { z } from 'zod'
 
+import {
+  ID_DOCUMENT_TYPES,
+  parseIdDocumentType,
+  type Player,
+  type TeamPlayer,
+} from '#/lib/types'
+
 export type LoginMethod = 'phone' | 'email'
 
 /** Payload sent to the login API / server fn. */
@@ -244,3 +251,121 @@ export const createCategorySchema = z.object({
 })
 
 export type CreateCategorySchema = z.infer<typeof createCategorySchema>
+
+export const createPlayerSchema = z.object({
+  fname: z.string().trim().min(1, 'First name is required'),
+  oname: z.string().trim().min(1, 'Other name is required'),
+  sname: z.string().trim(),
+  playerdob: z.string().trim().min(1, 'Date of birth is required'),
+  position: z.string().trim().min(1, 'Position is required'),
+  countrycode: z.string().trim().min(1, 'Country is required'),
+  jersey: z.string().trim().min(1, 'Jersey is required'),
+  contract: z.string().trim().min(1, 'Signed date is required'),
+  phone: z.string().trim(),
+  idno: z.string().trim(),
+  email: z.string().trim(),
+  password: z.string(),
+  id_document_type: z.enum(ID_DOCUMENT_TYPES).or(z.literal('')),
+  fifa_id: z.string().trim(),
+  preferred_foot: z.string().trim(),
+  height: z.string().trim(),
+  weight: z.string().trim(),
+})
+
+export type CreatePlayerSchema = z.infer<typeof createPlayerSchema>
+
+export const updatePlayerSchema = z.object({
+  fname: z.string().trim().min(1, 'First name is required'),
+  oname: z.string().trim(),
+  sname: z.string().trim().min(1, 'Surname is required'),
+  playerdob: z.string().trim(),
+  position: z.string().trim().min(1, 'Position is required'),
+  phone: z.string().trim(),
+  country: z.string().trim(),
+  jersey: z.string().trim(),
+  contract: z.string().trim(),
+  email: z.string().trim(),
+  id_document_type: z.enum(ID_DOCUMENT_TYPES).or(z.literal('')),
+  id_no: z.string().trim(),
+  nationality: z.string().trim(),
+  fifa_id: z.string().trim(),
+  preferred_foot: z.string().trim(),
+  height: z.string().trim(),
+  weight: z.string().trim(),
+})
+
+export type UpdatePlayerSchema = z.infer<typeof updatePlayerSchema>
+
+export function toDateInputValue(value: string | null | undefined) {
+  if (!value?.trim()) return ''
+  const trimmed = value.trim()
+  const iso = trimmed.match(/^(\d{4}-\d{2}-\d{2})/)
+  if (iso?.[1]) return iso[1]
+
+  const parsed = new Date(trimmed)
+  if (Number.isNaN(parsed.getTime())) return ''
+
+  const year = parsed.getFullYear()
+  const month = String(parsed.getMonth() + 1).padStart(2, '0')
+  const day = String(parsed.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
+function firstNonEmpty(...values: Array<string | null | undefined>) {
+  for (const value of values) {
+    if (value?.trim()) return value.trim()
+  }
+  return ''
+}
+
+export function playerToFormValues(
+  player: Player,
+  entry?: Pick<TeamPlayer, 'current_jersey_no' | 'signed_date'>,
+): UpdatePlayerSchema {
+  const nameParts = splitPlayerName(player.name ?? '')
+
+  return {
+    fname: nameParts.fname,
+    oname: nameParts.oname,
+    sname: nameParts.sname,
+    playerdob: toDateInputValue(player.dob),
+    position: firstNonEmpty(player.current_position),
+    phone: '',
+    country: player.country ? String(player.country) : '',
+    jersey: String(entry?.current_jersey_no ?? ''),
+    contract: toDateInputValue(entry?.signed_date),
+    email: '',
+    id_document_type: parseIdDocumentType(player.id_document_type),
+    id_no: firstNonEmpty(player.id_no),
+    nationality: firstNonEmpty(player.nationality),
+    fifa_id: firstNonEmpty(player.fifa_id),
+    preferred_foot: firstNonEmpty(player.preferred_foot),
+    height: firstNonEmpty(player.height),
+    weight: firstNonEmpty(player.weight),
+  }
+}
+
+/** "Charles Momanyi Saramu" → fname / oname / sname */
+export function splitPlayerName(name: string) {
+  const parts = name.trim().split(/\s+/).filter(Boolean)
+
+  if (parts.length === 0) {
+    return { fname: '', oname: '', sname: '' }
+  }
+  if (parts.length === 1) {
+    return { fname: parts[0] ?? '', oname: '', sname: '' }
+  }
+  if (parts.length === 2) {
+    return {
+      fname: parts[0] ?? '',
+      oname: '',
+      sname: parts[1] ?? '',
+    }
+  }
+
+  return {
+    fname: parts[0] ?? '',
+    oname: parts.slice(1, -1).join(' '),
+    sname: parts[parts.length - 1] ?? '',
+  }
+}

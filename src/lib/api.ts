@@ -104,12 +104,46 @@ export async function apiFetch(
   return res
 }
 
+function formatErrorItem(value: unknown): string {
+  if (typeof value === 'string') return value
+  if (Array.isArray(value)) {
+    return value.map(formatErrorItem).filter(Boolean).join(', ')
+  }
+  if (value && typeof value === 'object') {
+    const record = value as Record<string, unknown>
+    if (typeof record.msg === 'string') return record.msg
+    if (typeof record.message === 'string') return record.message
+    if (typeof record.detail === 'string') return record.detail
+  }
+  return ''
+}
+
+function formatErrorBody(error: unknown, status: number): string {
+  if (!error || typeof error !== 'object') {
+    return `Request failed (${status})`
+  }
+
+  const body = error as Record<string, unknown>
+  const detail = formatErrorItem(body.detail)
+  if (detail) return detail
+
+  const message = formatErrorItem(body.message)
+  if (message) return message
+
+  const fieldErrors = Object.entries(body)
+    .map(([key, value]) => {
+      const text = formatErrorItem(value)
+      return text ? `${key}: ${text}` : ''
+    })
+    .filter(Boolean)
+
+  return fieldErrors.join('. ') || `Request failed (${status})`
+}
+
 async function parseResponse<T>(res: Response): Promise<T> {
   if (!res.ok) {
     const error = await res.json().catch(() => ({}))
-    throw new Error(
-      error.detail || error.message || `Request failed (${res.status})`,
-    )
+    throw new Error(formatErrorBody(error, res.status))
   }
 
   if (res.status === 204) {
