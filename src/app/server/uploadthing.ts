@@ -5,7 +5,10 @@ const f = createUploadthing()
 
 export const uploadRouter = {
   imageUploader: f(
-    { image: { maxFileSize: '4MB' } },
+    {
+      image: { maxFileSize: '4MB' },
+      pdf: { maxFileSize: '4MB', maxFileCount: 1 },
+    },
     { awaitServerData: false },
   ).onUploadComplete(async () => ({})),
 } satisfies FileRouter

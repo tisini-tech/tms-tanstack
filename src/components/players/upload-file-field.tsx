@@ -11,6 +11,14 @@ function isPdfUrl(url: string) {
   return /\.pdf(?:$|\?)/i.test(url)
 }
 
+function isAllowedDocumentFile(file: File) {
+  return (
+    file.type.startsWith('image/') ||
+    file.type === 'application/pdf' ||
+    /\.pdf$/i.test(file.name)
+  )
+}
+
 export function UploadFileField({
   id,
   label,
@@ -29,12 +37,23 @@ export function UploadFileField({
   const inputRef = useRef<HTMLInputElement>(null)
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const accept = preview === 'document' ? 'image/*,application/pdf,.pdf' : 'image/*'
 
   async function handleFile(file: File | undefined) {
     if (!file) return
 
     if (file.size > MAX_FILE_SIZE) {
       setError('File must be 4MB or smaller')
+      return
+    }
+
+    if (preview === 'document' && !isAllowedDocumentFile(file)) {
+      setError('Upload an image or PDF')
+      return
+    }
+
+    if (preview === 'image' && !file.type.startsWith('image/')) {
+      setError('Upload an image')
       return
     }
 
@@ -72,9 +91,14 @@ export function UploadFileField({
             }
           />
         ) : (
-          <p className="truncate text-xs text-muted-foreground">
-            Document uploaded
-          </p>
+          <a
+            href={value}
+            target="_blank"
+            rel="noreferrer"
+            className="truncate text-xs text-primary underline-offset-2 hover:underline"
+          >
+            PDF uploaded — open preview
+          </a>
         )
       ) : null}
 
@@ -82,7 +106,7 @@ export function UploadFileField({
         ref={inputRef}
         id={id}
         type="file"
-        accept="image/*"
+        accept={accept}
         className="sr-only"
         onChange={(event) => {
           void handleFile(event.target.files?.[0])
