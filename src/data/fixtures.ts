@@ -203,3 +203,22 @@ export const createFixtureEventFn = createServerFn({ method: 'POST' })
     )
     return response
   })
+
+export const swapPlayerEventsFn = createServerFn({ method: 'POST' })
+  .middleware([authFnMiddleware])
+  .validator(
+    (data: {
+      fixtureId: string
+      wrongPlayerId: string
+      rightPlayerId: string
+    }) => data,
+  )
+  .handler(async ({ data }) => {
+    const { fixtureId, wrongPlayerId, rightPlayerId } = data
+    const response = await apiService.patch<RawFixtureEvent[]>(
+      `/fixtures/${fixtureId}/swap-player-events`,
+      { wrong_player: wrongPlayerId, right_player: rightPlayerId },
+    )
+
+    return response
+  })

@@ -290,6 +290,19 @@ export type EditFixtureEventSchema = z.infer<typeof editFixtureEventSchema>
 export const createFixtureEventSchema = editFixtureEventSchema
 export type CreateFixtureEventSchema = EditFixtureEventSchema
 
+export const swapFixturePlayersSchema = z
+  .object({
+    teamId: z.string().trim().min(1, 'Team is required'),
+    wrongPlayerId: z.string().trim().min(1, 'Player is required'),
+    rightPlayerId: z.string().trim().min(1, 'Player is required'),
+  })
+  .refine((value) => value.wrongPlayerId !== value.rightPlayerId, {
+    message: 'Select two different players',
+    path: ['rightPlayerId'],
+  })
+
+export type SwapFixturePlayersSchema = z.infer<typeof swapFixturePlayersSchema>
+
 export const createPlayerSchema = z.object({
   fname: z.string().trim().min(1, 'First name is required'),
   oname: z.string().trim().min(1, 'Other name is required'),
