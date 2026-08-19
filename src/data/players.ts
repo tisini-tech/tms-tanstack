@@ -27,6 +27,38 @@ export const deletePlayerFn = createServerFn({ method: 'POST' })
     return response.message
   })
 
+export type MergePlayerRef = {
+  player_id: number
+  team_player_id: number
+}
+
+export const mergePlayersFn = createServerFn({ method: 'POST' })
+  .middleware([authFnMiddleware])
+  .validator(
+    (data: {
+      keeper: MergePlayerRef
+      players: MergePlayerRef[]
+      preserveTeamPlayer?: boolean
+    }) => data,
+  )
+  .handler(async ({ data }) => {
+    const { keeper, players, preserveTeamPlayer = false } = data
+
+    const payload = {
+      keeper_team_player_id: keeper.team_player_id,
+      players,
+    }
+
+    const query = preserveTeamPlayer ? '?preserve_team_player=true' : ''
+
+    const response = await apiService.post<{ message: string }>(
+      `/players/${keeper.player_id}/merge-players${query}`,
+      payload,
+    )
+
+    return response
+  })
+
 export type CreatePlayerBody = {
   fname: string
   sname: string

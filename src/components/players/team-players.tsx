@@ -1,9 +1,12 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Combobox } from '@base-ui/react/combobox'
-import { Link } from '@tanstack/react-router'
+import { Link, useRouter } from '@tanstack/react-router'
 import {
   CheckIcon,
+  CheckSquareIcon,
   ChevronDownIcon,
+  Loader2Icon,
+  MergeIcon,
   PencilIcon,
   PlusIcon,
   SearchIcon,
@@ -12,16 +15,29 @@ import {
 import type { Team, TeamPlayer } from '#/lib/types'
 import { cn, getInitials } from '#/lib/utils'
 import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar'
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '#/components/ui/alert-dialog'
 import { Button } from '#/components/ui/button'
+import { Checkbox } from '#/components/ui/checkbox'
 import { Input } from '#/components/ui/input'
+import { toast } from '#/components/ui/toast'
 import { DeletePlayerDialog } from '#/components/players/delete-player'
 import { PreviewIdDocumentModal } from '#/components/players/preview-id-document'
+import { mergePlayersFn, type MergePlayerRef } from '#/data/players'
 
 interface TeamPlayersProps {
   teams: Team[]
   players: TeamPlayer[]
   selectedTeam: Team | null
   isLoading?: boolean
+  canSelect?: boolean
   onTeamChange: (team: Team | null) => void
 }
 
@@ -30,9 +46,31 @@ export function TeamPlayers({
   players,
   selectedTeam,
   isLoading = false,
+  canSelect = false,
   onTeamChange,
 }: TeamPlayersProps) {
+  const router = useRouter()
   const [query, setQuery] = useState('')
+  const [selecting, setSelecting] = useState(false)
+  const [selected, setSelected] = useState<MergePlayerRef[]>([])
+  const [mergeOpen, setMergeOpen] = useState(false)
+  const [merging, setMerging] = useState(false)
+  const [mergeError, setMergeError] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!canSelect) {
+      setSelecting(false)
+      setSelected([])
+      setMergeOpen(false)
+    }
+  }, [canSelect])
+
+  useEffect(() => {
+    setSelecting(false)
+    setSelected([])
+    setMergeOpen(false)
+    setMergeError(null)
+  }, [selectedTeam?.id])
 
   const filteredPlayers = useMemo(() => {
     const q = query.trim().toLowerCase()
@@ -55,6 +93,89 @@ export function TeamPlayers({
       return haystack.includes(q)
     })
   }, [players, query])
+
+  const selectedIds = useMemo(
+    () => new Set(selected.map((item) => item.team_player_id)),
+    [selected],
+  )
+  const visibleIds = useMemo(
+    () => filteredPlayers.map((entry) => entry.id),
+    [filteredPlayers],
+  )
+  const allVisibleSelected =
+    visibleIds.length > 0 && visibleIds.every((id) => selectedIds.has(id))
+  const canMerge = selected.length >= 2
+
+  const keeper = selected[0]
+  const keeperEntry = keeper
+    ? players.find((entry) => entry.id === keeper.team_player_id)
+    : undefined
+
+  function toRef(entry: TeamPlayer): MergePlayerRef {
+    return {
+      player_id: entry.player.id,
+      team_player_id: entry.id,
+    }
+  }
+
+  function toggleSelected(entry: TeamPlayer) {
+    const ref = toRef(entry)
+    setSelected((prev) => {
+      if (prev.some((item) => item.team_player_id === ref.team_player_id)) {
+        return prev.filter((item) => item.team_player_id !== ref.team_player_id)
+      }
+      return [...prev, ref]
+    })
+  }
+
+  function toggleSelectAllVisible() {
+    setSelected((prev) => {
+      if (allVisibleSelected) {
+        return prev.filter((item) => !visibleIds.includes(item.team_player_id))
+      }
+
+      const next = [...prev]
+      for (const entry of filteredPlayers) {
+        if (!next.some((item) => item.team_player_id === entry.id)) {
+          next.push(toRef(entry))
+        }
+      }
+      return next
+    })
+  }
+
+  async function handleMerge() {
+    if (!canMerge || !keeper) return
+
+    setMerging(true)
+    setMergeError(null)
+    try {
+      await mergePlayersFn({
+        data: {
+          keeper,
+          players: selected.slice(1),
+        },
+      })
+      await router.invalidate()
+      toast.add({
+        title: 'Players merged',
+        description: 'Duplicate records were collapsed into the keeper player.',
+      })
+      setMergeOpen(false)
+      setSelected([])
+      setSelecting(false)
+    } catch (caught) {
+      const message =
+        caught instanceof Error ? caught.message : 'Failed to merge players'
+      setMergeError(message)
+      toast.add({
+        title: 'Merge failed',
+        description: message,
+      })
+    } finally {
+      setMerging(false)
+    }
+  }
 
   return (
     <div className="flex w-full min-w-0 flex-col gap-6">
@@ -93,6 +214,22 @@ export function TeamPlayers({
             Add player
           </Button>
 
+          {canSelect ? (
+            <Button
+              type="button"
+              variant={selecting ? 'default' : 'outline'}
+              disabled={!selectedTeam || isLoading || players.length === 0}
+              onClick={() => {
+                setSelecting((prev) => {
+                  if (prev) setSelected([])
+                  return !prev
+                })
+              }}
+            >
+              <CheckSquareIcon className="size-4" data-icon="inline-start" />
+              {selecting ? 'Done' : 'Select'}
+            </Button>
+          ) : null}
           <div className="relative w-full sm:w-[240px]">
             <SearchIcon className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
@@ -186,6 +323,45 @@ export function TeamPlayers({
         </div>
       </div>
 
+      {selecting && selectedTeam && players.length > 0 ? (
+        <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border bg-muted/30 px-3 py-2">
+          <p className="text-sm text-muted-foreground">
+            {selected.length} selected
+            {keeperEntry
+              ? ` · keeper: ${keeperEntry.player.name || keeper.player_id}`
+              : ''}
+          </p>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              disabled={filteredPlayers.length === 0}
+              onClick={toggleSelectAllVisible}
+            >
+              {allVisibleSelected ? 'Clear visible' : 'Select all visible'}
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              disabled={!canMerge}
+              title={
+                canMerge
+                  ? 'Merge selected duplicates into the first selected player'
+                  : 'Select at least two players to merge'
+              }
+              onClick={() => {
+                setMergeError(null)
+                setMergeOpen(true)
+              }}
+            >
+              <MergeIcon className="size-4" data-icon="inline-start" />
+              Merge
+            </Button>
+          </div>
+        </div>
+      ) : null}
+
       {isLoading ? (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {Array.from({ length: 6 }).map((_, index) => (
@@ -210,21 +386,101 @@ export function TeamPlayers({
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {filteredPlayers.map((entry) => (
-            <PlayerCard key={entry.id} entry={entry} />
+            <PlayerCard
+              key={entry.id}
+              entry={entry}
+              selecting={selecting}
+              selected={selectedIds.has(entry.id)}
+              onToggle={() => toggleSelected(entry)}
+            />
           ))}
         </div>
       )}
+
+      <AlertDialog
+        open={mergeOpen}
+        onOpenChange={(next) => {
+          if (merging) return
+          setMergeOpen(next)
+          if (!next) setMergeError(null)
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Merge selected players?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {selected.length - 1} duplicate
+              {selected.length - 1 === 1 ? '' : 's'} will be merged into{' '}
+              <span className="font-medium">
+                {keeperEntry?.player.name || `player ${keeper?.player_id}`}
+              </span>
+              . This cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          {mergeError ? (
+            <p className="text-sm text-destructive">{mergeError}</p>
+          ) : null}
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={merging}>Cancel</AlertDialogCancel>
+            <Button
+              type="button"
+              disabled={merging || !canMerge}
+              onClick={() => {
+                void handleMerge()
+              }}
+            >
+              {merging ? (
+                <>
+                  <Loader2Icon
+                    className="size-4 animate-spin"
+                    data-icon="inline-start"
+                  />
+                  Merging…
+                </>
+              ) : (
+                'Merge players'
+              )}
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }
 
-function PlayerCard({ entry }: { entry: TeamPlayer }) {
+function PlayerCard({
+  entry,
+  selecting,
+  selected,
+  onToggle,
+}: {
+  entry: TeamPlayer
+  selecting: boolean
+  selected: boolean
+  onToggle: () => void
+}) {
   const player = entry.player
   const hasPhoto = Boolean(player.passportphoto?.trim())
   const name = player.name || 'Unknown player'
 
   return (
-    <div className="flex items-center gap-3 rounded-xl border border-border bg-card p-3">
+    <div
+      className={cn(
+        'flex items-center gap-3 rounded-xl border bg-card p-3',
+        selecting && selected
+          ? 'border-primary/50 ring-2 ring-primary/20'
+          : 'border-border',
+      )}
+    >
+      {selecting ? (
+        <Checkbox
+          checked={selected}
+          onCheckedChange={() => onToggle()}
+          aria-label={`Select ${name}`}
+          className="size-5"
+        />
+      ) : null}
+
       <Avatar size="lg" className="size-14 after:rounded-full">
         {hasPhoto ? (
           <AvatarImage src={player.passportphoto} alt={name} />
@@ -248,6 +504,9 @@ function PlayerCard({ entry }: { entry: TeamPlayer }) {
           {[player.nationality, player.preferred_foot]
             .filter(Boolean)
             .join(' · ') || '—'}
+        </p>
+        <p className="mt-1 truncate text-[11px] tabular-nums text-muted-foreground">
+          player_id {player.id} · team_player_id {entry.id}
         </p>
       </div>
 

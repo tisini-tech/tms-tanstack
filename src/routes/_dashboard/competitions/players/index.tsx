@@ -5,6 +5,13 @@ import { getPlayersFn } from '#/data/players'
 import { getTeamsFn } from '#/data/teams'
 import { TeamPlayers } from '#/components/players/team-players'
 
+const SELECT_PLAYER_ROLES = new Set([1, 7])
+
+function canSelectPlayers(role: string | number | null | undefined) {
+  const id = Number(role)
+  return Number.isFinite(id) && SELECT_PLAYER_ROLES.has(id)
+}
+
 export const Route = createFileRoute('/_dashboard/competitions/players/')({
   validateSearch: z.object({
     teamId: z.coerce.number().optional(),
@@ -34,6 +41,7 @@ export const Route = createFileRoute('/_dashboard/competitions/players/')({
 
 function RouteComponent() {
   const { teams, players, teamId } = Route.useLoaderData()
+  const { role } = Route.useRouteContext()
   const navigate = Route.useNavigate()
   const isLoading = useRouterState({ select: (s) => s.isLoading })
   const selectedTeam = teams.find((team) => team.id === teamId) ?? null
@@ -44,6 +52,7 @@ function RouteComponent() {
       players={players}
       selectedTeam={selectedTeam}
       isLoading={isLoading}
+      canSelect={canSelectPlayers(role)}
       onTeamChange={(team) => {
         void navigate({
           search: { teamId: team?.id },
