@@ -11,11 +11,11 @@ export const Route = createFileRoute('/_dashboard/competitions/players/create')(
   }),
   loaderDeps: ({ search: { teamId } }) => ({ teamId }),
   loader: async ({ deps: { teamId } }) => {
-    const [countries, teams] = await Promise.all([
+    const [countries, matches] = await Promise.all([
       getCountriesFn(),
-      getTeamsFn(),
+      getTeamsFn({ data: { search: String(teamId) } }),
     ])
-    const team = teams.find((entry) => entry.id === teamId)
+    const team = matches.find((entry) => entry.id === teamId)
     if (!team) {
       throw notFound()
     }

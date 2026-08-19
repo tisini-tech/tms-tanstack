@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Combobox } from '@base-ui/react/combobox'
 import { Link, useRouter } from '@tanstack/react-router'
+import { useQuery } from '@tanstack/react-query'
 import {
   CheckIcon,
   CheckSquareIcon,
@@ -31,10 +32,12 @@ import { toast } from '#/components/ui/toast'
 import { DeletePlayerDialog } from '#/components/players/delete-player'
 import { PreviewIdDocumentModal } from '#/components/players/preview-id-document'
 import { mergePlayersFn, type MergePlayerRef } from '#/data/players'
+import { getTeamsFn } from '#/data/teams'
 
 interface TeamPlayersProps {
   teams: Team[]
   players: TeamPlayer[]
+  teamId?: number
   selectedTeam: Team | null
   isLoading?: boolean
   canSelect?: boolean
@@ -44,6 +47,7 @@ interface TeamPlayersProps {
 export function TeamPlayers({
   teams,
   players,
+  teamId,
   selectedTeam,
   isLoading = false,
   canSelect = false,
@@ -51,6 +55,40 @@ export function TeamPlayers({
 }: TeamPlayersProps) {
   const router = useRouter()
   const [query, setQuery] = useState('')
+  const [teamSearch, setTeamSearch] = useState('')
+  const [debouncedTeamSearch, setDebouncedTeamSearch] = useState('')
+  const [pickedTeam, setPickedTeam] = useState<Team | null>(selectedTeam)
+
+  useEffect(() => {
+    const timeout = window.setTimeout(() => {
+      setDebouncedTeamSearch(teamSearch.trim())
+    }, 300)
+    return () => window.clearTimeout(timeout)
+  }, [teamSearch])
+
+  const { data: searchedTeams, isFetching: isSearchingTeams } = useQuery({
+    queryKey: ['teams', 'search', debouncedTeamSearch],
+    queryFn: () => getTeamsFn({ data: { search: debouncedTeamSearch } }),
+  })
+
+  const teamOptions = useMemo(() => {
+    const list = searchedTeams ?? teams
+    const extra = pickedTeam ?? selectedTeam
+    if (!extra) return list
+    if (list.some((team) => team.id === extra.id)) return list
+    return [extra, ...list]
+  }, [pickedTeam, searchedTeams, selectedTeam, teams])
+
+  const activeTeam = useMemo(() => {
+    if (pickedTeam && (!teamId || pickedTeam.id === teamId)) return pickedTeam
+    if (selectedTeam && (!teamId || selectedTeam.id === teamId)) {
+      return selectedTeam
+    }
+    if (teamId) {
+      return teamOptions.find((team) => team.id === teamId) ?? pickedTeam
+    }
+    return selectedTeam ?? pickedTeam
+  }, [pickedTeam, selectedTeam, teamId, teamOptions])
   const [selecting, setSelecting] = useState(false)
   const [selected, setSelected] = useState<MergePlayerRef[]>([])
   const [mergeOpen, setMergeOpen] = useState(false)
@@ -70,7 +108,11 @@ export function TeamPlayers({
     setSelected([])
     setMergeOpen(false)
     setMergeError(null)
-  }, [selectedTeam?.id])
+  }, [activeTeam?.id])
+
+  useEffect(() => {
+    if (selectedTeam) setPickedTeam(selectedTeam)
+  }, [selectedTeam])
 
   const filteredPlayers = useMemo(() => {
     const q = query.trim().toLowerCase()
@@ -185,10 +227,10 @@ export function TeamPlayers({
             Players
           </h1>
           <p className="text-sm text-muted-foreground">
-            {selectedTeam
+            {activeTeam
               ? `${filteredPlayers.length}${
                   query.trim() ? ` of ${players.length}` : ''
-                } player${filteredPlayers.length === 1 ? '' : 's'} in ${selectedTeam.name}`
+                } player${filteredPlayers.length === 1 ? '' : 's'} in ${activeTeam.name}`
               : 'Select a team to view its squad'}
           </p>
         </div>
@@ -196,14 +238,14 @@ export function TeamPlayers({
         <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
           <Button
             type="button"
-            disabled={!selectedTeam}
-            title={!selectedTeam ? 'Select a team first' : undefined}
-            nativeButton={!!selectedTeam ? false : undefined}
+            disabled={!activeTeam}
+            title={!activeTeam ? 'Select a team first' : undefined}
+            nativeButton={!!activeTeam ? false : undefined}
             render={
-              selectedTeam ? (
+              activeTeam ? (
                 <Link
                   to="/competitions/players/create"
-                  search={{ teamId: selectedTeam.id }}
+                  search={{ teamId: activeTeam.id }}
                 />
               ) : (
                 <button type="button" />
@@ -218,7 +260,7 @@ export function TeamPlayers({
             <Button
               type="button"
               variant={selecting ? 'default' : 'outline'}
-              disabled={!selectedTeam || isLoading || players.length === 0}
+              disabled={!activeTeam || isLoading || players.length === 0}
               onClick={() => {
                 setSelecting((prev) => {
                   if (prev) setSelected([])
@@ -237,20 +279,26 @@ export function TeamPlayers({
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Search players…"
               aria-label="Search players"
-              disabled={!selectedTeam || isLoading}
+              disabled={!activeTeam || isLoading}
               className="h-9 rounded-xl bg-input/50 pl-9"
             />
           </div>
 
           <Combobox.Root
-            value={selectedTeam}
+            value={activeTeam}
             onValueChange={(team) => {
+              if (!team) return
+              setPickedTeam(team)
               setQuery('')
               onTeamChange(team)
             }}
-            items={teams}
+            items={teamOptions}
+            filter={null}
             itemToStringLabel={(item) => item?.name ?? ''}
             isItemEqualToValue={(a, b) => a?.id === b?.id}
+            onInputValueChange={(value) => {
+              setTeamSearch(value)
+            }}
           >
             <Combobox.Trigger
               aria-label="Team"
@@ -282,7 +330,7 @@ export function TeamPlayers({
                     'data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95',
                   )}
                 >
-                  <div className="border-b border-border/60 p-2">
+                  <div className="relative border-b border-border/60 p-2">
                     <Combobox.Input
                       placeholder="Search teams…"
                       className={cn(
@@ -291,9 +339,12 @@ export function TeamPlayers({
                         'focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/30',
                       )}
                     />
+                    {isSearchingTeams ? (
+                      <Loader2Icon className="pointer-events-none absolute top-1/2 right-4 size-3.5 -translate-y-1/2 animate-spin text-muted-foreground" />
+                    ) : null}
                   </div>
                   <Combobox.Empty className="px-3 py-6 text-center text-sm text-muted-foreground">
-                    {teams.length === 0 ? 'No teams yet' : 'No teams found'}
+                    {isSearchingTeams ? 'Searching teams…' : 'No teams found'}
                   </Combobox.Empty>
                   <Combobox.List className="max-h-72 scroll-py-1 overflow-y-auto p-1 outline-none">
                     {(team: Team) => (
@@ -323,7 +374,7 @@ export function TeamPlayers({
         </div>
       </div>
 
-      {selecting && selectedTeam && players.length > 0 ? (
+      {selecting && activeTeam && players.length > 0 ? (
         <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border bg-muted/30 px-3 py-2">
           <p className="text-sm text-muted-foreground">
             {selected.length} selected
@@ -371,13 +422,13 @@ export function TeamPlayers({
             />
           ))}
         </div>
-      ) : !selectedTeam ? (
+      ) : !activeTeam ? (
         <div className="rounded-xl border border-dashed p-10 text-center text-sm text-muted-foreground">
           Choose a team to load its players.
         </div>
       ) : players.length === 0 ? (
         <div className="rounded-xl border border-dashed p-10 text-center text-sm text-muted-foreground">
-          No players found for {selectedTeam.name}.
+          No players found for {activeTeam.name}.
         </div>
       ) : filteredPlayers.length === 0 ? (
         <div className="rounded-xl border border-dashed p-10 text-center text-sm text-muted-foreground">

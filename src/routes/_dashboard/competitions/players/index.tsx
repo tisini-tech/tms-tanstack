@@ -27,35 +27,43 @@ export const Route = createFileRoute('/_dashboard/competitions/players/')({
         teams,
         players: [],
         teamId: undefined as number | undefined,
+        selectedTeam: null,
       }
     }
 
+    const listedTeam = teams.find((team) => team.id === selectedTeamId) ?? null
     const players = await getPlayersFn({
       data: { teamId: String(selectedTeamId) },
     })
 
-    return { teams, players, teamId: selectedTeamId }
+    return {
+      teams,
+      players,
+      teamId: selectedTeamId,
+      selectedTeam: listedTeam,
+    }
   },
   component: RouteComponent,
 })
 
 function RouteComponent() {
-  const { teams, players, teamId } = Route.useLoaderData()
+  const { teams, players, teamId, selectedTeam } = Route.useLoaderData()
   const { role } = Route.useRouteContext()
   const navigate = Route.useNavigate()
   const isLoading = useRouterState({ select: (s) => s.isLoading })
-  const selectedTeam = teams.find((team) => team.id === teamId) ?? null
 
   return (
     <TeamPlayers
       teams={teams}
       players={players}
+      teamId={teamId}
       selectedTeam={selectedTeam}
       isLoading={isLoading}
       canSelect={canSelectPlayers(role)}
       onTeamChange={(team) => {
+        if (!team) return
         void navigate({
-          search: { teamId: team?.id },
+          search: { teamId: team.id },
           replace: true,
         })
       }}
