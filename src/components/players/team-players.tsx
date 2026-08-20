@@ -245,7 +245,10 @@ export function TeamPlayers({
               activeTeam ? (
                 <Link
                   to="/competitions/players/create"
-                  search={{ teamId: activeTeam.id }}
+                  search={{
+                    teamId: activeTeam.id,
+                    teamName: activeTeam.name,
+                  }}
                 />
               ) : (
                 <button type="button" />

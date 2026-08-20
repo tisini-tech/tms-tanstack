@@ -8,17 +8,21 @@ import { getTeamsFn } from '#/data/teams'
 export const Route = createFileRoute('/_dashboard/competitions/players/create')({
   validateSearch: z.object({
     teamId: z.coerce.number(),
+    teamName: z.string().optional(),
   }),
-  loaderDeps: ({ search: { teamId } }) => ({ teamId }),
-  loader: async ({ deps: { teamId } }) => {
+  loaderDeps: ({ search: { teamId, teamName } }) => ({ teamId, teamName }),
+  loader: async ({ deps: { teamId, teamName } }) => {
+    const search = teamName?.trim() || ''
     const [countries, matches] = await Promise.all([
       getCountriesFn(),
-      getTeamsFn({ data: { search: String(teamId) } }),
+      getTeamsFn({ data: { search } }),
     ])
+
     const team = matches.find((entry) => entry.id === teamId)
     if (!team) {
       throw notFound()
     }
+
     return { countries, team }
   },
   component: RouteComponent,
