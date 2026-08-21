@@ -51,7 +51,7 @@ function CompetitionLayout() {
   const active = competition.status === 1
 
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-col gap-6">
+    <div className="flex flex-col gap-6 p-4">
       <div className="space-y-1">
         <Button
           type="button"
