@@ -19,9 +19,11 @@ import {
 export function EditPlayerForm({
   entry,
   countries,
+  backSearch,
 }: {
   entry: TeamPlayer
   countries: Country[]
+  backSearch: { teamId: number; teamName?: string }
 }) {
   const router = useRouter()
   const [submitError, setSubmitError] = useState<string | null>(null)
@@ -52,7 +54,6 @@ export function EditPlayerForm({
   }
 
   const player = entry.player
-  const backSearch = { teamId: entry.team }
 
   const form = useForm({
     defaultValues: playerToFormValues(player, entry),
@@ -100,7 +101,7 @@ export function EditPlayerForm({
   })
 
   return (
-    <div className="mx-auto flex w-full max-w-4xl flex-col gap-6">
+    <div className="mx-auto flex w-full max-w-6xl flex-col gap-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="space-y-1">
           <Button
@@ -117,7 +118,8 @@ export function EditPlayerForm({
             Edit player
           </h1>
           <p className="text-sm text-muted-foreground">
-            Update details for {player.name || 'this player'}.
+            Update details for {player.name || 'this player'}. Fields marked
+            with <span className="text-destructive">*</span> are required.
           </p>
         </div>
       </div>
@@ -131,16 +133,17 @@ export function EditPlayerForm({
           void form.handleSubmit()
         }}
       >
-        <FieldGroup className="gap-5">
+        <FieldGroup className="gap-6">
           <section className="space-y-4">
             <h2 className="text-sm font-medium text-heading">Identity</h2>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               <form.Field name="fname">
                 {(field) => (
                   <InputField
                     field={field}
                     id={`player-${player.id}-fname`}
                     label="First name"
+                    required
                     placeholder="Charles"
                     autoComplete="off"
                     className="gap-2"
@@ -153,7 +156,7 @@ export function EditPlayerForm({
                   <InputField
                     field={field}
                     id={`player-${player.id}-oname`}
-                    label="Last name"
+                    label="Other name"
                     placeholder="Momanyi"
                     autoComplete="off"
                     className="gap-2"
@@ -167,6 +170,7 @@ export function EditPlayerForm({
                     field={field}
                     id={`player-${player.id}-sname`}
                     label="Surname"
+                    required
                     placeholder="Saramu"
                     autoComplete="off"
                     className="gap-2"
@@ -174,9 +178,6 @@ export function EditPlayerForm({
                   />
                 )}
               </form.Field>
-            </div>
-
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <form.Field name="playerdob">
                 {(field) => (
                   <InputField
@@ -196,6 +197,7 @@ export function EditPlayerForm({
                     field={field}
                     id={`player-${player.id}-position`}
                     label="Position"
+                    required
                     placeholder="Forward"
                     autoComplete="off"
                     className="gap-2"
@@ -208,7 +210,7 @@ export function EditPlayerForm({
 
           <section className="space-y-4">
             <h2 className="text-sm font-medium text-heading">Squad details</h2>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               <form.Field name="jersey">
                 {(field) => (
                   <InputField
@@ -235,9 +237,6 @@ export function EditPlayerForm({
                   />
                 )}
               </form.Field>
-            </div>
-
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <form.Field name="preferred_foot">
                 {(field) => (
                   <InputField
@@ -264,9 +263,6 @@ export function EditPlayerForm({
                   />
                 )}
               </form.Field>
-            </div>
-
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <form.Field name="height">
                 {(field) => (
                   <InputField
@@ -293,9 +289,6 @@ export function EditPlayerForm({
                   />
                 )}
               </form.Field>
-            </div>
-
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <form.Field name="country">
                 {(field) => (
                   <SelectField
@@ -328,7 +321,7 @@ export function EditPlayerForm({
 
           <section className="space-y-4">
             <h2 className="text-sm font-medium text-heading">Contact & ID</h2>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               <form.Field name="id_no">
                 {(field) => (
                   <InputField
@@ -356,9 +349,6 @@ export function EditPlayerForm({
                   />
                 )}
               </form.Field>
-            </div>
-
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <form.Field name="phone">
                 {(field) => (
                   <InputField
@@ -389,7 +379,7 @@ export function EditPlayerForm({
               </form.Field>
             </div>
 
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
               <UploadFileField
                 id={`player-${player.id}-passport`}
                 label="Passport photo"

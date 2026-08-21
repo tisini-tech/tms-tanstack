@@ -32,7 +32,12 @@ import { toast } from '#/components/ui/toast'
 import { DeletePlayerDialog } from '#/components/players/delete-player'
 import { PreviewIdDocumentModal } from '#/components/players/preview-id-document'
 import { mergePlayersFn, type MergePlayerRef } from '#/data/players'
-import { getTeamsFn } from '#/data/teams'
+import { getTeamsFn, resolveTeamFn } from '#/data/teams'
+import {
+  isUnresolvedTeamName,
+  recallTeam,
+  rememberTeam,
+} from '#/lib/recent-teams'
 
 interface TeamPlayersProps {
   teams: Team[]
@@ -42,6 +47,20 @@ interface TeamPlayersProps {
   isLoading?: boolean
   canSelect?: boolean
   onTeamChange: (team: Team | null) => void
+}
+
+function teamNeedsResolve(
+  teamId: number | undefined,
+  ...candidates: Array<Team | null | undefined>
+) {
+  if (teamId == null) return false
+  const resolved = candidates.find(
+    (team) =>
+      team &&
+      team.id === teamId &&
+      !isUnresolvedTeamName(team.name, team.id),
+  )
+  return !resolved
 }
 
 export function TeamPlayers({
@@ -57,7 +76,16 @@ export function TeamPlayers({
   const [query, setQuery] = useState('')
   const [teamSearch, setTeamSearch] = useState('')
   const [debouncedTeamSearch, setDebouncedTeamSearch] = useState('')
-  const [pickedTeam, setPickedTeam] = useState<Team | null>(selectedTeam)
+  const [pickedTeam, setPickedTeam] = useState<Team | null>(() => {
+    if (
+      selectedTeam &&
+      !isUnresolvedTeamName(selectedTeam.name, selectedTeam.id)
+    ) {
+      return selectedTeam
+    }
+    if (teamId) return recallTeam(teamId) ?? selectedTeam
+    return selectedTeam
+  })
 
   useEffect(() => {
     const timeout = window.setTimeout(() => {
@@ -65,6 +93,41 @@ export function TeamPlayers({
     }, 300)
     return () => window.clearTimeout(timeout)
   }, [teamSearch])
+
+  const needsTeamResolve = teamNeedsResolve(teamId, pickedTeam, selectedTeam)
+
+  const { data: resolvedTeam } = useQuery({
+    queryKey: ['resolve-team', teamId],
+    enabled: needsTeamResolve && teamId != null,
+    queryFn: async () => {
+      const cached = recallTeam(teamId!)
+      if (cached && !isUnresolvedTeamName(cached.name, cached.id)) return cached
+      return resolveTeamFn({
+        data: {
+          teamId: teamId!,
+          teamName:
+            selectedTeam &&
+            !isUnresolvedTeamName(selectedTeam.name, selectedTeam.id)
+              ? selectedTeam.name
+              : undefined,
+        },
+      })
+    },
+  })
+
+  useEffect(() => {
+    if (!resolvedTeam) return
+    if (isUnresolvedTeamName(resolvedTeam.name, resolvedTeam.id)) return
+    rememberTeam(resolvedTeam)
+    setPickedTeam(resolvedTeam)
+    if (
+      !selectedTeam ||
+      isUnresolvedTeamName(selectedTeam.name, selectedTeam.id) ||
+      selectedTeam.name !== resolvedTeam.name
+    ) {
+      onTeamChange(resolvedTeam)
+    }
+  }, [resolvedTeam]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const { data: searchedTeams, isFetching: isSearchingTeams } = useQuery({
     queryKey: ['teams', 'search', debouncedTeamSearch],
@@ -80,6 +143,16 @@ export function TeamPlayers({
   }, [pickedTeam, searchedTeams, selectedTeam, teams])
 
   const activeTeam = useMemo(() => {
+    if (teamId) {
+      const named =
+        [pickedTeam, selectedTeam, ...teamOptions].find(
+          (team) =>
+            team &&
+            team.id === teamId &&
+            !isUnresolvedTeamName(team.name, team.id),
+        ) ?? null
+      if (named) return named
+    }
     if (pickedTeam && (!teamId || pickedTeam.id === teamId)) return pickedTeam
     if (selectedTeam && (!teamId || selectedTeam.id === teamId)) {
       return selectedTeam
@@ -111,7 +184,10 @@ export function TeamPlayers({
   }, [activeTeam?.id])
 
   useEffect(() => {
-    if (selectedTeam) setPickedTeam(selectedTeam)
+    if (!selectedTeam) return
+    if (isUnresolvedTeamName(selectedTeam.name, selectedTeam.id)) return
+    rememberTeam(selectedTeam)
+    setPickedTeam(selectedTeam)
   }, [selectedTeam])
 
   const filteredPlayers = useMemo(() => {
@@ -291,6 +367,7 @@ export function TeamPlayers({
             value={activeTeam}
             onValueChange={(team) => {
               if (!team) return
+              rememberTeam(team)
               setPickedTeam(team)
               setQuery('')
               onTeamChange(team)
@@ -443,6 +520,7 @@ export function TeamPlayers({
             <PlayerCard
               key={entry.id}
               entry={entry}
+              teamName={activeTeam?.name}
               selecting={selecting}
               selected={selectedIds.has(entry.id)}
               onToggle={() => toggleSelected(entry)}
@@ -504,11 +582,13 @@ export function TeamPlayers({
 
 function PlayerCard({
   entry,
+  teamName,
   selecting,
   selected,
   onToggle,
 }: {
   entry: TeamPlayer
+  teamName?: string
   selecting: boolean
   selected: boolean
   onToggle: () => void
@@ -577,7 +657,10 @@ function PlayerCard({
             <Link
               to="/competitions/players/$playerId/edit"
               params={{ playerId: String(entry.id) }}
-              search={{ teamId: entry.team }}
+              search={{
+                teamId: entry.team,
+                ...(teamName ? { teamName } : {}),
+              }}
             />
           }
         >

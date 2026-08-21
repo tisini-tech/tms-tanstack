@@ -10,6 +10,7 @@ export const Route = createFileRoute(
 )({
   validateSearch: z.object({
     teamId: z.coerce.number(),
+    teamName: z.string().optional(),
   }),
   loaderDeps: ({ search: { teamId } }) => ({ teamId }),
   loader: async ({ params, deps: { teamId } }) => {
@@ -35,6 +36,16 @@ export const Route = createFileRoute(
 
 function RouteComponent() {
   const { countries, entry } = Route.useLoaderData()
+  const { teamId, teamName } = Route.useSearch()
 
-  return <EditPlayerForm entry={entry} countries={countries} />
+  return (
+    <EditPlayerForm
+      entry={entry}
+      countries={countries}
+      backSearch={{
+        teamId,
+        ...(teamName?.trim() ? { teamName: teamName.trim() } : {}),
+      }}
+    />
+  )
 }

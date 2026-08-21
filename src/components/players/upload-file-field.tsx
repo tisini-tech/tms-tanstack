@@ -1,15 +1,13 @@
 import { useRef, useState } from 'react'
 import { Loader2Icon, UploadIcon } from 'lucide-react'
 
+import { DocumentPreview } from '#/components/players/preview-id-document'
 import { Button } from '#/components/ui/button'
 import { Field, FieldLabel } from '#/components/ui/field'
+import { tagPdfUploadUrl } from '#/lib/document-url'
 import { uploadFiles } from '#/lib/uploadthing'
 
 const MAX_FILE_SIZE = 4 * 1024 * 1024
-
-function isPdfUrl(url: string) {
-  return /\.pdf(?:$|\?)/i.test(url)
-}
 
 function isAllowedDocumentFile(file: File) {
   return (
@@ -37,7 +35,8 @@ export function UploadFileField({
   const inputRef = useRef<HTMLInputElement>(null)
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const accept = preview === 'document' ? 'image/*,application/pdf,.pdf' : 'image/*'
+  const accept =
+    preview === 'document' ? 'image/*,application/pdf,.pdf' : 'image/*'
 
   async function handleFile(file: File | undefined) {
     if (!file) return
@@ -63,9 +62,16 @@ export function UploadFileField({
 
     try {
       const result = await uploadFiles('imageUploader', { files: [file] })
-      const url = result[0]?.ufsUrl
+      const uploaded = result[0]
+      const url = uploaded?.ufsUrl
       if (!url) throw new Error('Upload failed')
-      onChange(url)
+
+      const isPdf =
+        file.type === 'application/pdf' ||
+        /\.pdf$/i.test(file.name) ||
+        uploaded.type === 'application/pdf'
+
+      onChange(isPdf ? tagPdfUploadUrl(url) : url)
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : 'Upload failed')
     } finally {
@@ -80,25 +86,14 @@ export function UploadFileField({
       <FieldLabel htmlFor={id}>{label}</FieldLabel>
 
       {value ? (
-        !isPdfUrl(value) ? (
+        preview === 'document' ? (
+          <DocumentPreview url={value} alt={label} compact className="w-full" />
+        ) : (
           <img
             src={value}
             alt=""
-            className={
-              preview === 'image'
-                ? 'size-24 rounded-xl object-cover ring-1 ring-border'
-                : 'max-h-32 w-full rounded-xl object-contain ring-1 ring-border'
-            }
+            className="size-24 rounded-xl object-cover ring-1 ring-border"
           />
-        ) : (
-          <a
-            href={value}
-            target="_blank"
-            rel="noreferrer"
-            className="truncate text-xs text-primary underline-offset-2 hover:underline"
-          >
-            PDF uploaded — open preview
-          </a>
         )
       ) : null}
 

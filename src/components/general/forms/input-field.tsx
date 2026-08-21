@@ -37,6 +37,7 @@ export type InputFieldProps<T extends string | number = string> = {
   field: TanStackInputFieldApi<T>
   label: string
   labelEnd?: ReactNode
+  required?: boolean
   type?: Exclude<
     React.HTMLInputTypeAttribute,
     | 'button'
@@ -62,6 +63,7 @@ export function InputField<T extends string | number = string>({
   field,
   label,
   labelEnd,
+  required = false,
   type = 'text',
   placeholder,
   autoComplete,
@@ -89,6 +91,18 @@ export function InputField<T extends string | number = string>({
   const isNumber = type === 'number'
   const inputType = isPassword && showPassword ? 'text' : type
 
+  const labelNode = (
+    <>
+      {label}
+      {required ? (
+        <span className="text-destructive" aria-hidden="true">
+          {' '}
+          *
+        </span>
+      ) : null}
+    </>
+  )
+
   return (
     <Field
       className={cn(className)}
@@ -96,11 +110,11 @@ export function InputField<T extends string | number = string>({
     >
       {labelEnd ? (
         <div className="flex items-center gap-2">
-          <FieldLabel htmlFor={id}>{label}</FieldLabel>
+          <FieldLabel htmlFor={id}>{labelNode}</FieldLabel>
           <span className="ml-auto">{labelEnd}</span>
         </div>
       ) : (
-        <FieldLabel htmlFor={id}>{label}</FieldLabel>
+        <FieldLabel htmlFor={id}>{labelNode}</FieldLabel>
       )}
       <div className={cn(isPassword && 'relative')}>
         <Input
@@ -110,6 +124,7 @@ export function InputField<T extends string | number = string>({
           min={min}
           max={max}
           step={step}
+          required={required}
           autoComplete={autoComplete ?? defaultAutoComplete}
           placeholder={placeholder}
           value={

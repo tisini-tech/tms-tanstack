@@ -30,6 +30,7 @@ export type SelectFieldProps<T extends string = string> = {
   /** Helper text under the label (same pattern as shadcn responsive fields). */
   description?: ReactNode
   placeholder?: string
+  required?: boolean
   /** Defaults to `field.name`. */
   id?: string
   /** Matches `Field`: use `responsive` for label left / control right on md+. */
@@ -44,6 +45,7 @@ export function SelectField<T extends string = string>({
   options,
   description,
   placeholder = "Select…",
+  required = false,
   id: idProp,
   orientation = "responsive",
   className,
@@ -60,7 +62,15 @@ export function SelectField<T extends string = string>({
       orientation={orientation}
     >
       <FieldContent>
-        <FieldLabel htmlFor={id}>{label}</FieldLabel>
+        <FieldLabel htmlFor={id}>
+          {label}
+          {required ? (
+            <span className="text-destructive" aria-hidden="true">
+              {" "}
+              *
+            </span>
+          ) : null}
+        </FieldLabel>
         {description ? (
           <FieldDescription>{description}</FieldDescription>
         ) : null}

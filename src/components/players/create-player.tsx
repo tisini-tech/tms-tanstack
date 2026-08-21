@@ -44,7 +44,7 @@ export function CreatePlayerForm({
   const [idDocument, setIdDocument] = useState('')
   const [uploadingCount, setUploadingCount] = useState(0)
 
-  const backSearch = { teamId: team.id }
+  const backSearch = { teamId: team.id, teamName: team.name }
 
   const countryOptions = useMemo(
     () =>
@@ -133,7 +133,7 @@ export function CreatePlayerForm({
   })
 
   return (
-    <div className="mx-auto flex w-full max-w-4xl flex-col gap-6">
+    <div className="mx-auto flex w-full max-w-6xl flex-col gap-6">
       <div className="space-y-1">
         <Button
           type="button"
@@ -149,7 +149,8 @@ export function CreatePlayerForm({
           Add player
         </h1>
         <p className="text-sm text-muted-foreground">
-          Create a player for {team.name}.
+          Create a player for {team.name}. Fields marked with{' '}
+          <span className="text-destructive">*</span> are required.
         </p>
       </div>
 
@@ -162,16 +163,17 @@ export function CreatePlayerForm({
           void form.handleSubmit()
         }}
       >
-        <FieldGroup className="gap-5">
+        <FieldGroup className="gap-6">
           <section className="space-y-4">
             <h2 className="text-sm font-medium text-heading">Identity</h2>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               <form.Field name="fname">
                 {(field) => (
                   <InputField
                     field={field}
                     id="create-player-fname"
                     label="First name"
+                    required
                     placeholder="Charles"
                     autoComplete="off"
                     className="gap-2"
@@ -185,6 +187,7 @@ export function CreatePlayerForm({
                     field={field}
                     id="create-player-oname"
                     label="Other name"
+                    required
                     placeholder="Momanyi"
                     autoComplete="off"
                     className="gap-2"
@@ -205,15 +208,13 @@ export function CreatePlayerForm({
                   />
                 )}
               </form.Field>
-            </div>
-
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <form.Field name="playerdob">
                 {(field) => (
                   <InputField
                     field={field}
                     id="create-player-dob"
                     label="Date of birth"
+                    required
                     type="date"
                     autoComplete="off"
                     className="gap-2"
@@ -227,6 +228,7 @@ export function CreatePlayerForm({
                     field={field}
                     id="create-player-position"
                     label="Position"
+                    required
                     placeholder="Forward"
                     autoComplete="off"
                     className="gap-2"
@@ -239,13 +241,14 @@ export function CreatePlayerForm({
 
           <section className="space-y-4">
             <h2 className="text-sm font-medium text-heading">Squad details</h2>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               <form.Field name="jersey">
                 {(field) => (
                   <InputField
                     field={field}
                     id="create-player-jersey"
                     label="Jersey"
+                    required
                     placeholder="10"
                     autoComplete="off"
                     className="gap-2"
@@ -259,6 +262,7 @@ export function CreatePlayerForm({
                     field={field as never}
                     id="create-player-country"
                     label="Country"
+                    required
                     placeholder="Select country"
                     options={countryOptions}
                     orientation="vertical"
@@ -267,15 +271,13 @@ export function CreatePlayerForm({
                   />
                 )}
               </form.Field>
-            </div>
-
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <form.Field name="contract">
                 {(field) => (
                   <InputField
                     field={field}
                     id="create-player-contract"
                     label="Signed date"
+                    required
                     type="date"
                     autoComplete="off"
                     className="gap-2"
@@ -296,9 +298,6 @@ export function CreatePlayerForm({
                   />
                 )}
               </form.Field>
-            </div>
-
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
               <form.Field name="fifa_id">
                 {(field) => (
                   <InputField
@@ -343,7 +342,7 @@ export function CreatePlayerForm({
 
           <section className="space-y-4">
             <h2 className="text-sm font-medium text-heading">Contact & ID</h2>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               <form.Field name="phone">
                 {(field) => (
                   <InputField
@@ -371,9 +370,6 @@ export function CreatePlayerForm({
                   />
                 )}
               </form.Field>
-            </div>
-
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <form.Field name="email">
                 {(field) => (
                   <InputField
@@ -402,24 +398,23 @@ export function CreatePlayerForm({
                   />
                 )}
               </form.Field>
+              <form.Field name="id_document_type">
+                {(field) => (
+                  <SelectField
+                    field={field as never}
+                    id="create-player-doc-type"
+                    label="ID document type"
+                    placeholder="Select document type"
+                    options={ID_DOCUMENT_TYPE_OPTIONS}
+                    orientation="vertical"
+                    className="gap-2"
+                    triggerClassName="h-10 rounded-xl px-3"
+                  />
+                )}
+              </form.Field>
             </div>
 
-            <form.Field name="id_document_type">
-              {(field) => (
-                <SelectField
-                  field={field as never}
-                  id="create-player-doc-type"
-                  label="ID document type"
-                  placeholder="Select document type"
-                  options={ID_DOCUMENT_TYPE_OPTIONS}
-                  orientation="vertical"
-                  className="gap-2"
-                  triggerClassName="h-10 rounded-xl px-3"
-                />
-              )}
-            </form.Field>
-
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
               <UploadFileField
                 id="create-player-passport"
                 label="Passport photo"
