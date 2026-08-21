@@ -502,3 +502,10 @@ export interface Metrics {
   metric_category: number
   strength: number
 }
+
+export interface CompetitionImage {
+  id: number
+  image: string
+  caption: string
+  division: number
+}

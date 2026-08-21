@@ -3,7 +3,6 @@ import { authFnMiddleware } from '#/middlewares/auth'
 import { createServerFn } from '@tanstack/react-start'
 import type {
   Fixture,
-  FixturePlayerStats,
   FixtureTeamStats,
   FixtureQuarterStats,
   PaginatedResponse,
