@@ -7,6 +7,7 @@ function teamsPath(opts?: {
   competitionId?: string
   seasonId?: string
   divisionId?: string
+  categoryId?: string
   search?: string
   pageSize?: number
 }) {
@@ -15,6 +16,7 @@ function teamsPath(opts?: {
   if (opts?.competitionId) params.set('competition_id', opts.competitionId)
   if (opts?.seasonId) params.set('season_id', opts.seasonId)
   if (opts?.divisionId) params.set('division_id', opts.divisionId)
+  if (opts?.categoryId) params.set('category_id', opts.categoryId)
   if (search) params.set('search', search)
   if (opts?.pageSize) params.set('page_size', String(opts.pageSize))
   const query = params.toString()
@@ -30,6 +32,7 @@ export const getTeamsFn = createServerFn({ method: 'GET' })
             competitionId?: string
             seasonId?: string
             divisionId?: string
+            categoryId?: string
             search?: string
             pageSize?: number
           }
@@ -38,6 +41,7 @@ export const getTeamsFn = createServerFn({ method: 'GET' })
       competitionId: data?.competitionId?.trim() || undefined,
       seasonId: data?.seasonId?.trim() || undefined,
       divisionId: data?.divisionId?.trim() || undefined,
+      categoryId: data?.categoryId?.trim() || undefined,
       search: data?.search?.trim() || undefined,
       pageSize: data?.pageSize ?? 200,
     }),
@@ -48,6 +52,7 @@ export const getTeamsFn = createServerFn({ method: 'GET' })
         competitionId: data.competitionId,
         seasonId: data.seasonId,
         divisionId: data.divisionId,
+        categoryId: data.categoryId,
         search: data.search,
         pageSize: data.pageSize,
       }),

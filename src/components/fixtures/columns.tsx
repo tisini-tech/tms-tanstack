@@ -65,8 +65,11 @@ export const columns: ColumnDef<Fixture>[] = [
           variant="outline"
           render={
             <Link
-              to={`/competitions/fixtures/$fixId`}
-              params={{ fixId: fixture.id.toString() }}
+              to={`/competitions/$compId/fixtures/$fixId`}
+              params={{
+                compId: String(fixture.competition.id),
+                fixId: fixture.id.toString(),
+              }}
             />
           }
           nativeButton={false}

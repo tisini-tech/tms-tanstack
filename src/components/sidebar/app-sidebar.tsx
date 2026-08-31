@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { useRouterState } from '@tanstack/react-router'
 
 import { NavUser } from '@/components/sidebar/nav-user'
@@ -13,6 +14,11 @@ import {
 
 import type { Module, User } from '#/lib/types'
 import { rememberLastModulePath } from '#/lib/last-module'
+import {
+  resolveCompetition,
+  resolveCompetitionFilters,
+} from '#/lib/competition-context'
+import { competitionQueryOptions } from '#/data/competitions'
 import {
   competitionNavItems,
   contentNavItems,
@@ -30,10 +36,23 @@ export function AppSidebar({
   modules: Module[]
 }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname })
+  const search = useRouterState({
+    select: (s) => s.location.search,
+  }) as {
+    seasonId?: number
+    divisionId?: number
+    categoryId?: number
+  }
   const modules = useMemo(
     () => getSiteModules(allowedModules),
     [allowedModules],
   )
+  const { data: competitions = [] } = useQuery(competitionQueryOptions)
+  const resolved = resolveCompetition(competitions, pathname)
+  const compId = resolved ? String(resolved.id) : null
+  const filters = resolved
+    ? resolveCompetitionFilters(resolved, search)
+    : undefined
 
   useEffect(() => {
     rememberLastModulePath(pathname)
@@ -81,7 +100,7 @@ export function AppSidebar({
         ) : null}
       </SidebarHeader>
       <SidebarContent>
-        <NavPrimary items={activeItems} />
+        <NavPrimary items={activeItems} compId={compId} filters={filters} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={user} />

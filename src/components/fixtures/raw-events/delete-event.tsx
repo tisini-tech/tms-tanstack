@@ -20,7 +20,7 @@ import { rawEventsQuery } from '#/lib/raw-events-queries'
 import type { RawFixtureEvent } from '#/lib/types'
 
 const rawEventsRoute = getRouteApi(
-  '/_dashboard/competitions/fixtures/$fixId/raw-events',
+  '/_dashboard/competitions/$compId/fixtures/$fixId/raw-events',
 )
 
 export function DeleteEventDialog({ event }: { event: RawFixtureEvent }) {

@@ -1,15 +1,15 @@
-import { useMemo, useRef, useState } from 'react'
 import { useForm } from '@tanstack/react-form'
-import { Link, useRouter } from '@tanstack/react-router'
+import { useMemo, useRef, useState } from 'react'
 import { ArrowLeftIcon, Loader2Icon } from 'lucide-react'
+import { Link, useParams, useRouter } from '@tanstack/react-router'
 
-import { InputField } from '#/components/general/forms/input-field'
-import { SelectField } from '#/components/general/forms/select-field'
-import { UploadFileField } from '#/components/players/upload-file-field'
 import { Button } from '#/components/ui/button'
 import { FieldGroup } from '#/components/ui/field'
 import { getPlayerPatch, updatePlayerFn } from '#/data/players'
+import { InputField } from '#/components/general/forms/input-field'
+import { SelectField } from '#/components/general/forms/select-field'
 import { playerToFormValues, updatePlayerSchema } from '#/lib/schemas'
+import { UploadFileField } from '#/components/players/upload-file-field'
 import {
   ID_DOCUMENT_TYPE_OPTIONS,
   type Country,
@@ -19,23 +19,39 @@ import {
 export function EditPlayerForm({
   entry,
   countries,
+  seasonId,
   backSearch,
 }: {
   entry: TeamPlayer
   countries: Country[]
-  backSearch: { teamId: number; teamName?: string }
+  seasonId?: number
+  backSearch: {
+    teamId: number
+    teamName?: string
+    seasonId?: number
+    divisionId?: number
+    categoryId?: number
+  }
 }) {
   const router = useRouter()
+  const { compId } = useParams({ strict: false }) as { compId?: string }
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [passportphoto, setPassportphoto] = useState(
     entry.player.passportphoto ?? '',
   )
   const [idDocument, setIdDocument] = useState(entry.player.id_document ?? '')
+  const [frontImg, setFrontImg] = useState(entry.front_img ?? '')
+  const [sideImg, setSideImg] = useState(entry.side_img ?? '')
+  const [actionImg, setActionImg] = useState(entry.action_img ?? '')
   const [uploadingCount, setUploadingCount] = useState(0)
+  const canEditSeasonImages = entry.season_player_id != null && seasonId != null
   const initialRef = useRef({
     ...playerToFormValues(entry.player, entry),
     passportphoto: entry.player.passportphoto ?? '',
     id_document: entry.player.id_document ?? '',
+    front_img: entry.front_img ?? '',
+    side_img: entry.side_img ?? '',
+    action_img: entry.action_img ?? '',
   })
 
   const countryOptions = useMemo(
@@ -71,9 +87,30 @@ export function EditPlayerForm({
         initialRef.current,
       )
 
+      if (canEditSeasonImages && seasonId != null) {
+        const seasonChanged =
+          frontImg !== initialRef.current.front_img ||
+          sideImg !== initialRef.current.side_img ||
+          actionImg !== initialRef.current.action_img
+
+        if (seasonChanged) {
+          patch.season_id = seasonId
+          if (frontImg !== initialRef.current.front_img) {
+            patch.front_img = frontImg
+          }
+          if (sideImg !== initialRef.current.side_img) {
+            patch.side_img = sideImg
+          }
+          if (actionImg !== initialRef.current.action_img) {
+            patch.action_img = actionImg
+          }
+        }
+      }
+
       if (Object.keys(patch).length === 0) {
         await router.navigate({
-          to: '/competitions/players',
+          to: '/competitions/$compId/players',
+          params: { compId: compId ?? '' },
           search: backSearch,
         })
         return
@@ -89,7 +126,8 @@ export function EditPlayerForm({
         })
         await router.invalidate()
         await router.navigate({
-          to: '/competitions/players',
+          to: '/competitions/$compId/players',
+          params: { compId: compId ?? '' },
           search: backSearch,
         })
       } catch (error) {
@@ -109,7 +147,13 @@ export function EditPlayerForm({
             variant="ghost"
             size="sm"
             nativeButton={false}
-            render={<Link to="/competitions/players" search={backSearch} />}
+            render={
+              <Link
+                to="/competitions/$compId/players"
+                params={{ compId: compId ?? '' }}
+                search={backSearch}
+              />
+            }
           >
             <ArrowLeftIcon className="size-4" data-icon="inline-start" />
             Back to players
@@ -263,32 +307,6 @@ export function EditPlayerForm({
                   />
                 )}
               </form.Field>
-              <form.Field name="height">
-                {(field) => (
-                  <InputField
-                    field={field}
-                    id={`player-${player.id}-height`}
-                    label="Height"
-                    placeholder="180"
-                    autoComplete="off"
-                    className="gap-2"
-                    inputClassName="h-10 rounded-xl px-3"
-                  />
-                )}
-              </form.Field>
-              <form.Field name="weight">
-                {(field) => (
-                  <InputField
-                    field={field}
-                    id={`player-${player.id}-weight`}
-                    label="Weight"
-                    placeholder="75"
-                    autoComplete="off"
-                    className="gap-2"
-                    inputClassName="h-10 rounded-xl px-3"
-                  />
-                )}
-              </form.Field>
               <form.Field name="country">
                 {(field) => (
                   <SelectField
@@ -399,6 +417,42 @@ export function EditPlayerForm({
             </div>
           </section>
 
+          {canEditSeasonImages ? (
+            <section className="space-y-4">
+              <div className="space-y-1">
+                <h2 className="text-sm font-medium text-heading">
+                  Season photos
+                </h2>
+                <p className="text-sm text-muted-foreground">
+                  Images for the selected season registration.
+                </p>
+              </div>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                <UploadFileField
+                  id={`player-${player.id}-front`}
+                  label="Front image"
+                  value={frontImg}
+                  onChange={setFrontImg}
+                  onUploadingChange={handleUploadingChange}
+                />
+                <UploadFileField
+                  id={`player-${player.id}-side`}
+                  label="Side image"
+                  value={sideImg}
+                  onChange={setSideImg}
+                  onUploadingChange={handleUploadingChange}
+                />
+                <UploadFileField
+                  id={`player-${player.id}-action`}
+                  label="Action image"
+                  value={actionImg}
+                  onChange={setActionImg}
+                  onUploadingChange={handleUploadingChange}
+                />
+              </div>
+            </section>
+          ) : null}
+
           {submitError ? (
             <p className="text-sm text-destructive">{submitError}</p>
           ) : null}
@@ -409,7 +463,13 @@ export function EditPlayerForm({
             type="button"
             variant="outline"
             nativeButton={false}
-            render={<Link to="/competitions/players" search={backSearch} />}
+            render={
+              <Link
+                to="/competitions/$compId/players"
+                params={{ compId: compId ?? '' }}
+                search={backSearch}
+              />
+            }
           >
             Cancel
           </Button>

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useForm } from '@tanstack/react-form'
-import { Link, useRouter } from '@tanstack/react-router'
+import { Link, useParams, useRouter } from '@tanstack/react-router'
 import { ArrowLeftIcon, Loader2Icon } from 'lucide-react'
 
 import { InputField } from '#/components/general/forms/input-field'
@@ -24,13 +24,6 @@ function defaultCountryCode(countries: Country[]) {
   )
 }
 
-function toOptionalNumber(value: string) {
-  const trimmed = value.trim()
-  if (!trimmed) return undefined
-  const n = Number(trimmed)
-  return Number.isFinite(n) ? n : undefined
-}
-
 export function CreatePlayerForm({
   team,
   countries,
@@ -39,6 +32,7 @@ export function CreatePlayerForm({
   countries: Country[]
 }) {
   const router = useRouter()
+  const { compId } = useParams({ strict: false }) as { compId?: string }
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [passportphoto, setPassportphoto] = useState('')
   const [idDocument, setIdDocument] = useState('')
@@ -78,17 +72,12 @@ export function CreatePlayerForm({
       id_document_type: '',
       fifa_id: '',
       preferred_foot: '',
-      height: '',
-      weight: '',
     } satisfies CreatePlayerSchema,
     validators: {
       onSubmit: createPlayerSchema as never,
     },
     onSubmit: async ({ value }) => {
       setSubmitError(null)
-
-      const height = toOptionalNumber(value.height)
-      const weight = toOptionalNumber(value.weight)
 
       try {
         await createPlayerFn({
@@ -114,14 +103,13 @@ export function CreatePlayerForm({
             ...(value.preferred_foot.trim()
               ? { preferred_foot: value.preferred_foot.trim() }
               : {}),
-            ...(height != null ? { height } : {}),
-            ...(weight != null ? { weight } : {}),
             ...(passportphoto ? { passportphoto } : {}),
           },
         })
         await router.invalidate()
         await router.navigate({
-          to: '/competitions/players',
+          to: '/competitions/$compId/players',
+          params: { compId: compId ?? '' },
           search: backSearch,
         })
       } catch (error) {
@@ -140,7 +128,13 @@ export function CreatePlayerForm({
           variant="ghost"
           size="sm"
           nativeButton={false}
-          render={<Link to="/competitions/players" search={backSearch} />}
+          render={
+            <Link
+              to="/competitions/$compId/players"
+              params={{ compId: compId ?? '' }}
+              search={backSearch}
+            />
+          }
         >
           <ArrowLeftIcon className="size-4" data-icon="inline-start" />
           Back to players
@@ -311,32 +305,6 @@ export function CreatePlayerForm({
                   />
                 )}
               </form.Field>
-              <form.Field name="height">
-                {(field) => (
-                  <InputField
-                    field={field}
-                    id="create-player-height"
-                    label="Height"
-                    placeholder="Optional"
-                    autoComplete="off"
-                    className="gap-2"
-                    inputClassName="h-10 rounded-xl px-3"
-                  />
-                )}
-              </form.Field>
-              <form.Field name="weight">
-                {(field) => (
-                  <InputField
-                    field={field}
-                    id="create-player-weight"
-                    label="Weight"
-                    placeholder="Optional"
-                    autoComplete="off"
-                    className="gap-2"
-                    inputClassName="h-10 rounded-xl px-3"
-                  />
-                )}
-              </form.Field>
             </div>
           </section>
 
@@ -445,7 +413,11 @@ export function CreatePlayerForm({
             variant="outline"
             nativeButton={false}
             render={
-              <Link to="/competitions/players" search={backSearch} />
+              <Link
+                to="/competitions/$compId/players"
+                params={{ compId: compId ?? '' }}
+                search={backSearch}
+              />
             }
           >
             Cancel

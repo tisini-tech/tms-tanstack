@@ -64,44 +64,42 @@ export const navItems: NavItem[] = [
   },
 ]
 
-export const competitionNavItems: NavItem[] = linkOptions([
+export const competitionNavItems: NavItem[] = [
   {
     to: '/competitions',
     label: 'Overview',
     icon: HomeIcon,
     activeOptions: { exact: true },
   },
-  // {
-  //   to: '/competitions/leagues',
-  //   label: 'Competitions',
-  //   icon: TrophyIcon,
-  //   activeOptions: { exact: false },
-  // },
   {
-    to: '/competitions/fixtures',
+    to: '/competitions/$compId/fixtures',
     label: 'Fixtures',
     icon: CalendarIcon,
     activeOptions: { exact: false },
+    needsCompId: true,
   },
   {
-    to: '/competitions/teams',
+    to: '/competitions/$compId/teams',
     label: 'Teams',
     icon: GroupIcon,
     activeOptions: { exact: false },
+    needsCompId: true,
   },
   {
-    to: '/competitions/players',
+    to: '/competitions/$compId/players',
     label: 'Players',
     icon: UserIcon,
     activeOptions: { exact: false },
+    needsCompId: true,
   },
   {
-    to: '/competitions/stats',
+    to: '/competitions/$compId/stats',
     label: 'Stats',
     icon: BarChartIcon,
     activeOptions: { exact: false },
+    needsCompId: true,
   },
-])
+]
 
 export const contentNavItems: NavItem[] = linkOptions([
   {

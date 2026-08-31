@@ -33,9 +33,9 @@ import {
 import type { Metrics, RawFixtureEvent, TeamPlayer } from '#/lib/types'
 
 const rawEventsRoute = getRouteApi(
-  '/_dashboard/competitions/fixtures/$fixId/raw-events',
+  '/_dashboard/competitions/$compId/fixtures/$fixId/raw-events',
 )
-const fixtureRoute = getRouteApi('/_dashboard/competitions/fixtures/$fixId')
+const fixtureRoute = getRouteApi('/_dashboard/competitions/$compId/fixtures/$fixId')
 
 function toIdNumber(value: string) {
   const n = Number(value)

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link } from '@tanstack/react-router'
+import { Link, useParams } from '@tanstack/react-router'
 import type { ColumnDef } from '@tanstack/react-table'
 
 import { Input } from '../ui/input'
@@ -30,6 +30,7 @@ export function DataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
+  const { compId } = useParams({ strict: false }) as { compId?: string }
   const [rowSelection, setRowSelection] = useState({})
   const [globalFilter, setGlobalFilter] = useState<string>('')
 
@@ -69,10 +70,11 @@ export function DataTable<TData, TValue>({
 
         <Button
           type="button"
-          disabled={getReviewableFixtureIds().length === 0}
+          disabled={getReviewableFixtureIds().length === 0 || !compId}
           render={
             <Link
-              to="/competitions/fixtures/review"
+              to="/competitions/$compId/fixtures/review"
+              params={{ compId: compId ?? '' }}
               search={{
                 ids: getReviewableFixtureIds().join(','),
               }}

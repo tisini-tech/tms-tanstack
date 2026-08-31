@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Combobox } from '@base-ui/react/combobox'
-import { Link, useRouter } from '@tanstack/react-router'
+import { Link, useParams, useRouter } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import {
   CheckIcon,
@@ -31,6 +31,7 @@ import { Input } from '#/components/ui/input'
 import { toast } from '#/components/ui/toast'
 import { DeletePlayerDialog } from '#/components/players/delete-player'
 import { PreviewIdDocumentModal } from '#/components/players/preview-id-document'
+import { RegisterSeasonPlayerDialog } from '#/components/players/register-season-player'
 import { mergePlayersFn, type MergePlayerRef } from '#/data/players'
 import { getTeamsFn, resolveTeamFn } from '#/data/teams'
 import {
@@ -39,10 +40,13 @@ import {
   rememberTeam,
 } from '#/lib/recent-teams'
 
+type SeasonFilter = 'all' | 'inSeason' | 'notRegistered'
+
 interface TeamPlayersProps {
   teams: Team[]
   players: TeamPlayer[]
   teamId?: number
+  seasonId?: number
   selectedTeam: Team | null
   isLoading?: boolean
   canSelect?: boolean
@@ -67,13 +71,16 @@ export function TeamPlayers({
   teams,
   players,
   teamId,
+  seasonId,
   selectedTeam,
   isLoading = false,
   canSelect = false,
   onTeamChange,
 }: TeamPlayersProps) {
   const router = useRouter()
+  const { compId } = useParams({ strict: false }) as { compId?: string }
   const [query, setQuery] = useState('')
+  const [seasonFilter, setSeasonFilter] = useState<SeasonFilter>('all')
   const [teamSearch, setTeamSearch] = useState('')
   const [debouncedTeamSearch, setDebouncedTeamSearch] = useState('')
   const [pickedTeam, setPickedTeam] = useState<Team | null>(() => {
@@ -181,7 +188,8 @@ export function TeamPlayers({
     setSelected([])
     setMergeOpen(false)
     setMergeError(null)
-  }, [activeTeam?.id])
+    setSeasonFilter('all')
+  }, [activeTeam?.id, seasonId])
 
   useEffect(() => {
     if (!selectedTeam) return
@@ -190,11 +198,25 @@ export function TeamPlayers({
     setPickedTeam(selectedTeam)
   }, [selectedTeam])
 
-  const filteredPlayers = useMemo(() => {
-    const q = query.trim().toLowerCase()
-    if (!q) return players
+  const inSeasonCount = useMemo(
+    () => players.filter((entry) => entry.season_player_id != null).length,
+    [players],
+  )
+  const notRegisteredCount = players.length - inSeasonCount
 
-    return players.filter((entry) => {
+  const filteredPlayers = useMemo(() => {
+    let list = players
+
+    if (seasonId != null && seasonFilter === 'inSeason') {
+      list = list.filter((entry) => entry.season_player_id != null)
+    } else if (seasonId != null && seasonFilter === 'notRegistered') {
+      list = list.filter((entry) => entry.season_player_id == null)
+    }
+
+    const q = query.trim().toLowerCase()
+    if (!q) return list
+
+    return list.filter((entry) => {
       const player = entry.player
       const haystack = [
         player.name,
@@ -210,7 +232,7 @@ export function TeamPlayers({
 
       return haystack.includes(q)
     })
-  }, [players, query])
+  }, [players, query, seasonFilter, seasonId])
 
   const selectedIds = useMemo(
     () => new Set(selected.map((item) => item.team_player_id)),
@@ -305,26 +327,67 @@ export function TeamPlayers({
           <p className="text-sm text-muted-foreground">
             {activeTeam
               ? `${filteredPlayers.length}${
-                  query.trim() ? ` of ${players.length}` : ''
+                  query.trim() ||
+                  (seasonId != null && seasonFilter !== 'all')
+                    ? ` of ${players.length}`
+                    : ''
                 } player${filteredPlayers.length === 1 ? '' : 's'} in ${activeTeam.name}`
               : 'Select a team to view its squad'}
+            {activeTeam && seasonId != null ? (
+              <>
+                {' · '}
+                <span className="text-foreground">{inSeasonCount}</span> in
+                season
+                {' · '}
+                <span className="text-foreground">{notRegisteredCount}</span>{' '}
+                not registered
+              </>
+            ) : null}
           </p>
         </div>
 
         <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
+          {seasonId != null ? (
+            <div className="flex rounded-xl border border-border bg-muted/30 p-0.5">
+              {(
+                [
+                  { value: 'all', label: 'All' },
+                  { value: 'inSeason', label: 'In season' },
+                  { value: 'notRegistered', label: 'Not registered' },
+                ] as const
+              ).map((item) => (
+                <button
+                  key={item.value}
+                  type="button"
+                  onClick={() => setSeasonFilter(item.value)}
+                  className={cn(
+                    'rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors',
+                    seasonFilter === item.value
+                      ? 'bg-background text-foreground shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground',
+                  )}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+          ) : null}
+
           <Button
             type="button"
-            disabled={!activeTeam}
+            disabled={!activeTeam || !compId}
             title={!activeTeam ? 'Select a team first' : undefined}
             nativeButton={!!activeTeam ? false : undefined}
             render={
               activeTeam ? (
                 <Link
-                  to="/competitions/players/create"
-                  search={{
+                  to="/competitions/$compId/players/create"
+                  params={{ compId: compId ?? '' }}
+                  search={(prev) => ({
+                    ...prev,
                     teamId: activeTeam.id,
                     teamName: activeTeam.name,
-                  }}
+                  })}
                 />
               ) : (
                 <button type="button" />
@@ -512,7 +575,13 @@ export function TeamPlayers({
         </div>
       ) : filteredPlayers.length === 0 ? (
         <div className="rounded-xl border border-dashed p-10 text-center text-sm text-muted-foreground">
-          No players match “{query.trim()}”.
+          {query.trim()
+            ? `No players match “${query.trim()}”.`
+            : seasonFilter === 'inSeason'
+              ? 'No players registered for this season yet.'
+              : seasonFilter === 'notRegistered'
+                ? 'All players on this roster are registered for the season.'
+                : 'No players found.'}
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -521,6 +590,7 @@ export function TeamPlayers({
               key={entry.id}
               entry={entry}
               teamName={activeTeam?.name}
+              seasonId={seasonId}
               selecting={selecting}
               selected={selectedIds.has(entry.id)}
               onToggle={() => toggleSelected(entry)}
@@ -583,19 +653,24 @@ export function TeamPlayers({
 function PlayerCard({
   entry,
   teamName,
+  seasonId,
   selecting,
   selected,
   onToggle,
 }: {
   entry: TeamPlayer
   teamName?: string
+  seasonId?: number
   selecting: boolean
   selected: boolean
   onToggle: () => void
 }) {
+  const { compId } = useParams({ strict: false }) as { compId?: string }
   const player = entry.player
   const hasPhoto = Boolean(player.passportphoto?.trim())
   const name = player.name || 'Unknown player'
+  const inSeason = entry.season_player_id != null
+  const showSeasonStatus = seasonId != null
 
   return (
     <div
@@ -634,6 +709,20 @@ function PlayerCard({
         <p className="truncate text-sm text-muted-foreground">
           {player.current_position || 'Unlisted position'}
         </p>
+        {showSeasonStatus ? (
+          <p className="mt-1">
+            <span
+              className={cn(
+                'inline-flex rounded-md px-1.5 py-0.5 text-[11px] font-medium',
+                inSeason
+                  ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400'
+                  : 'bg-amber-500/10 text-amber-800 dark:text-amber-400',
+              )}
+            >
+              {inSeason ? 'In season' : 'Not registered'}
+            </span>
+          </p>
+        ) : null}
         <p className="truncate text-xs text-muted-foreground">
           {[player.nationality, player.preferred_foot]
             .filter(Boolean)
@@ -646,6 +735,9 @@ function PlayerCard({
 
       <div className="flex shrink-0 flex-col gap-1">
         <PreviewIdDocumentModal player={player} />
+        {showSeasonStatus && !inSeason ? (
+          <RegisterSeasonPlayerDialog entry={entry} seasonId={seasonId} />
+        ) : null}
         <Button
           type="button"
           variant="outline"
@@ -655,12 +747,13 @@ function PlayerCard({
           nativeButton={false}
           render={
             <Link
-              to="/competitions/players/$playerId/edit"
-              params={{ playerId: String(entry.id) }}
-              search={{
+              to="/competitions/$compId/players/$playerId/edit"
+              params={{ compId: compId ?? '', playerId: String(entry.id) }}
+              search={(prev) => ({
+                ...prev,
                 teamId: entry.team,
                 ...(teamName ? { teamName } : {}),
-              }}
+              })}
             />
           }
         >

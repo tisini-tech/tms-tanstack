@@ -6,6 +6,8 @@ export interface NavItem {
   label: string
   icon: LucideIcon
   activeOptions: ActiveOptions
+  /** When true, sidebar injects current competition `$compId` params. */
+  needsCompId?: boolean
 }
 
 /** Module as returned by the auth API / stored in session */
@@ -65,6 +67,11 @@ export interface Division {
   name: string
 }
 
+export interface Category {
+  id: number
+  name: string
+}
+
 export interface Competition {
   id: number
   name: string
@@ -74,6 +81,7 @@ export interface Competition {
   status: number
   seasons: Season[]
   divisions: Division[]
+  categories: Category[]
 }
 
 export interface Fixture {
@@ -471,6 +479,10 @@ export interface TeamPlayer {
   team: number
   current_jersey_no: number
   signed_date: string
+  season_player_id: number | null
+  front_img: string | null
+  side_img: string | null
+  action_img: string | null
 }
 
 export interface MetricDetail {

@@ -6,14 +6,72 @@ import type { UpdatePlayerSchema } from '#/lib/schemas'
 import type { IdDocumentType, Player, TeamPlayer } from '#/lib/types'
 
 export const getPlayersFn = createServerFn({ method: 'GET' })
-  .validator((data: { teamId: string }) => data)
+  .validator((data: { teamId: string; seasonId?: number }) => data)
   .middleware([authFnMiddleware])
   .handler(async ({ data }) => {
-    const { teamId } = data
+    const { teamId, seasonId } = data
+    const params = new URLSearchParams()
+    if (seasonId != null) params.set('season_id', String(seasonId))
+    const query = params.toString()
     const players = await apiService.get<TeamPlayer[]>(
-      `/teams/${teamId}/players`,
+      `/teams/${teamId}/players${query ? `?${query}` : ''}`,
     )
     return players
+  })
+
+/** Merge club roster with season registrations (by team_player id). */
+export function mergeSeasonPlayers(
+  roster: TeamPlayer[],
+  seasonPlayers: TeamPlayer[],
+): TeamPlayer[] {
+  const byId = new Map(seasonPlayers.map((entry) => [entry.id, entry]))
+
+  return roster.map((entry) => {
+    const season = byId.get(entry.id)
+    if (!season) {
+      return {
+        ...entry,
+        season_player_id: null,
+        front_img: null,
+        side_img: null,
+        action_img: null,
+      }
+    }
+
+    return {
+      ...entry,
+      season_player_id: season.season_player_id,
+      front_img: season.front_img,
+      side_img: season.side_img,
+      action_img: season.action_img,
+    }
+  })
+}
+
+export const addSeasonPlayerFn = createServerFn({ method: 'POST' })
+  .middleware([authFnMiddleware])
+  .validator(
+    (data: {
+      teamId: string
+      teamPlayerId: number
+      seasonId: number
+      frontImg?: string
+      sideImg?: string
+      actionImg?: string
+    }) => data,
+  )
+  .handler(async ({ data }) => {
+    const { teamId, teamPlayerId, seasonId, frontImg, sideImg, actionImg } =
+      data
+    return apiService.post<TeamPlayer>(
+      `/teams/${teamId}/seasons/${seasonId}/players`,
+      {
+        team_player_id: teamPlayerId,
+        ...(frontImg?.trim() ? { front_img: frontImg.trim() } : {}),
+        ...(sideImg?.trim() ? { side_img: sideImg.trim() } : {}),
+        ...(actionImg?.trim() ? { action_img: actionImg.trim() } : {}),
+      },
+    )
   })
 
 export const deletePlayerFn = createServerFn({ method: 'POST' })
@@ -119,6 +177,11 @@ export type UpdatePlayerBody = {
   preferred_foot?: string
   height?: string
   weight?: string
+  /** When set with season images, upserts TeamSeasonPlayer for that season. */
+  season_id?: number
+  front_img?: string
+  side_img?: string
+  action_img?: string
 }
 
 export type UpdatePlayerPayload = {
@@ -177,8 +240,6 @@ export function getPlayerPatch(
     current.preferred_foot.trim(),
     initial.preferred_foot.trim(),
   )
-  setIfChanged('height', current.height.trim(), initial.height.trim())
-  setIfChanged('weight', current.weight.trim(), initial.weight.trim())
   setIfChanged('passportphoto', current.passportphoto, initial.passportphoto)
   setIfChanged('id_document', current.id_document, initial.id_document)
 

@@ -319,8 +319,6 @@ export const createPlayerSchema = z.object({
   id_document_type: z.enum(ID_DOCUMENT_TYPES).or(z.literal('')),
   fifa_id: z.string().trim(),
   preferred_foot: z.string().trim(),
-  height: z.string().trim(),
-  weight: z.string().trim(),
 })
 
 export type CreatePlayerSchema = z.infer<typeof createPlayerSchema>
@@ -341,8 +339,6 @@ export const updatePlayerSchema = z.object({
   nationality: z.string().trim(),
   fifa_id: z.string().trim(),
   preferred_foot: z.string().trim(),
-  height: z.string().trim(),
-  weight: z.string().trim(),
 })
 
 export type UpdatePlayerSchema = z.infer<typeof updatePlayerSchema>
@@ -391,8 +387,6 @@ export function playerToFormValues(
     nationality: firstNonEmpty(player.nationality),
     fifa_id: firstNonEmpty(player.fifa_id),
     preferred_foot: firstNonEmpty(player.preferred_foot),
-    height: firstNonEmpty(player.height),
-    weight: firstNonEmpty(player.weight),
   }
 }
 

@@ -4,6 +4,7 @@ import { createFileRoute, Outlet, useRouterState } from '@tanstack/react-router'
 import { getAuthContextFn } from '#/data/auth'
 import { Separator } from '#/components/ui/separator'
 import { AppSidebar } from '#/components/sidebar/app-sidebar'
+import { CompetitionContextSwitcher } from '#/components/competitions/competition-context-switcher'
 import {
   SidebarInset,
   SidebarProvider,
@@ -11,6 +12,7 @@ import {
   useSidebar,
 } from '#/components/ui/sidebar'
 import { cn } from '#/lib/utils'
+import { isCompetitionModulePath } from '#/lib/competition-context'
 
 export const Route = createFileRoute('/_dashboard')({
   beforeLoad: async () => {
@@ -45,6 +47,7 @@ function RouteComponent() {
   const { user, modules } = Route.useRouteContext()
   const pathname = useRouterState({ select: (s) => s.location.pathname })
   const focusLayout = isFocusLayoutPath(pathname)
+  const showCompetitionContext = isCompetitionModulePath(pathname)
 
   return (
     <SidebarProvider defaultOpen={!focusLayout}>
@@ -57,13 +60,16 @@ function RouteComponent() {
         )}
       >
         {!focusLayout ? (
-          <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
-            <div className="flex items-center gap-2 px-4">
-              <SidebarTrigger className="-ml-1" />
-              <Separator
-                orientation="vertical"
-                className="mr-2 data-[orientation=vertical]:h-4"
-              />
+          <header className="flex min-h-14 shrink-0 items-start transition-[width,height] ease-linear sm:h-16 sm:items-center group-has-data-[collapsible=icon]/sidebar-wrapper:sm:h-12">
+            <div className="flex min-w-0 flex-1 flex-col gap-2 px-3 py-2 sm:flex-row sm:items-center sm:gap-2 sm:px-4 sm:py-0">
+              <div className="flex shrink-0 items-center gap-2">
+                <SidebarTrigger className="-ml-1" />
+                <Separator
+                  orientation="vertical"
+                  className="mr-2 hidden data-[orientation=vertical]:h-4 sm:block"
+                />
+              </div>
+              {showCompetitionContext ? <CompetitionContextSwitcher /> : null}
             </div>
           </header>
         ) : null}

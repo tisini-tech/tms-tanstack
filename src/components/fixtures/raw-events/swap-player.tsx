@@ -26,9 +26,9 @@ import {
 import type { RawFixtureEvent, TeamPlayer } from '#/lib/types'
 
 const rawEventsRoute = getRouteApi(
-  '/_dashboard/competitions/fixtures/$fixId/raw-events',
+  '/_dashboard/competitions/$compId/fixtures/$fixId/raw-events',
 )
-const fixtureRoute = getRouteApi('/_dashboard/competitions/fixtures/$fixId')
+const fixtureRoute = getRouteApi('/_dashboard/competitions/$compId/fixtures/$fixId')
 
 function playerOptions(players: TeamPlayer[]) {
   return players.map((entry) => ({
