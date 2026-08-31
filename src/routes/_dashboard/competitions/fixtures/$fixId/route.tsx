@@ -36,13 +36,14 @@ export const Route = createFileRoute(
   '/_dashboard/competitions/fixtures/$fixId',
 )({
   loader: async ({ params: { fixId } }) => {
-    const teamStats = await getFixtureTeamStatsFn({ data: { id: fixId } })
-    const playerStats = await getFixturePlayerStatsFn({ data: { id: fixId } })
-    const quarterStats = await getFixtureQuarterStatsFn({
-      data: { id: fixId },
-    })
-    const passMatrix = await getFixturePassMatrixFn({ data: { id: fixId } })
-    const reviewStats = await getFixtureReviewStatsFn({ data: { id: fixId } })
+    const [teamStats, playerStats, quarterStats, passMatrix, reviewStats] =
+      await Promise.all([
+        getFixtureTeamStatsFn({ data: { id: fixId } }),
+        getFixturePlayerStatsFn({ data: { id: fixId } }),
+        getFixtureQuarterStatsFn({ data: { id: fixId } }),
+        getFixturePassMatrixFn({ data: { id: fixId } }),
+        getFixtureReviewStatsFn({ data: { id: fixId } }),
+      ])
 
     return {
       teamStats,

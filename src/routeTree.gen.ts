@@ -41,6 +41,7 @@ import { Route as DashboardCompetitionsFixturesReviewRouteImport } from './route
 import { Route as DashboardArticlesArticleIdEditRouteImport } from './routes/_dashboard/articles/$articleId/edit'
 import { Route as DashboardCompetitionsFixturesFixIdRouteRouteImport } from './routes/_dashboard/competitions/fixtures/$fixId/route'
 import { Route as DashboardCompetitionsCompetitionsCompIdRouteRouteImport } from './routes/_dashboard/competitions/_competitions/$compId/route'
+import { Route as DashboardCompetitionsTeamsTeamIdIndexRouteImport } from './routes/_dashboard/competitions/teams/$teamId/index'
 import { Route as DashboardCompetitionsFixturesFixIdIndexRouteImport } from './routes/_dashboard/competitions/fixtures/$fixId/index'
 import { Route as DashboardCompetitionsCompetitionsCompIdIndexRouteImport } from './routes/_dashboard/competitions/_competitions/$compId/index'
 import { Route as DashboardCompetitionsPlayersPlayerIdEditRouteImport } from './routes/_dashboard/competitions/players/$playerId/edit'
@@ -222,6 +223,12 @@ const DashboardCompetitionsCompetitionsCompIdRouteRoute =
     path: '/competitions/$compId',
     getParentRoute: () => DashboardRouteRoute,
   } as any)
+const DashboardCompetitionsTeamsTeamIdIndexRoute =
+  DashboardCompetitionsTeamsTeamIdIndexRouteImport.update({
+    id: '/competitions/teams/$teamId/',
+    path: '/competitions/teams/$teamId/',
+    getParentRoute: () => DashboardRouteRoute,
+  } as any)
 const DashboardCompetitionsFixturesFixIdIndexRoute =
   DashboardCompetitionsFixturesFixIdIndexRouteImport.update({
     id: '/',
@@ -310,6 +317,7 @@ export interface FileRoutesByFullPath {
   '/competitions/players/$playerId/edit': typeof DashboardCompetitionsPlayersPlayerIdEditRoute
   '/competitions/$compId/': typeof DashboardCompetitionsCompetitionsCompIdIndexRoute
   '/competitions/fixtures/$fixId/': typeof DashboardCompetitionsFixturesFixIdIndexRoute
+  '/competitions/teams/$teamId/': typeof DashboardCompetitionsTeamsTeamIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -347,6 +355,7 @@ export interface FileRoutesByTo {
   '/competitions/players/$playerId/edit': typeof DashboardCompetitionsPlayersPlayerIdEditRoute
   '/competitions/$compId': typeof DashboardCompetitionsCompetitionsCompIdIndexRoute
   '/competitions/fixtures/$fixId': typeof DashboardCompetitionsFixturesFixIdIndexRoute
+  '/competitions/teams/$teamId': typeof DashboardCompetitionsTeamsTeamIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -390,6 +399,7 @@ export interface FileRoutesById {
   '/_dashboard/competitions/players/$playerId/edit': typeof DashboardCompetitionsPlayersPlayerIdEditRoute
   '/_dashboard/competitions/_competitions/$compId/': typeof DashboardCompetitionsCompetitionsCompIdIndexRoute
   '/_dashboard/competitions/fixtures/$fixId/': typeof DashboardCompetitionsFixturesFixIdIndexRoute
+  '/_dashboard/competitions/teams/$teamId/': typeof DashboardCompetitionsTeamsTeamIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -432,6 +442,7 @@ export interface FileRouteTypes {
     | '/competitions/players/$playerId/edit'
     | '/competitions/$compId/'
     | '/competitions/fixtures/$fixId/'
+    | '/competitions/teams/$teamId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -469,6 +480,7 @@ export interface FileRouteTypes {
     | '/competitions/players/$playerId/edit'
     | '/competitions/$compId'
     | '/competitions/fixtures/$fixId'
+    | '/competitions/teams/$teamId'
   id:
     | '__root__'
     | '/'
@@ -511,6 +523,7 @@ export interface FileRouteTypes {
     | '/_dashboard/competitions/players/$playerId/edit'
     | '/_dashboard/competitions/_competitions/$compId/'
     | '/_dashboard/competitions/fixtures/$fixId/'
+    | '/_dashboard/competitions/teams/$teamId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -747,6 +760,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardCompetitionsCompetitionsCompIdRouteRouteImport
       parentRoute: typeof DashboardRouteRoute
     }
+    '/_dashboard/competitions/teams/$teamId/': {
+      id: '/_dashboard/competitions/teams/$teamId/'
+      path: '/competitions/teams/$teamId'
+      fullPath: '/competitions/teams/$teamId/'
+      preLoaderRoute: typeof DashboardCompetitionsTeamsTeamIdIndexRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
     '/_dashboard/competitions/fixtures/$fixId/': {
       id: '/_dashboard/competitions/fixtures/$fixId/'
       path: '/'
@@ -909,6 +929,7 @@ interface DashboardRouteRouteChildren {
   DashboardCompetitionsPlayersIndexRoute: typeof DashboardCompetitionsPlayersIndexRoute
   DashboardCompetitionsTeamsIndexRoute: typeof DashboardCompetitionsTeamsIndexRoute
   DashboardCompetitionsPlayersPlayerIdEditRoute: typeof DashboardCompetitionsPlayersPlayerIdEditRoute
+  DashboardCompetitionsTeamsTeamIdIndexRoute: typeof DashboardCompetitionsTeamsTeamIdIndexRoute
 }
 
 const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
@@ -943,6 +964,8 @@ const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
   DashboardCompetitionsTeamsIndexRoute: DashboardCompetitionsTeamsIndexRoute,
   DashboardCompetitionsPlayersPlayerIdEditRoute:
     DashboardCompetitionsPlayersPlayerIdEditRoute,
+  DashboardCompetitionsTeamsTeamIdIndexRoute:
+    DashboardCompetitionsTeamsTeamIdIndexRoute,
 }
 
 const DashboardRouteRouteWithChildren = DashboardRouteRoute._addFileChildren(

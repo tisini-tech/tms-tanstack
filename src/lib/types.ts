@@ -317,6 +317,13 @@ export interface Team {
   year_founded: number
   website_url: string
   description: string
+  stats: {
+    players_registered: number
+    players_fully_registered: number
+    games_played: number
+    games_won: number
+    games_lost: number
+  }
 }
 
 export interface ReviewComment {

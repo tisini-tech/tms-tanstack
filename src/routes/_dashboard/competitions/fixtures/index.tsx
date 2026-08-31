@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { createFileRoute } from '@tanstack/react-router'
+import { z } from 'zod'
+import { Link, createFileRoute } from '@tanstack/react-router'
 
 import type { Fixture } from '#/lib/types'
 import SearchBar from '#/components/general/search'
@@ -7,17 +8,51 @@ import { columns } from '#/components/fixtures/columns'
 import { DataTable } from '#/components/fixtures/fixtures-table'
 import { getFixturesFn, searchFixturesFn } from '#/data/fixtures'
 
-export const Route = createFileRoute('/_dashboard/competitions/fixtures/')({
-  loader: async () => {
-    const fixturesData = await getFixturesFn()
+function filterFixturesByTeam(fixtures: Fixture[], teamId: number) {
+  return fixtures.filter(
+    (fixture) =>
+      fixture.home_team.id === teamId || fixture.away_team.id === teamId,
+  )
+}
 
-    return { fixturesData }
+export const Route = createFileRoute('/_dashboard/competitions/fixtures/')({
+  validateSearch: z.object({
+    teamId: z.coerce.number().optional(),
+    teamName: z.string().optional(),
+  }),
+  loaderDeps: ({ search: { teamId, teamName } }) => ({ teamId, teamName }),
+  loader: async ({ deps: { teamId, teamName } }) => {
+    const fixturesData = await getFixturesFn()
+    let fixtures = fixturesData.results ?? []
+
+    if (teamId) {
+      if (teamName?.trim()) {
+        const searchData = await searchFixturesFn({
+          data: { search: teamName.trim() },
+        }).catch(() => null)
+        if (searchData?.results?.length) {
+          const byId = new Map<number, Fixture>()
+          for (const fixture of [...fixtures, ...searchData.results]) {
+            byId.set(fixture.id, fixture)
+          }
+          fixtures = [...byId.values()]
+        }
+      }
+
+      fixtures = filterFixturesByTeam(fixtures, teamId)
+    }
+
+    return {
+      fixturesData: { ...fixturesData, results: fixtures },
+      teamId,
+      teamName,
+    }
   },
   component: RouteComponent,
 })
 
 function RouteComponent() {
-  const { fixturesData } = Route.useLoaderData()
+  const { fixturesData, teamId, teamName } = Route.useLoaderData()
 
   // null = show loader data; array = show search results
   const [searchResults, setSearchResults] = useState<Fixture[] | null>(null)
@@ -43,7 +78,11 @@ function RouteComponent() {
     setIsLoading(true)
     try {
       const response = await searchFixturesFn({ data: { search } })
-      setSearchResults(response.results)
+      let results = response.results ?? []
+      if (teamId) {
+        results = filterFixturesByTeam(results, teamId)
+      }
+      setSearchResults(results)
     } finally {
       setIsLoading(false)
     }
@@ -51,6 +90,22 @@ function RouteComponent() {
 
   return (
     <div className="space-y-4">
+      {teamId && teamName ? (
+        <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border bg-muted/30 px-4 py-3">
+          <p className="text-sm text-muted-foreground">
+            Showing fixtures for{' '}
+            <span className="font-medium text-foreground">{teamName}</span>
+          </p>
+          <Link
+            to="/competitions/fixtures"
+            search={{}}
+            className="text-sm font-medium text-primary hover:underline"
+          >
+            Clear filter
+          </Link>
+        </div>
+      ) : null}
+
       <SearchBar
         search={search}
         handleSearch={handleSearch}

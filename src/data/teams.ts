@@ -3,9 +3,18 @@ import { authFnMiddleware } from '#/middlewares/auth'
 import { createServerFn } from '@tanstack/react-start'
 import type { PaginatedResponse, Team } from '#/lib/types'
 
-function teamsPath(opts?: { search?: string; pageSize?: number }) {
+function teamsPath(opts?: {
+  competitionId?: string
+  seasonId?: string
+  divisionId?: string
+  search?: string
+  pageSize?: number
+}) {
   const params = new URLSearchParams()
   const search = opts?.search?.trim()
+  if (opts?.competitionId) params.set('competition_id', opts.competitionId)
+  if (opts?.seasonId) params.set('season_id', opts.seasonId)
+  if (opts?.divisionId) params.set('division_id', opts.divisionId)
   if (search) params.set('search', search)
   if (opts?.pageSize) params.set('page_size', String(opts.pageSize))
   const query = params.toString()
@@ -15,14 +24,33 @@ function teamsPath(opts?: { search?: string; pageSize?: number }) {
 export const getTeamsFn = createServerFn({ method: 'GET' })
   .middleware([authFnMiddleware])
   .validator(
-    (data: { search?: string; pageSize?: number } | undefined) => ({
-      search: data?.search ?? '',
-      pageSize: data?.pageSize,
+    (
+      data:
+        | {
+            competitionId?: string
+            seasonId?: string
+            divisionId?: string
+            search?: string
+            pageSize?: number
+          }
+        | undefined,
+    ) => ({
+      competitionId: data?.competitionId?.trim() || undefined,
+      seasonId: data?.seasonId?.trim() || undefined,
+      divisionId: data?.divisionId?.trim() || undefined,
+      search: data?.search?.trim() || undefined,
+      pageSize: data?.pageSize ?? 200,
     }),
   )
   .handler(async ({ data }) => {
     const response = await apiService.get<PaginatedResponse<Team>>(
-      teamsPath({ search: data.search, pageSize: data.pageSize }),
+      teamsPath({
+        competitionId: data.competitionId,
+        seasonId: data.seasonId,
+        divisionId: data.divisionId,
+        search: data.search,
+        pageSize: data.pageSize,
+      }),
     )
     return response.results
   })
