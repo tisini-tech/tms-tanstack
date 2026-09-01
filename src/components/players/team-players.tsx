@@ -43,6 +43,7 @@ import {
   recallTeam,
   rememberTeam,
 } from '#/lib/recent-teams'
+import { isPlayerFullyRegistered } from '#/lib/player-registration'
 
 type SeasonFilter = 'all' | 'inSeason' | 'notRegistered'
 
@@ -205,6 +206,10 @@ export function TeamPlayers({
     [players],
   )
   const notRegisteredCount = players.length - inSeasonCount
+  const fullyRegisteredCount = useMemo(
+    () => players.filter((entry) => isPlayerFullyRegistered(entry.player)).length,
+    [players],
+  )
 
   const filteredPlayers = useMemo(() => {
     let list = players
@@ -334,16 +339,27 @@ export function TeamPlayers({
                     : ''
                 } player${filteredPlayers.length === 1 ? '' : 's'} in ${activeTeam.name}`
               : 'Select a team to view its squad'}
-            {activeTeam && seasonId != null ? (
+            {activeTeam ? (
               <>
                 {' · '}
-                <span className="text-foreground">{inSeasonCount}</span> in
-                season
-                {' · '}
-                <span className="text-foreground">
-                  {notRegisteredCount}
-                </span>{' '}
-                not registered
+                {seasonId != null ? (
+                  <>
+                    <span className="text-foreground">{inSeasonCount}</span> in
+                    season
+                    {' · '}
+                  </>
+                ) : null}
+                <span className="text-foreground">{fullyRegisteredCount}</span>{' '}
+                fully registered
+                {seasonId != null ? (
+                  <>
+                    {' · '}
+                    <span className="text-foreground">
+                      {notRegisteredCount}
+                    </span>{' '}
+                    not registered
+                  </>
+                ) : null}
               </>
             ) : null}
           </p>
