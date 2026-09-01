@@ -128,7 +128,7 @@ export type CreatePlayerBody = {
   oname: string
   playerdob: string
   position: string
-  countrycode: string
+  country: number
   jersey: string
   contract: string
   phone?: string

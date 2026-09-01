@@ -10,17 +10,13 @@ import { Button } from '#/components/ui/button'
 import { FieldGroup } from '#/components/ui/field'
 import { createPlayerFn } from '#/data/players'
 import { createPlayerSchema, type CreatePlayerSchema } from '#/lib/schemas'
-import {
-  ID_DOCUMENT_TYPE_OPTIONS,
-  type Country,
-  type Team,
-} from '#/lib/types'
+import { ID_DOCUMENT_TYPE_OPTIONS, type Country, type Team } from '#/lib/types'
 
-function defaultCountryCode(countries: Country[]) {
-  return (
-    countries.find((country) => country.iso_code2 === 'KE')?.iso_code2 ??
-    countries[0]?.iso_code2 ??
-    ''
+function defaultCountryId(countries: Country[]) {
+  return String(
+    countries.find((country) => country.iso_code2 === 'KE')?.id ??
+      countries[0]?.id ??
+      '',
   )
 }
 
@@ -45,8 +41,8 @@ export function CreatePlayerForm({
       [...countries]
         .sort((a, b) => a.name.localeCompare(b.name))
         .map((country) => ({
-          value: country.iso_code2,
-          label: `${country.name} (${country.iso_code2})`,
+          value: String(country.id),
+          label: country.name,
         })),
     [countries],
   )
@@ -62,7 +58,7 @@ export function CreatePlayerForm({
       sname: '',
       playerdob: '',
       position: '',
-      countrycode: defaultCountryCode(countries),
+      country: defaultCountryId(countries),
       jersey: '',
       contract: '',
       phone: '',
@@ -88,7 +84,7 @@ export function CreatePlayerForm({
             oname: value.oname.trim(),
             playerdob: value.playerdob.trim(),
             position: value.position.trim(),
-            countrycode: value.countrycode.trim(),
+            country: Number(value.country),
             jersey: value.jersey.trim(),
             contract: value.contract.trim(),
             ...(value.phone.trim() ? { phone: value.phone.trim() } : {}),
@@ -180,7 +176,7 @@ export function CreatePlayerForm({
                   <InputField
                     field={field}
                     id="create-player-oname"
-                    label="Other name"
+                    label="Last Name"
                     required
                     placeholder="Momanyi"
                     autoComplete="off"
@@ -250,7 +246,7 @@ export function CreatePlayerForm({
                   />
                 )}
               </form.Field>
-              <form.Field name="countrycode">
+              <form.Field name="country">
                 {(field) => (
                   <SelectField
                     field={field as never}

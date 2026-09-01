@@ -309,7 +309,7 @@ export const createPlayerSchema = z.object({
   sname: z.string().trim(),
   playerdob: z.string().trim().min(1, 'Date of birth is required'),
   position: z.string().trim().min(1, 'Position is required'),
-  countrycode: z.string().trim().min(1, 'Country is required'),
+  country: z.string().trim().min(1, 'Country is required'),
   jersey: z.string().trim().min(1, 'Jersey is required'),
   contract: z.string().trim().min(1, 'Signed date is required'),
   phone: z.string().trim(),
