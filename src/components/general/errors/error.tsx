@@ -1,7 +1,12 @@
 import { Link, useRouter } from '@tanstack/react-router'
-import { HouseIcon, RotateCcwIcon, TriangleAlertIcon } from 'lucide-react'
+import { RotateCcwIcon, TriangleAlertIcon } from 'lucide-react'
 
 import { Button } from '#/components/ui/button'
+import {
+  ErrorPageGoBackButton,
+  ErrorPageHomeButton,
+  useErrorPageHomePath,
+} from '#/components/general/errors/error-page-nav'
 
 export type ErrorPageProps = {
   error?: unknown
@@ -10,7 +15,7 @@ export type ErrorPageProps = {
 
 export const ErrorPage = ({ error, reset }: ErrorPageProps) => {
   const router = useRouter()
-
+  const homePath = useErrorPageHomePath()
   const message = error instanceof Error ? error.message : null
 
   const retry = () => {
@@ -26,7 +31,7 @@ export const ErrorPage = ({ error, reset }: ErrorPageProps) => {
       />
 
       <header className="relative z-10 px-6 py-5 md:px-10">
-        <Link to="/" className="inline-flex items-center">
+        <Link to={homePath} className="inline-flex items-center">
           <img
             src="/tisini.png"
             alt="Tisini"
@@ -71,16 +76,8 @@ export const ErrorPage = ({ error, reset }: ErrorPageProps) => {
               Try again
             </Button>
 
-            <Button
-              render={<Link to="/" />}
-              nativeButton={false}
-              variant="outline"
-              size="lg"
-              className="h-11 gap-2 rounded-xl px-5"
-            >
-              <HouseIcon className="size-4" aria-hidden />
-              Back to home
-            </Button>
+            <ErrorPageHomeButton homePath={homePath} />
+            <ErrorPageGoBackButton />
           </div>
 
           <p className="mt-12 text-xs text-muted-foreground">

@@ -30,6 +30,10 @@ import { Checkbox } from '#/components/ui/checkbox'
 import { Input } from '#/components/ui/input'
 import { toast } from '#/components/ui/toast'
 import { DeletePlayerDialog } from '#/components/players/delete-player'
+import {
+  formatPlayerMeasurements,
+  PlayerMeasurementsDialog,
+} from '#/components/players/player-measurements'
 import { PreviewIdDocumentModal } from '#/components/players/preview-id-document'
 import { RegisterSeasonPlayerDialog } from '#/components/players/register-season-player'
 import { mergePlayersFn, type MergePlayerRef } from '#/data/players'
@@ -60,9 +64,7 @@ function teamNeedsResolve(
   if (teamId == null) return false
   const resolved = candidates.find(
     (team) =>
-      team &&
-      team.id === teamId &&
-      !isUnresolvedTeamName(team.name, team.id),
+      team && team.id === teamId && !isUnresolvedTeamName(team.name, team.id),
   )
   return !resolved
 }
@@ -327,8 +329,7 @@ export function TeamPlayers({
           <p className="text-sm text-muted-foreground">
             {activeTeam
               ? `${filteredPlayers.length}${
-                  query.trim() ||
-                  (seasonId != null && seasonFilter !== 'all')
+                  query.trim() || (seasonId != null && seasonFilter !== 'all')
                     ? ` of ${players.length}`
                     : ''
                 } player${filteredPlayers.length === 1 ? '' : 's'} in ${activeTeam.name}`
@@ -339,7 +340,9 @@ export function TeamPlayers({
                 <span className="text-foreground">{inSeasonCount}</span> in
                 season
                 {' · '}
-                <span className="text-foreground">{notRegisteredCount}</span>{' '}
+                <span className="text-foreground">
+                  {notRegisteredCount}
+                </span>{' '}
                 not registered
               </>
             ) : null}
@@ -671,6 +674,7 @@ function PlayerCard({
   const name = player.name || 'Unknown player'
   const inSeason = entry.season_player_id != null
   const showSeasonStatus = seasonId != null
+  const measurements = formatPlayerMeasurements(player)
 
   return (
     <div
@@ -724,7 +728,7 @@ function PlayerCard({
           </p>
         ) : null}
         <p className="truncate text-xs text-muted-foreground">
-          {[player.nationality, player.preferred_foot]
+          {[measurements, player.nationality, player.preferred_foot]
             .filter(Boolean)
             .join(' · ') || '—'}
         </p>
@@ -735,6 +739,7 @@ function PlayerCard({
 
       <div className="flex shrink-0 flex-col gap-1">
         <PreviewIdDocumentModal player={player} />
+        <PlayerMeasurementsDialog entry={entry} />
         {showSeasonStatus && !inSeason ? (
           <RegisterSeasonPlayerDialog entry={entry} seasonId={seasonId} />
         ) : null}

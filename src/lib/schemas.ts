@@ -336,7 +336,6 @@ export const updatePlayerSchema = z.object({
   email: z.string().trim(),
   id_document_type: z.enum(ID_DOCUMENT_TYPES).or(z.literal('')),
   id_no: z.string().trim(),
-  nationality: z.string().trim(),
   fifa_id: z.string().trim(),
   preferred_foot: z.string().trim(),
 })
@@ -384,7 +383,6 @@ export function playerToFormValues(
     email: '',
     id_document_type: parseIdDocumentType(player.id_document_type),
     id_no: firstNonEmpty(player.id_no),
-    nationality: firstNonEmpty(player.nationality),
     fifa_id: firstNonEmpty(player.fifa_id),
     preferred_foot: firstNonEmpty(player.preferred_foot),
   }

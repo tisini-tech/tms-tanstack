@@ -268,19 +268,6 @@ export function EditPlayerForm({
                   />
                 )}
               </form.Field>
-              <form.Field name="nationality">
-                {(field) => (
-                  <InputField
-                    field={field}
-                    id={`player-${player.id}-nationality`}
-                    label="Nationality"
-                    placeholder="Kenyan"
-                    autoComplete="off"
-                    className="gap-2"
-                    inputClassName="h-10 rounded-xl px-3"
-                  />
-                )}
-              </form.Field>
               <form.Field name="preferred_foot">
                 {(field) => (
                   <InputField

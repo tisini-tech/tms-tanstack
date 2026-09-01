@@ -19,38 +19,39 @@ import { Route as AuthResetPasswordRouteImport } from './routes/_auth/reset-pass
 import { Route as AuthRegisterRouteImport } from './routes/_auth/register'
 import { Route as AuthLoginRouteImport } from './routes/_auth/login'
 import { Route as AuthForgotPasswordRouteImport } from './routes/_auth/forgot-password'
-import { Route as DashboardWalletIndexRouteImport } from './routes/_dashboard/wallet/index'
-import { Route as DashboardTicketsIndexRouteImport } from './routes/_dashboard/tickets/index'
-import { Route as DashboardTeamsIndexRouteImport } from './routes/_dashboard/teams/index'
-import { Route as DashboardPlayersIndexRouteImport } from './routes/_dashboard/players/index'
-import { Route as DashboardCompetitionsIndexRouteImport } from './routes/_dashboard/competitions/index'
-import { Route as DashboardArticlesIndexRouteImport } from './routes/_dashboard/articles/index'
-import { Route as DashboardAgentsIndexRouteImport } from './routes/_dashboard/agents/index'
-import { Route as DashboardAdminIndexRouteImport } from './routes/_dashboard/admin/index'
-import { Route as DashboardAgentsFixturesRouteImport } from './routes/_dashboard/agents/fixtures'
-import { Route as DashboardCompetitionsCompIdRouteRouteImport } from './routes/_dashboard/competitions/$compId/route'
-import { Route as DashboardArticlesCreateIndexRouteImport } from './routes/_dashboard/articles/create/index'
-import { Route as DashboardArticlesArticleIdEditRouteImport } from './routes/_dashboard/articles/$articleId/edit'
-import { Route as DashboardCompetitionsCompIdStatsRouteRouteImport } from './routes/_dashboard/competitions/$compId/stats/route'
-import { Route as DashboardCompetitionsCompIdSettingsRouteRouteImport } from './routes/_dashboard/competitions/$compId/_settings/route'
-import { Route as DashboardCompetitionsCompIdTeamsIndexRouteImport } from './routes/_dashboard/competitions/$compId/teams/index'
-import { Route as DashboardCompetitionsCompIdStatsIndexRouteImport } from './routes/_dashboard/competitions/$compId/stats/index'
-import { Route as DashboardCompetitionsCompIdPlayersIndexRouteImport } from './routes/_dashboard/competitions/$compId/players/index'
-import { Route as DashboardCompetitionsCompIdLeaguesIndexRouteImport } from './routes/_dashboard/competitions/$compId/leagues/index'
-import { Route as DashboardCompetitionsCompIdFixturesIndexRouteImport } from './routes/_dashboard/competitions/$compId/fixtures/index'
-import { Route as DashboardCompetitionsCompIdSettingsIndexRouteImport } from './routes/_dashboard/competitions/$compId/_settings/index'
-import { Route as DashboardCompetitionsCompIdStatsTeamsRouteImport } from './routes/_dashboard/competitions/$compId/stats/teams'
-import { Route as DashboardCompetitionsCompIdPlayersCreateRouteImport } from './routes/_dashboard/competitions/$compId/players/create'
-import { Route as DashboardCompetitionsCompIdFixturesReviewRouteImport } from './routes/_dashboard/competitions/$compId/fixtures/review'
-import { Route as DashboardCompetitionsCompIdSettingsImagesRouteImport } from './routes/_dashboard/competitions/$compId/_settings/images'
-import { Route as DashboardCompetitionsCompIdSettingsDivisionsRouteImport } from './routes/_dashboard/competitions/$compId/_settings/divisions'
-import { Route as DashboardCompetitionsCompIdFixturesFixIdRouteRouteImport } from './routes/_dashboard/competitions/$compId/fixtures/$fixId/route'
-import { Route as DashboardCompetitionsCompIdTeamsTeamIdIndexRouteImport } from './routes/_dashboard/competitions/$compId/teams/$teamId/index'
-import { Route as DashboardCompetitionsCompIdFixturesFixIdIndexRouteImport } from './routes/_dashboard/competitions/$compId/fixtures/$fixId/index'
-import { Route as DashboardCompetitionsCompIdPlayersPlayerIdEditRouteImport } from './routes/_dashboard/competitions/$compId/players/$playerId/edit'
-import { Route as DashboardCompetitionsCompIdFixturesFixIdReviewRouteImport } from './routes/_dashboard/competitions/$compId/fixtures/$fixId/review'
-import { Route as DashboardCompetitionsCompIdFixturesFixIdRawEventsRouteImport } from './routes/_dashboard/competitions/$compId/fixtures/$fixId/raw-events'
-import { Route as DashboardCompetitionsCompIdFixturesFixIdPlayerStatsRouteImport } from './routes/_dashboard/competitions/$compId/fixtures/$fixId/player-stats'
+import { Route as DashboardContentRouteRouteImport } from './routes/_dashboard/_content/route'
+import { Route as DashboardContentWalletIndexRouteImport } from './routes/_dashboard/_content/wallet/index'
+import { Route as DashboardContentTicketsIndexRouteImport } from './routes/_dashboard/_content/tickets/index'
+import { Route as DashboardContentTeamsIndexRouteImport } from './routes/_dashboard/_content/teams/index'
+import { Route as DashboardContentPlayersIndexRouteImport } from './routes/_dashboard/_content/players/index'
+import { Route as DashboardContentCompetitionsIndexRouteImport } from './routes/_dashboard/_content/competitions/index'
+import { Route as DashboardContentArticlesIndexRouteImport } from './routes/_dashboard/_content/articles/index'
+import { Route as DashboardContentAgentsIndexRouteImport } from './routes/_dashboard/_content/agents/index'
+import { Route as DashboardContentAdminIndexRouteImport } from './routes/_dashboard/_content/admin/index'
+import { Route as DashboardContentAgentsFixturesRouteImport } from './routes/_dashboard/_content/agents/fixtures'
+import { Route as DashboardContentCompetitionsCompIdRouteRouteImport } from './routes/_dashboard/_content/competitions/$compId/route'
+import { Route as DashboardContentArticlesCreateIndexRouteImport } from './routes/_dashboard/_content/articles/create/index'
+import { Route as DashboardContentArticlesArticleIdEditRouteImport } from './routes/_dashboard/_content/articles/$articleId/edit'
+import { Route as DashboardContentCompetitionsCompIdStatsRouteRouteImport } from './routes/_dashboard/_content/competitions/$compId/stats/route'
+import { Route as DashboardContentCompetitionsCompIdSettingsRouteRouteImport } from './routes/_dashboard/_content/competitions/$compId/_settings/route'
+import { Route as DashboardContentCompetitionsCompIdTeamsIndexRouteImport } from './routes/_dashboard/_content/competitions/$compId/teams/index'
+import { Route as DashboardContentCompetitionsCompIdStatsIndexRouteImport } from './routes/_dashboard/_content/competitions/$compId/stats/index'
+import { Route as DashboardContentCompetitionsCompIdPlayersIndexRouteImport } from './routes/_dashboard/_content/competitions/$compId/players/index'
+import { Route as DashboardContentCompetitionsCompIdLeaguesIndexRouteImport } from './routes/_dashboard/_content/competitions/$compId/leagues/index'
+import { Route as DashboardContentCompetitionsCompIdFixturesIndexRouteImport } from './routes/_dashboard/_content/competitions/$compId/fixtures/index'
+import { Route as DashboardContentCompetitionsCompIdSettingsIndexRouteImport } from './routes/_dashboard/_content/competitions/$compId/_settings/index'
+import { Route as DashboardContentCompetitionsCompIdStatsTeamsRouteImport } from './routes/_dashboard/_content/competitions/$compId/stats/teams'
+import { Route as DashboardContentCompetitionsCompIdPlayersCreateRouteImport } from './routes/_dashboard/_content/competitions/$compId/players/create'
+import { Route as DashboardContentCompetitionsCompIdFixturesReviewRouteImport } from './routes/_dashboard/_content/competitions/$compId/fixtures/review'
+import { Route as DashboardContentCompetitionsCompIdSettingsImagesRouteImport } from './routes/_dashboard/_content/competitions/$compId/_settings/images'
+import { Route as DashboardContentCompetitionsCompIdSettingsDivisionsRouteImport } from './routes/_dashboard/_content/competitions/$compId/_settings/divisions'
+import { Route as DashboardContentCompetitionsCompIdFixturesFixIdRouteRouteImport } from './routes/_dashboard/_content/competitions/$compId/fixtures/$fixId/route'
+import { Route as DashboardContentCompetitionsCompIdTeamsTeamIdIndexRouteImport } from './routes/_dashboard/_content/competitions/$compId/teams/$teamId/index'
+import { Route as DashboardContentCompetitionsCompIdFixturesFixIdIndexRouteImport } from './routes/_dashboard/_content/competitions/$compId/fixtures/$fixId/index'
+import { Route as DashboardContentCompetitionsCompIdPlayersPlayerIdEditRouteImport } from './routes/_dashboard/_content/competitions/$compId/players/$playerId/edit'
+import { Route as DashboardContentCompetitionsCompIdFixturesFixIdReviewRouteImport } from './routes/_dashboard/_content/competitions/$compId/fixtures/$fixId/review'
+import { Route as DashboardContentCompetitionsCompIdFixturesFixIdRawEventsRouteImport } from './routes/_dashboard/_content/competitions/$compId/fixtures/$fixId/raw-events'
+import { Route as DashboardContentCompetitionsCompIdFixturesFixIdPlayerStatsRouteImport } from './routes/_dashboard/_content/competitions/$compId/fixtures/$fixId/player-stats'
 
 const DashboardRouteRoute = DashboardRouteRouteImport.update({
   id: '/_dashboard',
@@ -100,188 +101,204 @@ const AuthForgotPasswordRoute = AuthForgotPasswordRouteImport.update({
   path: '/forgot-password',
   getParentRoute: () => AuthRouteRoute,
 } as any)
-const DashboardWalletIndexRoute = DashboardWalletIndexRouteImport.update({
-  id: '/wallet/',
-  path: '/wallet/',
+const DashboardContentRouteRoute = DashboardContentRouteRouteImport.update({
+  id: '/_content',
   getParentRoute: () => DashboardRouteRoute,
 } as any)
-const DashboardTicketsIndexRoute = DashboardTicketsIndexRouteImport.update({
-  id: '/tickets/',
-  path: '/tickets/',
-  getParentRoute: () => DashboardRouteRoute,
-} as any)
-const DashboardTeamsIndexRoute = DashboardTeamsIndexRouteImport.update({
-  id: '/teams/',
-  path: '/teams/',
-  getParentRoute: () => DashboardRouteRoute,
-} as any)
-const DashboardPlayersIndexRoute = DashboardPlayersIndexRouteImport.update({
-  id: '/players/',
-  path: '/players/',
-  getParentRoute: () => DashboardRouteRoute,
-} as any)
-const DashboardCompetitionsIndexRoute =
-  DashboardCompetitionsIndexRouteImport.update({
-    id: '/competitions/',
-    path: '/competitions/',
-    getParentRoute: () => DashboardRouteRoute,
+const DashboardContentWalletIndexRoute =
+  DashboardContentWalletIndexRouteImport.update({
+    id: '/wallet/',
+    path: '/wallet/',
+    getParentRoute: () => DashboardContentRouteRoute,
   } as any)
-const DashboardArticlesIndexRoute = DashboardArticlesIndexRouteImport.update({
-  id: '/articles/',
-  path: '/articles/',
-  getParentRoute: () => DashboardRouteRoute,
-} as any)
-const DashboardAgentsIndexRoute = DashboardAgentsIndexRouteImport.update({
-  id: '/agents/',
-  path: '/agents/',
-  getParentRoute: () => DashboardRouteRoute,
-} as any)
-const DashboardAdminIndexRoute = DashboardAdminIndexRouteImport.update({
-  id: '/admin/',
-  path: '/admin/',
-  getParentRoute: () => DashboardRouteRoute,
-} as any)
-const DashboardAgentsFixturesRoute = DashboardAgentsFixturesRouteImport.update({
-  id: '/agents/fixtures',
-  path: '/agents/fixtures',
-  getParentRoute: () => DashboardRouteRoute,
-} as any)
-const DashboardCompetitionsCompIdRouteRoute =
-  DashboardCompetitionsCompIdRouteRouteImport.update({
-    id: '/competitions/$compId',
-    path: '/competitions/$compId',
-    getParentRoute: () => DashboardRouteRoute,
+const DashboardContentTicketsIndexRoute =
+  DashboardContentTicketsIndexRouteImport.update({
+    id: '/tickets/',
+    path: '/tickets/',
+    getParentRoute: () => DashboardContentRouteRoute,
   } as any)
-const DashboardArticlesCreateIndexRoute =
-  DashboardArticlesCreateIndexRouteImport.update({
-    id: '/articles/create/',
-    path: '/articles/create/',
-    getParentRoute: () => DashboardRouteRoute,
-  } as any)
-const DashboardArticlesArticleIdEditRoute =
-  DashboardArticlesArticleIdEditRouteImport.update({
-    id: '/articles/$articleId/edit',
-    path: '/articles/$articleId/edit',
-    getParentRoute: () => DashboardRouteRoute,
-  } as any)
-const DashboardCompetitionsCompIdStatsRouteRoute =
-  DashboardCompetitionsCompIdStatsRouteRouteImport.update({
-    id: '/stats',
-    path: '/stats',
-    getParentRoute: () => DashboardCompetitionsCompIdRouteRoute,
-  } as any)
-const DashboardCompetitionsCompIdSettingsRouteRoute =
-  DashboardCompetitionsCompIdSettingsRouteRouteImport.update({
-    id: '/_settings',
-    getParentRoute: () => DashboardCompetitionsCompIdRouteRoute,
-  } as any)
-const DashboardCompetitionsCompIdTeamsIndexRoute =
-  DashboardCompetitionsCompIdTeamsIndexRouteImport.update({
+const DashboardContentTeamsIndexRoute =
+  DashboardContentTeamsIndexRouteImport.update({
     id: '/teams/',
     path: '/teams/',
-    getParentRoute: () => DashboardCompetitionsCompIdRouteRoute,
+    getParentRoute: () => DashboardContentRouteRoute,
   } as any)
-const DashboardCompetitionsCompIdStatsIndexRoute =
-  DashboardCompetitionsCompIdStatsIndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => DashboardCompetitionsCompIdStatsRouteRoute,
-  } as any)
-const DashboardCompetitionsCompIdPlayersIndexRoute =
-  DashboardCompetitionsCompIdPlayersIndexRouteImport.update({
+const DashboardContentPlayersIndexRoute =
+  DashboardContentPlayersIndexRouteImport.update({
     id: '/players/',
     path: '/players/',
-    getParentRoute: () => DashboardCompetitionsCompIdRouteRoute,
+    getParentRoute: () => DashboardContentRouteRoute,
   } as any)
-const DashboardCompetitionsCompIdLeaguesIndexRoute =
-  DashboardCompetitionsCompIdLeaguesIndexRouteImport.update({
+const DashboardContentCompetitionsIndexRoute =
+  DashboardContentCompetitionsIndexRouteImport.update({
+    id: '/competitions/',
+    path: '/competitions/',
+    getParentRoute: () => DashboardContentRouteRoute,
+  } as any)
+const DashboardContentArticlesIndexRoute =
+  DashboardContentArticlesIndexRouteImport.update({
+    id: '/articles/',
+    path: '/articles/',
+    getParentRoute: () => DashboardContentRouteRoute,
+  } as any)
+const DashboardContentAgentsIndexRoute =
+  DashboardContentAgentsIndexRouteImport.update({
+    id: '/agents/',
+    path: '/agents/',
+    getParentRoute: () => DashboardContentRouteRoute,
+  } as any)
+const DashboardContentAdminIndexRoute =
+  DashboardContentAdminIndexRouteImport.update({
+    id: '/admin/',
+    path: '/admin/',
+    getParentRoute: () => DashboardContentRouteRoute,
+  } as any)
+const DashboardContentAgentsFixturesRoute =
+  DashboardContentAgentsFixturesRouteImport.update({
+    id: '/agents/fixtures',
+    path: '/agents/fixtures',
+    getParentRoute: () => DashboardContentRouteRoute,
+  } as any)
+const DashboardContentCompetitionsCompIdRouteRoute =
+  DashboardContentCompetitionsCompIdRouteRouteImport.update({
+    id: '/competitions/$compId',
+    path: '/competitions/$compId',
+    getParentRoute: () => DashboardContentRouteRoute,
+  } as any)
+const DashboardContentArticlesCreateIndexRoute =
+  DashboardContentArticlesCreateIndexRouteImport.update({
+    id: '/articles/create/',
+    path: '/articles/create/',
+    getParentRoute: () => DashboardContentRouteRoute,
+  } as any)
+const DashboardContentArticlesArticleIdEditRoute =
+  DashboardContentArticlesArticleIdEditRouteImport.update({
+    id: '/articles/$articleId/edit',
+    path: '/articles/$articleId/edit',
+    getParentRoute: () => DashboardContentRouteRoute,
+  } as any)
+const DashboardContentCompetitionsCompIdStatsRouteRoute =
+  DashboardContentCompetitionsCompIdStatsRouteRouteImport.update({
+    id: '/stats',
+    path: '/stats',
+    getParentRoute: () => DashboardContentCompetitionsCompIdRouteRoute,
+  } as any)
+const DashboardContentCompetitionsCompIdSettingsRouteRoute =
+  DashboardContentCompetitionsCompIdSettingsRouteRouteImport.update({
+    id: '/_settings',
+    getParentRoute: () => DashboardContentCompetitionsCompIdRouteRoute,
+  } as any)
+const DashboardContentCompetitionsCompIdTeamsIndexRoute =
+  DashboardContentCompetitionsCompIdTeamsIndexRouteImport.update({
+    id: '/teams/',
+    path: '/teams/',
+    getParentRoute: () => DashboardContentCompetitionsCompIdRouteRoute,
+  } as any)
+const DashboardContentCompetitionsCompIdStatsIndexRoute =
+  DashboardContentCompetitionsCompIdStatsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => DashboardContentCompetitionsCompIdStatsRouteRoute,
+  } as any)
+const DashboardContentCompetitionsCompIdPlayersIndexRoute =
+  DashboardContentCompetitionsCompIdPlayersIndexRouteImport.update({
+    id: '/players/',
+    path: '/players/',
+    getParentRoute: () => DashboardContentCompetitionsCompIdRouteRoute,
+  } as any)
+const DashboardContentCompetitionsCompIdLeaguesIndexRoute =
+  DashboardContentCompetitionsCompIdLeaguesIndexRouteImport.update({
     id: '/leagues/',
     path: '/leagues/',
-    getParentRoute: () => DashboardCompetitionsCompIdRouteRoute,
+    getParentRoute: () => DashboardContentCompetitionsCompIdRouteRoute,
   } as any)
-const DashboardCompetitionsCompIdFixturesIndexRoute =
-  DashboardCompetitionsCompIdFixturesIndexRouteImport.update({
+const DashboardContentCompetitionsCompIdFixturesIndexRoute =
+  DashboardContentCompetitionsCompIdFixturesIndexRouteImport.update({
     id: '/fixtures/',
     path: '/fixtures/',
-    getParentRoute: () => DashboardCompetitionsCompIdRouteRoute,
+    getParentRoute: () => DashboardContentCompetitionsCompIdRouteRoute,
   } as any)
-const DashboardCompetitionsCompIdSettingsIndexRoute =
-  DashboardCompetitionsCompIdSettingsIndexRouteImport.update({
+const DashboardContentCompetitionsCompIdSettingsIndexRoute =
+  DashboardContentCompetitionsCompIdSettingsIndexRouteImport.update({
     id: '/',
     path: '/',
-    getParentRoute: () => DashboardCompetitionsCompIdSettingsRouteRoute,
+    getParentRoute: () => DashboardContentCompetitionsCompIdSettingsRouteRoute,
   } as any)
-const DashboardCompetitionsCompIdStatsTeamsRoute =
-  DashboardCompetitionsCompIdStatsTeamsRouteImport.update({
+const DashboardContentCompetitionsCompIdStatsTeamsRoute =
+  DashboardContentCompetitionsCompIdStatsTeamsRouteImport.update({
     id: '/teams',
     path: '/teams',
-    getParentRoute: () => DashboardCompetitionsCompIdStatsRouteRoute,
+    getParentRoute: () => DashboardContentCompetitionsCompIdStatsRouteRoute,
   } as any)
-const DashboardCompetitionsCompIdPlayersCreateRoute =
-  DashboardCompetitionsCompIdPlayersCreateRouteImport.update({
+const DashboardContentCompetitionsCompIdPlayersCreateRoute =
+  DashboardContentCompetitionsCompIdPlayersCreateRouteImport.update({
     id: '/players/create',
     path: '/players/create',
-    getParentRoute: () => DashboardCompetitionsCompIdRouteRoute,
+    getParentRoute: () => DashboardContentCompetitionsCompIdRouteRoute,
   } as any)
-const DashboardCompetitionsCompIdFixturesReviewRoute =
-  DashboardCompetitionsCompIdFixturesReviewRouteImport.update({
+const DashboardContentCompetitionsCompIdFixturesReviewRoute =
+  DashboardContentCompetitionsCompIdFixturesReviewRouteImport.update({
     id: '/fixtures/review',
     path: '/fixtures/review',
-    getParentRoute: () => DashboardCompetitionsCompIdRouteRoute,
+    getParentRoute: () => DashboardContentCompetitionsCompIdRouteRoute,
   } as any)
-const DashboardCompetitionsCompIdSettingsImagesRoute =
-  DashboardCompetitionsCompIdSettingsImagesRouteImport.update({
+const DashboardContentCompetitionsCompIdSettingsImagesRoute =
+  DashboardContentCompetitionsCompIdSettingsImagesRouteImport.update({
     id: '/images',
     path: '/images',
-    getParentRoute: () => DashboardCompetitionsCompIdSettingsRouteRoute,
+    getParentRoute: () => DashboardContentCompetitionsCompIdSettingsRouteRoute,
   } as any)
-const DashboardCompetitionsCompIdSettingsDivisionsRoute =
-  DashboardCompetitionsCompIdSettingsDivisionsRouteImport.update({
+const DashboardContentCompetitionsCompIdSettingsDivisionsRoute =
+  DashboardContentCompetitionsCompIdSettingsDivisionsRouteImport.update({
     id: '/divisions',
     path: '/divisions',
-    getParentRoute: () => DashboardCompetitionsCompIdSettingsRouteRoute,
+    getParentRoute: () => DashboardContentCompetitionsCompIdSettingsRouteRoute,
   } as any)
-const DashboardCompetitionsCompIdFixturesFixIdRouteRoute =
-  DashboardCompetitionsCompIdFixturesFixIdRouteRouteImport.update({
+const DashboardContentCompetitionsCompIdFixturesFixIdRouteRoute =
+  DashboardContentCompetitionsCompIdFixturesFixIdRouteRouteImport.update({
     id: '/fixtures/$fixId',
     path: '/fixtures/$fixId',
-    getParentRoute: () => DashboardCompetitionsCompIdRouteRoute,
+    getParentRoute: () => DashboardContentCompetitionsCompIdRouteRoute,
   } as any)
-const DashboardCompetitionsCompIdTeamsTeamIdIndexRoute =
-  DashboardCompetitionsCompIdTeamsTeamIdIndexRouteImport.update({
+const DashboardContentCompetitionsCompIdTeamsTeamIdIndexRoute =
+  DashboardContentCompetitionsCompIdTeamsTeamIdIndexRouteImport.update({
     id: '/teams/$teamId/',
     path: '/teams/$teamId/',
-    getParentRoute: () => DashboardCompetitionsCompIdRouteRoute,
+    getParentRoute: () => DashboardContentCompetitionsCompIdRouteRoute,
   } as any)
-const DashboardCompetitionsCompIdFixturesFixIdIndexRoute =
-  DashboardCompetitionsCompIdFixturesFixIdIndexRouteImport.update({
+const DashboardContentCompetitionsCompIdFixturesFixIdIndexRoute =
+  DashboardContentCompetitionsCompIdFixturesFixIdIndexRouteImport.update({
     id: '/',
     path: '/',
-    getParentRoute: () => DashboardCompetitionsCompIdFixturesFixIdRouteRoute,
+    getParentRoute: () =>
+      DashboardContentCompetitionsCompIdFixturesFixIdRouteRoute,
   } as any)
-const DashboardCompetitionsCompIdPlayersPlayerIdEditRoute =
-  DashboardCompetitionsCompIdPlayersPlayerIdEditRouteImport.update({
+const DashboardContentCompetitionsCompIdPlayersPlayerIdEditRoute =
+  DashboardContentCompetitionsCompIdPlayersPlayerIdEditRouteImport.update({
     id: '/players/$playerId/edit',
     path: '/players/$playerId/edit',
-    getParentRoute: () => DashboardCompetitionsCompIdRouteRoute,
+    getParentRoute: () => DashboardContentCompetitionsCompIdRouteRoute,
   } as any)
-const DashboardCompetitionsCompIdFixturesFixIdReviewRoute =
-  DashboardCompetitionsCompIdFixturesFixIdReviewRouteImport.update({
+const DashboardContentCompetitionsCompIdFixturesFixIdReviewRoute =
+  DashboardContentCompetitionsCompIdFixturesFixIdReviewRouteImport.update({
     id: '/review',
     path: '/review',
-    getParentRoute: () => DashboardCompetitionsCompIdFixturesFixIdRouteRoute,
+    getParentRoute: () =>
+      DashboardContentCompetitionsCompIdFixturesFixIdRouteRoute,
   } as any)
-const DashboardCompetitionsCompIdFixturesFixIdRawEventsRoute =
-  DashboardCompetitionsCompIdFixturesFixIdRawEventsRouteImport.update({
+const DashboardContentCompetitionsCompIdFixturesFixIdRawEventsRoute =
+  DashboardContentCompetitionsCompIdFixturesFixIdRawEventsRouteImport.update({
     id: '/raw-events',
     path: '/raw-events',
-    getParentRoute: () => DashboardCompetitionsCompIdFixturesFixIdRouteRoute,
+    getParentRoute: () =>
+      DashboardContentCompetitionsCompIdFixturesFixIdRouteRoute,
   } as any)
-const DashboardCompetitionsCompIdFixturesFixIdPlayerStatsRoute =
-  DashboardCompetitionsCompIdFixturesFixIdPlayerStatsRouteImport.update({
+const DashboardContentCompetitionsCompIdFixturesFixIdPlayerStatsRoute =
+  DashboardContentCompetitionsCompIdFixturesFixIdPlayerStatsRouteImport.update({
     id: '/player-stats',
     path: '/player-stats',
-    getParentRoute: () => DashboardCompetitionsCompIdFixturesFixIdRouteRoute,
+    getParentRoute: () =>
+      DashboardContentCompetitionsCompIdFixturesFixIdRouteRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -293,37 +310,37 @@ export interface FileRoutesByFullPath {
   '/verify': typeof AuthVerifyRoute
   '/api/uploadthing': typeof ApiUploadthingRoute
   '/home/': typeof HomeIndexRoute
-  '/competitions/$compId': typeof DashboardCompetitionsCompIdRouteRouteWithChildren
-  '/agents/fixtures': typeof DashboardAgentsFixturesRoute
-  '/admin/': typeof DashboardAdminIndexRoute
-  '/agents/': typeof DashboardAgentsIndexRoute
-  '/articles/': typeof DashboardArticlesIndexRoute
-  '/competitions/': typeof DashboardCompetitionsIndexRoute
-  '/players/': typeof DashboardPlayersIndexRoute
-  '/teams/': typeof DashboardTeamsIndexRoute
-  '/tickets/': typeof DashboardTicketsIndexRoute
-  '/wallet/': typeof DashboardWalletIndexRoute
-  '/competitions/$compId/stats': typeof DashboardCompetitionsCompIdStatsRouteRouteWithChildren
-  '/articles/$articleId/edit': typeof DashboardArticlesArticleIdEditRoute
-  '/articles/create/': typeof DashboardArticlesCreateIndexRoute
-  '/competitions/$compId/fixtures/$fixId': typeof DashboardCompetitionsCompIdFixturesFixIdRouteRouteWithChildren
-  '/competitions/$compId/divisions': typeof DashboardCompetitionsCompIdSettingsDivisionsRoute
-  '/competitions/$compId/images': typeof DashboardCompetitionsCompIdSettingsImagesRoute
-  '/competitions/$compId/fixtures/review': typeof DashboardCompetitionsCompIdFixturesReviewRoute
-  '/competitions/$compId/players/create': typeof DashboardCompetitionsCompIdPlayersCreateRoute
-  '/competitions/$compId/stats/teams': typeof DashboardCompetitionsCompIdStatsTeamsRoute
-  '/competitions/$compId/': typeof DashboardCompetitionsCompIdSettingsIndexRoute
-  '/competitions/$compId/fixtures/': typeof DashboardCompetitionsCompIdFixturesIndexRoute
-  '/competitions/$compId/leagues/': typeof DashboardCompetitionsCompIdLeaguesIndexRoute
-  '/competitions/$compId/players/': typeof DashboardCompetitionsCompIdPlayersIndexRoute
-  '/competitions/$compId/stats/': typeof DashboardCompetitionsCompIdStatsIndexRoute
-  '/competitions/$compId/teams/': typeof DashboardCompetitionsCompIdTeamsIndexRoute
-  '/competitions/$compId/fixtures/$fixId/player-stats': typeof DashboardCompetitionsCompIdFixturesFixIdPlayerStatsRoute
-  '/competitions/$compId/fixtures/$fixId/raw-events': typeof DashboardCompetitionsCompIdFixturesFixIdRawEventsRoute
-  '/competitions/$compId/fixtures/$fixId/review': typeof DashboardCompetitionsCompIdFixturesFixIdReviewRoute
-  '/competitions/$compId/players/$playerId/edit': typeof DashboardCompetitionsCompIdPlayersPlayerIdEditRoute
-  '/competitions/$compId/fixtures/$fixId/': typeof DashboardCompetitionsCompIdFixturesFixIdIndexRoute
-  '/competitions/$compId/teams/$teamId/': typeof DashboardCompetitionsCompIdTeamsTeamIdIndexRoute
+  '/competitions/$compId': typeof DashboardContentCompetitionsCompIdRouteRouteWithChildren
+  '/agents/fixtures': typeof DashboardContentAgentsFixturesRoute
+  '/admin/': typeof DashboardContentAdminIndexRoute
+  '/agents/': typeof DashboardContentAgentsIndexRoute
+  '/articles/': typeof DashboardContentArticlesIndexRoute
+  '/competitions/': typeof DashboardContentCompetitionsIndexRoute
+  '/players/': typeof DashboardContentPlayersIndexRoute
+  '/teams/': typeof DashboardContentTeamsIndexRoute
+  '/tickets/': typeof DashboardContentTicketsIndexRoute
+  '/wallet/': typeof DashboardContentWalletIndexRoute
+  '/competitions/$compId/stats': typeof DashboardContentCompetitionsCompIdStatsRouteRouteWithChildren
+  '/articles/$articleId/edit': typeof DashboardContentArticlesArticleIdEditRoute
+  '/articles/create/': typeof DashboardContentArticlesCreateIndexRoute
+  '/competitions/$compId/fixtures/$fixId': typeof DashboardContentCompetitionsCompIdFixturesFixIdRouteRouteWithChildren
+  '/competitions/$compId/divisions': typeof DashboardContentCompetitionsCompIdSettingsDivisionsRoute
+  '/competitions/$compId/images': typeof DashboardContentCompetitionsCompIdSettingsImagesRoute
+  '/competitions/$compId/fixtures/review': typeof DashboardContentCompetitionsCompIdFixturesReviewRoute
+  '/competitions/$compId/players/create': typeof DashboardContentCompetitionsCompIdPlayersCreateRoute
+  '/competitions/$compId/stats/teams': typeof DashboardContentCompetitionsCompIdStatsTeamsRoute
+  '/competitions/$compId/': typeof DashboardContentCompetitionsCompIdSettingsIndexRoute
+  '/competitions/$compId/fixtures/': typeof DashboardContentCompetitionsCompIdFixturesIndexRoute
+  '/competitions/$compId/leagues/': typeof DashboardContentCompetitionsCompIdLeaguesIndexRoute
+  '/competitions/$compId/players/': typeof DashboardContentCompetitionsCompIdPlayersIndexRoute
+  '/competitions/$compId/stats/': typeof DashboardContentCompetitionsCompIdStatsIndexRoute
+  '/competitions/$compId/teams/': typeof DashboardContentCompetitionsCompIdTeamsIndexRoute
+  '/competitions/$compId/fixtures/$fixId/player-stats': typeof DashboardContentCompetitionsCompIdFixturesFixIdPlayerStatsRoute
+  '/competitions/$compId/fixtures/$fixId/raw-events': typeof DashboardContentCompetitionsCompIdFixturesFixIdRawEventsRoute
+  '/competitions/$compId/fixtures/$fixId/review': typeof DashboardContentCompetitionsCompIdFixturesFixIdReviewRoute
+  '/competitions/$compId/players/$playerId/edit': typeof DashboardContentCompetitionsCompIdPlayersPlayerIdEditRoute
+  '/competitions/$compId/fixtures/$fixId/': typeof DashboardContentCompetitionsCompIdFixturesFixIdIndexRoute
+  '/competitions/$compId/teams/$teamId/': typeof DashboardContentCompetitionsCompIdTeamsTeamIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -334,40 +351,41 @@ export interface FileRoutesByTo {
   '/verify': typeof AuthVerifyRoute
   '/api/uploadthing': typeof ApiUploadthingRoute
   '/home': typeof HomeIndexRoute
-  '/competitions/$compId': typeof DashboardCompetitionsCompIdSettingsIndexRoute
-  '/agents/fixtures': typeof DashboardAgentsFixturesRoute
-  '/admin': typeof DashboardAdminIndexRoute
-  '/agents': typeof DashboardAgentsIndexRoute
-  '/articles': typeof DashboardArticlesIndexRoute
-  '/competitions': typeof DashboardCompetitionsIndexRoute
-  '/players': typeof DashboardPlayersIndexRoute
-  '/teams': typeof DashboardTeamsIndexRoute
-  '/tickets': typeof DashboardTicketsIndexRoute
-  '/wallet': typeof DashboardWalletIndexRoute
-  '/articles/$articleId/edit': typeof DashboardArticlesArticleIdEditRoute
-  '/articles/create': typeof DashboardArticlesCreateIndexRoute
-  '/competitions/$compId/divisions': typeof DashboardCompetitionsCompIdSettingsDivisionsRoute
-  '/competitions/$compId/images': typeof DashboardCompetitionsCompIdSettingsImagesRoute
-  '/competitions/$compId/fixtures/review': typeof DashboardCompetitionsCompIdFixturesReviewRoute
-  '/competitions/$compId/players/create': typeof DashboardCompetitionsCompIdPlayersCreateRoute
-  '/competitions/$compId/stats/teams': typeof DashboardCompetitionsCompIdStatsTeamsRoute
-  '/competitions/$compId/fixtures': typeof DashboardCompetitionsCompIdFixturesIndexRoute
-  '/competitions/$compId/leagues': typeof DashboardCompetitionsCompIdLeaguesIndexRoute
-  '/competitions/$compId/players': typeof DashboardCompetitionsCompIdPlayersIndexRoute
-  '/competitions/$compId/stats': typeof DashboardCompetitionsCompIdStatsIndexRoute
-  '/competitions/$compId/teams': typeof DashboardCompetitionsCompIdTeamsIndexRoute
-  '/competitions/$compId/fixtures/$fixId/player-stats': typeof DashboardCompetitionsCompIdFixturesFixIdPlayerStatsRoute
-  '/competitions/$compId/fixtures/$fixId/raw-events': typeof DashboardCompetitionsCompIdFixturesFixIdRawEventsRoute
-  '/competitions/$compId/fixtures/$fixId/review': typeof DashboardCompetitionsCompIdFixturesFixIdReviewRoute
-  '/competitions/$compId/players/$playerId/edit': typeof DashboardCompetitionsCompIdPlayersPlayerIdEditRoute
-  '/competitions/$compId/fixtures/$fixId': typeof DashboardCompetitionsCompIdFixturesFixIdIndexRoute
-  '/competitions/$compId/teams/$teamId': typeof DashboardCompetitionsCompIdTeamsTeamIdIndexRoute
+  '/competitions/$compId': typeof DashboardContentCompetitionsCompIdSettingsIndexRoute
+  '/agents/fixtures': typeof DashboardContentAgentsFixturesRoute
+  '/admin': typeof DashboardContentAdminIndexRoute
+  '/agents': typeof DashboardContentAgentsIndexRoute
+  '/articles': typeof DashboardContentArticlesIndexRoute
+  '/competitions': typeof DashboardContentCompetitionsIndexRoute
+  '/players': typeof DashboardContentPlayersIndexRoute
+  '/teams': typeof DashboardContentTeamsIndexRoute
+  '/tickets': typeof DashboardContentTicketsIndexRoute
+  '/wallet': typeof DashboardContentWalletIndexRoute
+  '/articles/$articleId/edit': typeof DashboardContentArticlesArticleIdEditRoute
+  '/articles/create': typeof DashboardContentArticlesCreateIndexRoute
+  '/competitions/$compId/divisions': typeof DashboardContentCompetitionsCompIdSettingsDivisionsRoute
+  '/competitions/$compId/images': typeof DashboardContentCompetitionsCompIdSettingsImagesRoute
+  '/competitions/$compId/fixtures/review': typeof DashboardContentCompetitionsCompIdFixturesReviewRoute
+  '/competitions/$compId/players/create': typeof DashboardContentCompetitionsCompIdPlayersCreateRoute
+  '/competitions/$compId/stats/teams': typeof DashboardContentCompetitionsCompIdStatsTeamsRoute
+  '/competitions/$compId/fixtures': typeof DashboardContentCompetitionsCompIdFixturesIndexRoute
+  '/competitions/$compId/leagues': typeof DashboardContentCompetitionsCompIdLeaguesIndexRoute
+  '/competitions/$compId/players': typeof DashboardContentCompetitionsCompIdPlayersIndexRoute
+  '/competitions/$compId/stats': typeof DashboardContentCompetitionsCompIdStatsIndexRoute
+  '/competitions/$compId/teams': typeof DashboardContentCompetitionsCompIdTeamsIndexRoute
+  '/competitions/$compId/fixtures/$fixId/player-stats': typeof DashboardContentCompetitionsCompIdFixturesFixIdPlayerStatsRoute
+  '/competitions/$compId/fixtures/$fixId/raw-events': typeof DashboardContentCompetitionsCompIdFixturesFixIdRawEventsRoute
+  '/competitions/$compId/fixtures/$fixId/review': typeof DashboardContentCompetitionsCompIdFixturesFixIdReviewRoute
+  '/competitions/$compId/players/$playerId/edit': typeof DashboardContentCompetitionsCompIdPlayersPlayerIdEditRoute
+  '/competitions/$compId/fixtures/$fixId': typeof DashboardContentCompetitionsCompIdFixturesFixIdIndexRoute
+  '/competitions/$compId/teams/$teamId': typeof DashboardContentCompetitionsCompIdTeamsTeamIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_auth': typeof AuthRouteRouteWithChildren
   '/_dashboard': typeof DashboardRouteRouteWithChildren
+  '/_dashboard/_content': typeof DashboardContentRouteRouteWithChildren
   '/_auth/forgot-password': typeof AuthForgotPasswordRoute
   '/_auth/login': typeof AuthLoginRoute
   '/_auth/register': typeof AuthRegisterRoute
@@ -375,38 +393,38 @@ export interface FileRoutesById {
   '/_auth/verify': typeof AuthVerifyRoute
   '/api/uploadthing': typeof ApiUploadthingRoute
   '/home/': typeof HomeIndexRoute
-  '/_dashboard/competitions/$compId': typeof DashboardCompetitionsCompIdRouteRouteWithChildren
-  '/_dashboard/agents/fixtures': typeof DashboardAgentsFixturesRoute
-  '/_dashboard/admin/': typeof DashboardAdminIndexRoute
-  '/_dashboard/agents/': typeof DashboardAgentsIndexRoute
-  '/_dashboard/articles/': typeof DashboardArticlesIndexRoute
-  '/_dashboard/competitions/': typeof DashboardCompetitionsIndexRoute
-  '/_dashboard/players/': typeof DashboardPlayersIndexRoute
-  '/_dashboard/teams/': typeof DashboardTeamsIndexRoute
-  '/_dashboard/tickets/': typeof DashboardTicketsIndexRoute
-  '/_dashboard/wallet/': typeof DashboardWalletIndexRoute
-  '/_dashboard/competitions/$compId/_settings': typeof DashboardCompetitionsCompIdSettingsRouteRouteWithChildren
-  '/_dashboard/competitions/$compId/stats': typeof DashboardCompetitionsCompIdStatsRouteRouteWithChildren
-  '/_dashboard/articles/$articleId/edit': typeof DashboardArticlesArticleIdEditRoute
-  '/_dashboard/articles/create/': typeof DashboardArticlesCreateIndexRoute
-  '/_dashboard/competitions/$compId/fixtures/$fixId': typeof DashboardCompetitionsCompIdFixturesFixIdRouteRouteWithChildren
-  '/_dashboard/competitions/$compId/_settings/divisions': typeof DashboardCompetitionsCompIdSettingsDivisionsRoute
-  '/_dashboard/competitions/$compId/_settings/images': typeof DashboardCompetitionsCompIdSettingsImagesRoute
-  '/_dashboard/competitions/$compId/fixtures/review': typeof DashboardCompetitionsCompIdFixturesReviewRoute
-  '/_dashboard/competitions/$compId/players/create': typeof DashboardCompetitionsCompIdPlayersCreateRoute
-  '/_dashboard/competitions/$compId/stats/teams': typeof DashboardCompetitionsCompIdStatsTeamsRoute
-  '/_dashboard/competitions/$compId/_settings/': typeof DashboardCompetitionsCompIdSettingsIndexRoute
-  '/_dashboard/competitions/$compId/fixtures/': typeof DashboardCompetitionsCompIdFixturesIndexRoute
-  '/_dashboard/competitions/$compId/leagues/': typeof DashboardCompetitionsCompIdLeaguesIndexRoute
-  '/_dashboard/competitions/$compId/players/': typeof DashboardCompetitionsCompIdPlayersIndexRoute
-  '/_dashboard/competitions/$compId/stats/': typeof DashboardCompetitionsCompIdStatsIndexRoute
-  '/_dashboard/competitions/$compId/teams/': typeof DashboardCompetitionsCompIdTeamsIndexRoute
-  '/_dashboard/competitions/$compId/fixtures/$fixId/player-stats': typeof DashboardCompetitionsCompIdFixturesFixIdPlayerStatsRoute
-  '/_dashboard/competitions/$compId/fixtures/$fixId/raw-events': typeof DashboardCompetitionsCompIdFixturesFixIdRawEventsRoute
-  '/_dashboard/competitions/$compId/fixtures/$fixId/review': typeof DashboardCompetitionsCompIdFixturesFixIdReviewRoute
-  '/_dashboard/competitions/$compId/players/$playerId/edit': typeof DashboardCompetitionsCompIdPlayersPlayerIdEditRoute
-  '/_dashboard/competitions/$compId/fixtures/$fixId/': typeof DashboardCompetitionsCompIdFixturesFixIdIndexRoute
-  '/_dashboard/competitions/$compId/teams/$teamId/': typeof DashboardCompetitionsCompIdTeamsTeamIdIndexRoute
+  '/_dashboard/_content/competitions/$compId': typeof DashboardContentCompetitionsCompIdRouteRouteWithChildren
+  '/_dashboard/_content/agents/fixtures': typeof DashboardContentAgentsFixturesRoute
+  '/_dashboard/_content/admin/': typeof DashboardContentAdminIndexRoute
+  '/_dashboard/_content/agents/': typeof DashboardContentAgentsIndexRoute
+  '/_dashboard/_content/articles/': typeof DashboardContentArticlesIndexRoute
+  '/_dashboard/_content/competitions/': typeof DashboardContentCompetitionsIndexRoute
+  '/_dashboard/_content/players/': typeof DashboardContentPlayersIndexRoute
+  '/_dashboard/_content/teams/': typeof DashboardContentTeamsIndexRoute
+  '/_dashboard/_content/tickets/': typeof DashboardContentTicketsIndexRoute
+  '/_dashboard/_content/wallet/': typeof DashboardContentWalletIndexRoute
+  '/_dashboard/_content/competitions/$compId/_settings': typeof DashboardContentCompetitionsCompIdSettingsRouteRouteWithChildren
+  '/_dashboard/_content/competitions/$compId/stats': typeof DashboardContentCompetitionsCompIdStatsRouteRouteWithChildren
+  '/_dashboard/_content/articles/$articleId/edit': typeof DashboardContentArticlesArticleIdEditRoute
+  '/_dashboard/_content/articles/create/': typeof DashboardContentArticlesCreateIndexRoute
+  '/_dashboard/_content/competitions/$compId/fixtures/$fixId': typeof DashboardContentCompetitionsCompIdFixturesFixIdRouteRouteWithChildren
+  '/_dashboard/_content/competitions/$compId/_settings/divisions': typeof DashboardContentCompetitionsCompIdSettingsDivisionsRoute
+  '/_dashboard/_content/competitions/$compId/_settings/images': typeof DashboardContentCompetitionsCompIdSettingsImagesRoute
+  '/_dashboard/_content/competitions/$compId/fixtures/review': typeof DashboardContentCompetitionsCompIdFixturesReviewRoute
+  '/_dashboard/_content/competitions/$compId/players/create': typeof DashboardContentCompetitionsCompIdPlayersCreateRoute
+  '/_dashboard/_content/competitions/$compId/stats/teams': typeof DashboardContentCompetitionsCompIdStatsTeamsRoute
+  '/_dashboard/_content/competitions/$compId/_settings/': typeof DashboardContentCompetitionsCompIdSettingsIndexRoute
+  '/_dashboard/_content/competitions/$compId/fixtures/': typeof DashboardContentCompetitionsCompIdFixturesIndexRoute
+  '/_dashboard/_content/competitions/$compId/leagues/': typeof DashboardContentCompetitionsCompIdLeaguesIndexRoute
+  '/_dashboard/_content/competitions/$compId/players/': typeof DashboardContentCompetitionsCompIdPlayersIndexRoute
+  '/_dashboard/_content/competitions/$compId/stats/': typeof DashboardContentCompetitionsCompIdStatsIndexRoute
+  '/_dashboard/_content/competitions/$compId/teams/': typeof DashboardContentCompetitionsCompIdTeamsIndexRoute
+  '/_dashboard/_content/competitions/$compId/fixtures/$fixId/player-stats': typeof DashboardContentCompetitionsCompIdFixturesFixIdPlayerStatsRoute
+  '/_dashboard/_content/competitions/$compId/fixtures/$fixId/raw-events': typeof DashboardContentCompetitionsCompIdFixturesFixIdRawEventsRoute
+  '/_dashboard/_content/competitions/$compId/fixtures/$fixId/review': typeof DashboardContentCompetitionsCompIdFixturesFixIdReviewRoute
+  '/_dashboard/_content/competitions/$compId/players/$playerId/edit': typeof DashboardContentCompetitionsCompIdPlayersPlayerIdEditRoute
+  '/_dashboard/_content/competitions/$compId/fixtures/$fixId/': typeof DashboardContentCompetitionsCompIdFixturesFixIdIndexRoute
+  '/_dashboard/_content/competitions/$compId/teams/$teamId/': typeof DashboardContentCompetitionsCompIdTeamsTeamIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -493,6 +511,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_auth'
     | '/_dashboard'
+    | '/_dashboard/_content'
     | '/_auth/forgot-password'
     | '/_auth/login'
     | '/_auth/register'
@@ -500,38 +519,38 @@ export interface FileRouteTypes {
     | '/_auth/verify'
     | '/api/uploadthing'
     | '/home/'
-    | '/_dashboard/competitions/$compId'
-    | '/_dashboard/agents/fixtures'
-    | '/_dashboard/admin/'
-    | '/_dashboard/agents/'
-    | '/_dashboard/articles/'
-    | '/_dashboard/competitions/'
-    | '/_dashboard/players/'
-    | '/_dashboard/teams/'
-    | '/_dashboard/tickets/'
-    | '/_dashboard/wallet/'
-    | '/_dashboard/competitions/$compId/_settings'
-    | '/_dashboard/competitions/$compId/stats'
-    | '/_dashboard/articles/$articleId/edit'
-    | '/_dashboard/articles/create/'
-    | '/_dashboard/competitions/$compId/fixtures/$fixId'
-    | '/_dashboard/competitions/$compId/_settings/divisions'
-    | '/_dashboard/competitions/$compId/_settings/images'
-    | '/_dashboard/competitions/$compId/fixtures/review'
-    | '/_dashboard/competitions/$compId/players/create'
-    | '/_dashboard/competitions/$compId/stats/teams'
-    | '/_dashboard/competitions/$compId/_settings/'
-    | '/_dashboard/competitions/$compId/fixtures/'
-    | '/_dashboard/competitions/$compId/leagues/'
-    | '/_dashboard/competitions/$compId/players/'
-    | '/_dashboard/competitions/$compId/stats/'
-    | '/_dashboard/competitions/$compId/teams/'
-    | '/_dashboard/competitions/$compId/fixtures/$fixId/player-stats'
-    | '/_dashboard/competitions/$compId/fixtures/$fixId/raw-events'
-    | '/_dashboard/competitions/$compId/fixtures/$fixId/review'
-    | '/_dashboard/competitions/$compId/players/$playerId/edit'
-    | '/_dashboard/competitions/$compId/fixtures/$fixId/'
-    | '/_dashboard/competitions/$compId/teams/$teamId/'
+    | '/_dashboard/_content/competitions/$compId'
+    | '/_dashboard/_content/agents/fixtures'
+    | '/_dashboard/_content/admin/'
+    | '/_dashboard/_content/agents/'
+    | '/_dashboard/_content/articles/'
+    | '/_dashboard/_content/competitions/'
+    | '/_dashboard/_content/players/'
+    | '/_dashboard/_content/teams/'
+    | '/_dashboard/_content/tickets/'
+    | '/_dashboard/_content/wallet/'
+    | '/_dashboard/_content/competitions/$compId/_settings'
+    | '/_dashboard/_content/competitions/$compId/stats'
+    | '/_dashboard/_content/articles/$articleId/edit'
+    | '/_dashboard/_content/articles/create/'
+    | '/_dashboard/_content/competitions/$compId/fixtures/$fixId'
+    | '/_dashboard/_content/competitions/$compId/_settings/divisions'
+    | '/_dashboard/_content/competitions/$compId/_settings/images'
+    | '/_dashboard/_content/competitions/$compId/fixtures/review'
+    | '/_dashboard/_content/competitions/$compId/players/create'
+    | '/_dashboard/_content/competitions/$compId/stats/teams'
+    | '/_dashboard/_content/competitions/$compId/_settings/'
+    | '/_dashboard/_content/competitions/$compId/fixtures/'
+    | '/_dashboard/_content/competitions/$compId/leagues/'
+    | '/_dashboard/_content/competitions/$compId/players/'
+    | '/_dashboard/_content/competitions/$compId/stats/'
+    | '/_dashboard/_content/competitions/$compId/teams/'
+    | '/_dashboard/_content/competitions/$compId/fixtures/$fixId/player-stats'
+    | '/_dashboard/_content/competitions/$compId/fixtures/$fixId/raw-events'
+    | '/_dashboard/_content/competitions/$compId/fixtures/$fixId/review'
+    | '/_dashboard/_content/competitions/$compId/players/$playerId/edit'
+    | '/_dashboard/_content/competitions/$compId/fixtures/$fixId/'
+    | '/_dashboard/_content/competitions/$compId/teams/$teamId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -614,229 +633,236 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthForgotPasswordRouteImport
       parentRoute: typeof AuthRouteRoute
     }
-    '/_dashboard/wallet/': {
-      id: '/_dashboard/wallet/'
+    '/_dashboard/_content': {
+      id: '/_dashboard/_content'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof DashboardContentRouteRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/_dashboard/_content/wallet/': {
+      id: '/_dashboard/_content/wallet/'
       path: '/wallet'
       fullPath: '/wallet/'
-      preLoaderRoute: typeof DashboardWalletIndexRouteImport
-      parentRoute: typeof DashboardRouteRoute
+      preLoaderRoute: typeof DashboardContentWalletIndexRouteImport
+      parentRoute: typeof DashboardContentRouteRoute
     }
-    '/_dashboard/tickets/': {
-      id: '/_dashboard/tickets/'
+    '/_dashboard/_content/tickets/': {
+      id: '/_dashboard/_content/tickets/'
       path: '/tickets'
       fullPath: '/tickets/'
-      preLoaderRoute: typeof DashboardTicketsIndexRouteImport
-      parentRoute: typeof DashboardRouteRoute
+      preLoaderRoute: typeof DashboardContentTicketsIndexRouteImport
+      parentRoute: typeof DashboardContentRouteRoute
     }
-    '/_dashboard/teams/': {
-      id: '/_dashboard/teams/'
+    '/_dashboard/_content/teams/': {
+      id: '/_dashboard/_content/teams/'
       path: '/teams'
       fullPath: '/teams/'
-      preLoaderRoute: typeof DashboardTeamsIndexRouteImport
-      parentRoute: typeof DashboardRouteRoute
+      preLoaderRoute: typeof DashboardContentTeamsIndexRouteImport
+      parentRoute: typeof DashboardContentRouteRoute
     }
-    '/_dashboard/players/': {
-      id: '/_dashboard/players/'
+    '/_dashboard/_content/players/': {
+      id: '/_dashboard/_content/players/'
       path: '/players'
       fullPath: '/players/'
-      preLoaderRoute: typeof DashboardPlayersIndexRouteImport
-      parentRoute: typeof DashboardRouteRoute
+      preLoaderRoute: typeof DashboardContentPlayersIndexRouteImport
+      parentRoute: typeof DashboardContentRouteRoute
     }
-    '/_dashboard/competitions/': {
-      id: '/_dashboard/competitions/'
+    '/_dashboard/_content/competitions/': {
+      id: '/_dashboard/_content/competitions/'
       path: '/competitions'
       fullPath: '/competitions/'
-      preLoaderRoute: typeof DashboardCompetitionsIndexRouteImport
-      parentRoute: typeof DashboardRouteRoute
+      preLoaderRoute: typeof DashboardContentCompetitionsIndexRouteImport
+      parentRoute: typeof DashboardContentRouteRoute
     }
-    '/_dashboard/articles/': {
-      id: '/_dashboard/articles/'
+    '/_dashboard/_content/articles/': {
+      id: '/_dashboard/_content/articles/'
       path: '/articles'
       fullPath: '/articles/'
-      preLoaderRoute: typeof DashboardArticlesIndexRouteImport
-      parentRoute: typeof DashboardRouteRoute
+      preLoaderRoute: typeof DashboardContentArticlesIndexRouteImport
+      parentRoute: typeof DashboardContentRouteRoute
     }
-    '/_dashboard/agents/': {
-      id: '/_dashboard/agents/'
+    '/_dashboard/_content/agents/': {
+      id: '/_dashboard/_content/agents/'
       path: '/agents'
       fullPath: '/agents/'
-      preLoaderRoute: typeof DashboardAgentsIndexRouteImport
-      parentRoute: typeof DashboardRouteRoute
+      preLoaderRoute: typeof DashboardContentAgentsIndexRouteImport
+      parentRoute: typeof DashboardContentRouteRoute
     }
-    '/_dashboard/admin/': {
-      id: '/_dashboard/admin/'
+    '/_dashboard/_content/admin/': {
+      id: '/_dashboard/_content/admin/'
       path: '/admin'
       fullPath: '/admin/'
-      preLoaderRoute: typeof DashboardAdminIndexRouteImport
-      parentRoute: typeof DashboardRouteRoute
+      preLoaderRoute: typeof DashboardContentAdminIndexRouteImport
+      parentRoute: typeof DashboardContentRouteRoute
     }
-    '/_dashboard/agents/fixtures': {
-      id: '/_dashboard/agents/fixtures'
+    '/_dashboard/_content/agents/fixtures': {
+      id: '/_dashboard/_content/agents/fixtures'
       path: '/agents/fixtures'
       fullPath: '/agents/fixtures'
-      preLoaderRoute: typeof DashboardAgentsFixturesRouteImport
-      parentRoute: typeof DashboardRouteRoute
+      preLoaderRoute: typeof DashboardContentAgentsFixturesRouteImport
+      parentRoute: typeof DashboardContentRouteRoute
     }
-    '/_dashboard/competitions/$compId': {
-      id: '/_dashboard/competitions/$compId'
+    '/_dashboard/_content/competitions/$compId': {
+      id: '/_dashboard/_content/competitions/$compId'
       path: '/competitions/$compId'
       fullPath: '/competitions/$compId'
-      preLoaderRoute: typeof DashboardCompetitionsCompIdRouteRouteImport
-      parentRoute: typeof DashboardRouteRoute
+      preLoaderRoute: typeof DashboardContentCompetitionsCompIdRouteRouteImport
+      parentRoute: typeof DashboardContentRouteRoute
     }
-    '/_dashboard/articles/create/': {
-      id: '/_dashboard/articles/create/'
+    '/_dashboard/_content/articles/create/': {
+      id: '/_dashboard/_content/articles/create/'
       path: '/articles/create'
       fullPath: '/articles/create/'
-      preLoaderRoute: typeof DashboardArticlesCreateIndexRouteImport
-      parentRoute: typeof DashboardRouteRoute
+      preLoaderRoute: typeof DashboardContentArticlesCreateIndexRouteImport
+      parentRoute: typeof DashboardContentRouteRoute
     }
-    '/_dashboard/articles/$articleId/edit': {
-      id: '/_dashboard/articles/$articleId/edit'
+    '/_dashboard/_content/articles/$articleId/edit': {
+      id: '/_dashboard/_content/articles/$articleId/edit'
       path: '/articles/$articleId/edit'
       fullPath: '/articles/$articleId/edit'
-      preLoaderRoute: typeof DashboardArticlesArticleIdEditRouteImport
-      parentRoute: typeof DashboardRouteRoute
+      preLoaderRoute: typeof DashboardContentArticlesArticleIdEditRouteImport
+      parentRoute: typeof DashboardContentRouteRoute
     }
-    '/_dashboard/competitions/$compId/stats': {
-      id: '/_dashboard/competitions/$compId/stats'
+    '/_dashboard/_content/competitions/$compId/stats': {
+      id: '/_dashboard/_content/competitions/$compId/stats'
       path: '/stats'
       fullPath: '/competitions/$compId/stats'
-      preLoaderRoute: typeof DashboardCompetitionsCompIdStatsRouteRouteImport
-      parentRoute: typeof DashboardCompetitionsCompIdRouteRoute
+      preLoaderRoute: typeof DashboardContentCompetitionsCompIdStatsRouteRouteImport
+      parentRoute: typeof DashboardContentCompetitionsCompIdRouteRoute
     }
-    '/_dashboard/competitions/$compId/_settings': {
-      id: '/_dashboard/competitions/$compId/_settings'
+    '/_dashboard/_content/competitions/$compId/_settings': {
+      id: '/_dashboard/_content/competitions/$compId/_settings'
       path: ''
       fullPath: '/competitions/$compId'
-      preLoaderRoute: typeof DashboardCompetitionsCompIdSettingsRouteRouteImport
-      parentRoute: typeof DashboardCompetitionsCompIdRouteRoute
+      preLoaderRoute: typeof DashboardContentCompetitionsCompIdSettingsRouteRouteImport
+      parentRoute: typeof DashboardContentCompetitionsCompIdRouteRoute
     }
-    '/_dashboard/competitions/$compId/teams/': {
-      id: '/_dashboard/competitions/$compId/teams/'
+    '/_dashboard/_content/competitions/$compId/teams/': {
+      id: '/_dashboard/_content/competitions/$compId/teams/'
       path: '/teams'
       fullPath: '/competitions/$compId/teams/'
-      preLoaderRoute: typeof DashboardCompetitionsCompIdTeamsIndexRouteImport
-      parentRoute: typeof DashboardCompetitionsCompIdRouteRoute
+      preLoaderRoute: typeof DashboardContentCompetitionsCompIdTeamsIndexRouteImport
+      parentRoute: typeof DashboardContentCompetitionsCompIdRouteRoute
     }
-    '/_dashboard/competitions/$compId/stats/': {
-      id: '/_dashboard/competitions/$compId/stats/'
+    '/_dashboard/_content/competitions/$compId/stats/': {
+      id: '/_dashboard/_content/competitions/$compId/stats/'
       path: '/'
       fullPath: '/competitions/$compId/stats/'
-      preLoaderRoute: typeof DashboardCompetitionsCompIdStatsIndexRouteImport
-      parentRoute: typeof DashboardCompetitionsCompIdStatsRouteRoute
+      preLoaderRoute: typeof DashboardContentCompetitionsCompIdStatsIndexRouteImport
+      parentRoute: typeof DashboardContentCompetitionsCompIdStatsRouteRoute
     }
-    '/_dashboard/competitions/$compId/players/': {
-      id: '/_dashboard/competitions/$compId/players/'
+    '/_dashboard/_content/competitions/$compId/players/': {
+      id: '/_dashboard/_content/competitions/$compId/players/'
       path: '/players'
       fullPath: '/competitions/$compId/players/'
-      preLoaderRoute: typeof DashboardCompetitionsCompIdPlayersIndexRouteImport
-      parentRoute: typeof DashboardCompetitionsCompIdRouteRoute
+      preLoaderRoute: typeof DashboardContentCompetitionsCompIdPlayersIndexRouteImport
+      parentRoute: typeof DashboardContentCompetitionsCompIdRouteRoute
     }
-    '/_dashboard/competitions/$compId/leagues/': {
-      id: '/_dashboard/competitions/$compId/leagues/'
+    '/_dashboard/_content/competitions/$compId/leagues/': {
+      id: '/_dashboard/_content/competitions/$compId/leagues/'
       path: '/leagues'
       fullPath: '/competitions/$compId/leagues/'
-      preLoaderRoute: typeof DashboardCompetitionsCompIdLeaguesIndexRouteImport
-      parentRoute: typeof DashboardCompetitionsCompIdRouteRoute
+      preLoaderRoute: typeof DashboardContentCompetitionsCompIdLeaguesIndexRouteImport
+      parentRoute: typeof DashboardContentCompetitionsCompIdRouteRoute
     }
-    '/_dashboard/competitions/$compId/fixtures/': {
-      id: '/_dashboard/competitions/$compId/fixtures/'
+    '/_dashboard/_content/competitions/$compId/fixtures/': {
+      id: '/_dashboard/_content/competitions/$compId/fixtures/'
       path: '/fixtures'
       fullPath: '/competitions/$compId/fixtures/'
-      preLoaderRoute: typeof DashboardCompetitionsCompIdFixturesIndexRouteImport
-      parentRoute: typeof DashboardCompetitionsCompIdRouteRoute
+      preLoaderRoute: typeof DashboardContentCompetitionsCompIdFixturesIndexRouteImport
+      parentRoute: typeof DashboardContentCompetitionsCompIdRouteRoute
     }
-    '/_dashboard/competitions/$compId/_settings/': {
-      id: '/_dashboard/competitions/$compId/_settings/'
+    '/_dashboard/_content/competitions/$compId/_settings/': {
+      id: '/_dashboard/_content/competitions/$compId/_settings/'
       path: '/'
       fullPath: '/competitions/$compId/'
-      preLoaderRoute: typeof DashboardCompetitionsCompIdSettingsIndexRouteImport
-      parentRoute: typeof DashboardCompetitionsCompIdSettingsRouteRoute
+      preLoaderRoute: typeof DashboardContentCompetitionsCompIdSettingsIndexRouteImport
+      parentRoute: typeof DashboardContentCompetitionsCompIdSettingsRouteRoute
     }
-    '/_dashboard/competitions/$compId/stats/teams': {
-      id: '/_dashboard/competitions/$compId/stats/teams'
+    '/_dashboard/_content/competitions/$compId/stats/teams': {
+      id: '/_dashboard/_content/competitions/$compId/stats/teams'
       path: '/teams'
       fullPath: '/competitions/$compId/stats/teams'
-      preLoaderRoute: typeof DashboardCompetitionsCompIdStatsTeamsRouteImport
-      parentRoute: typeof DashboardCompetitionsCompIdStatsRouteRoute
+      preLoaderRoute: typeof DashboardContentCompetitionsCompIdStatsTeamsRouteImport
+      parentRoute: typeof DashboardContentCompetitionsCompIdStatsRouteRoute
     }
-    '/_dashboard/competitions/$compId/players/create': {
-      id: '/_dashboard/competitions/$compId/players/create'
+    '/_dashboard/_content/competitions/$compId/players/create': {
+      id: '/_dashboard/_content/competitions/$compId/players/create'
       path: '/players/create'
       fullPath: '/competitions/$compId/players/create'
-      preLoaderRoute: typeof DashboardCompetitionsCompIdPlayersCreateRouteImport
-      parentRoute: typeof DashboardCompetitionsCompIdRouteRoute
+      preLoaderRoute: typeof DashboardContentCompetitionsCompIdPlayersCreateRouteImport
+      parentRoute: typeof DashboardContentCompetitionsCompIdRouteRoute
     }
-    '/_dashboard/competitions/$compId/fixtures/review': {
-      id: '/_dashboard/competitions/$compId/fixtures/review'
+    '/_dashboard/_content/competitions/$compId/fixtures/review': {
+      id: '/_dashboard/_content/competitions/$compId/fixtures/review'
       path: '/fixtures/review'
       fullPath: '/competitions/$compId/fixtures/review'
-      preLoaderRoute: typeof DashboardCompetitionsCompIdFixturesReviewRouteImport
-      parentRoute: typeof DashboardCompetitionsCompIdRouteRoute
+      preLoaderRoute: typeof DashboardContentCompetitionsCompIdFixturesReviewRouteImport
+      parentRoute: typeof DashboardContentCompetitionsCompIdRouteRoute
     }
-    '/_dashboard/competitions/$compId/_settings/images': {
-      id: '/_dashboard/competitions/$compId/_settings/images'
+    '/_dashboard/_content/competitions/$compId/_settings/images': {
+      id: '/_dashboard/_content/competitions/$compId/_settings/images'
       path: '/images'
       fullPath: '/competitions/$compId/images'
-      preLoaderRoute: typeof DashboardCompetitionsCompIdSettingsImagesRouteImport
-      parentRoute: typeof DashboardCompetitionsCompIdSettingsRouteRoute
+      preLoaderRoute: typeof DashboardContentCompetitionsCompIdSettingsImagesRouteImport
+      parentRoute: typeof DashboardContentCompetitionsCompIdSettingsRouteRoute
     }
-    '/_dashboard/competitions/$compId/_settings/divisions': {
-      id: '/_dashboard/competitions/$compId/_settings/divisions'
+    '/_dashboard/_content/competitions/$compId/_settings/divisions': {
+      id: '/_dashboard/_content/competitions/$compId/_settings/divisions'
       path: '/divisions'
       fullPath: '/competitions/$compId/divisions'
-      preLoaderRoute: typeof DashboardCompetitionsCompIdSettingsDivisionsRouteImport
-      parentRoute: typeof DashboardCompetitionsCompIdSettingsRouteRoute
+      preLoaderRoute: typeof DashboardContentCompetitionsCompIdSettingsDivisionsRouteImport
+      parentRoute: typeof DashboardContentCompetitionsCompIdSettingsRouteRoute
     }
-    '/_dashboard/competitions/$compId/fixtures/$fixId': {
-      id: '/_dashboard/competitions/$compId/fixtures/$fixId'
+    '/_dashboard/_content/competitions/$compId/fixtures/$fixId': {
+      id: '/_dashboard/_content/competitions/$compId/fixtures/$fixId'
       path: '/fixtures/$fixId'
       fullPath: '/competitions/$compId/fixtures/$fixId'
-      preLoaderRoute: typeof DashboardCompetitionsCompIdFixturesFixIdRouteRouteImport
-      parentRoute: typeof DashboardCompetitionsCompIdRouteRoute
+      preLoaderRoute: typeof DashboardContentCompetitionsCompIdFixturesFixIdRouteRouteImport
+      parentRoute: typeof DashboardContentCompetitionsCompIdRouteRoute
     }
-    '/_dashboard/competitions/$compId/teams/$teamId/': {
-      id: '/_dashboard/competitions/$compId/teams/$teamId/'
+    '/_dashboard/_content/competitions/$compId/teams/$teamId/': {
+      id: '/_dashboard/_content/competitions/$compId/teams/$teamId/'
       path: '/teams/$teamId'
       fullPath: '/competitions/$compId/teams/$teamId/'
-      preLoaderRoute: typeof DashboardCompetitionsCompIdTeamsTeamIdIndexRouteImport
-      parentRoute: typeof DashboardCompetitionsCompIdRouteRoute
+      preLoaderRoute: typeof DashboardContentCompetitionsCompIdTeamsTeamIdIndexRouteImport
+      parentRoute: typeof DashboardContentCompetitionsCompIdRouteRoute
     }
-    '/_dashboard/competitions/$compId/fixtures/$fixId/': {
-      id: '/_dashboard/competitions/$compId/fixtures/$fixId/'
+    '/_dashboard/_content/competitions/$compId/fixtures/$fixId/': {
+      id: '/_dashboard/_content/competitions/$compId/fixtures/$fixId/'
       path: '/'
       fullPath: '/competitions/$compId/fixtures/$fixId/'
-      preLoaderRoute: typeof DashboardCompetitionsCompIdFixturesFixIdIndexRouteImport
-      parentRoute: typeof DashboardCompetitionsCompIdFixturesFixIdRouteRoute
+      preLoaderRoute: typeof DashboardContentCompetitionsCompIdFixturesFixIdIndexRouteImport
+      parentRoute: typeof DashboardContentCompetitionsCompIdFixturesFixIdRouteRoute
     }
-    '/_dashboard/competitions/$compId/players/$playerId/edit': {
-      id: '/_dashboard/competitions/$compId/players/$playerId/edit'
+    '/_dashboard/_content/competitions/$compId/players/$playerId/edit': {
+      id: '/_dashboard/_content/competitions/$compId/players/$playerId/edit'
       path: '/players/$playerId/edit'
       fullPath: '/competitions/$compId/players/$playerId/edit'
-      preLoaderRoute: typeof DashboardCompetitionsCompIdPlayersPlayerIdEditRouteImport
-      parentRoute: typeof DashboardCompetitionsCompIdRouteRoute
+      preLoaderRoute: typeof DashboardContentCompetitionsCompIdPlayersPlayerIdEditRouteImport
+      parentRoute: typeof DashboardContentCompetitionsCompIdRouteRoute
     }
-    '/_dashboard/competitions/$compId/fixtures/$fixId/review': {
-      id: '/_dashboard/competitions/$compId/fixtures/$fixId/review'
+    '/_dashboard/_content/competitions/$compId/fixtures/$fixId/review': {
+      id: '/_dashboard/_content/competitions/$compId/fixtures/$fixId/review'
       path: '/review'
       fullPath: '/competitions/$compId/fixtures/$fixId/review'
-      preLoaderRoute: typeof DashboardCompetitionsCompIdFixturesFixIdReviewRouteImport
-      parentRoute: typeof DashboardCompetitionsCompIdFixturesFixIdRouteRoute
+      preLoaderRoute: typeof DashboardContentCompetitionsCompIdFixturesFixIdReviewRouteImport
+      parentRoute: typeof DashboardContentCompetitionsCompIdFixturesFixIdRouteRoute
     }
-    '/_dashboard/competitions/$compId/fixtures/$fixId/raw-events': {
-      id: '/_dashboard/competitions/$compId/fixtures/$fixId/raw-events'
+    '/_dashboard/_content/competitions/$compId/fixtures/$fixId/raw-events': {
+      id: '/_dashboard/_content/competitions/$compId/fixtures/$fixId/raw-events'
       path: '/raw-events'
       fullPath: '/competitions/$compId/fixtures/$fixId/raw-events'
-      preLoaderRoute: typeof DashboardCompetitionsCompIdFixturesFixIdRawEventsRouteImport
-      parentRoute: typeof DashboardCompetitionsCompIdFixturesFixIdRouteRoute
+      preLoaderRoute: typeof DashboardContentCompetitionsCompIdFixturesFixIdRawEventsRouteImport
+      parentRoute: typeof DashboardContentCompetitionsCompIdFixturesFixIdRouteRoute
     }
-    '/_dashboard/competitions/$compId/fixtures/$fixId/player-stats': {
-      id: '/_dashboard/competitions/$compId/fixtures/$fixId/player-stats'
+    '/_dashboard/_content/competitions/$compId/fixtures/$fixId/player-stats': {
+      id: '/_dashboard/_content/competitions/$compId/fixtures/$fixId/player-stats'
       path: '/player-stats'
       fullPath: '/competitions/$compId/fixtures/$fixId/player-stats'
-      preLoaderRoute: typeof DashboardCompetitionsCompIdFixturesFixIdPlayerStatsRouteImport
-      parentRoute: typeof DashboardCompetitionsCompIdFixturesFixIdRouteRoute
+      preLoaderRoute: typeof DashboardContentCompetitionsCompIdFixturesFixIdPlayerStatsRouteImport
+      parentRoute: typeof DashboardContentCompetitionsCompIdFixturesFixIdRouteRoute
     }
   }
 }
@@ -861,143 +887,159 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
   AuthRouteRouteChildren,
 )
 
-interface DashboardCompetitionsCompIdSettingsRouteRouteChildren {
-  DashboardCompetitionsCompIdSettingsDivisionsRoute: typeof DashboardCompetitionsCompIdSettingsDivisionsRoute
-  DashboardCompetitionsCompIdSettingsImagesRoute: typeof DashboardCompetitionsCompIdSettingsImagesRoute
-  DashboardCompetitionsCompIdSettingsIndexRoute: typeof DashboardCompetitionsCompIdSettingsIndexRoute
+interface DashboardContentCompetitionsCompIdSettingsRouteRouteChildren {
+  DashboardContentCompetitionsCompIdSettingsDivisionsRoute: typeof DashboardContentCompetitionsCompIdSettingsDivisionsRoute
+  DashboardContentCompetitionsCompIdSettingsImagesRoute: typeof DashboardContentCompetitionsCompIdSettingsImagesRoute
+  DashboardContentCompetitionsCompIdSettingsIndexRoute: typeof DashboardContentCompetitionsCompIdSettingsIndexRoute
 }
 
-const DashboardCompetitionsCompIdSettingsRouteRouteChildren: DashboardCompetitionsCompIdSettingsRouteRouteChildren =
+const DashboardContentCompetitionsCompIdSettingsRouteRouteChildren: DashboardContentCompetitionsCompIdSettingsRouteRouteChildren =
   {
-    DashboardCompetitionsCompIdSettingsDivisionsRoute:
-      DashboardCompetitionsCompIdSettingsDivisionsRoute,
-    DashboardCompetitionsCompIdSettingsImagesRoute:
-      DashboardCompetitionsCompIdSettingsImagesRoute,
-    DashboardCompetitionsCompIdSettingsIndexRoute:
-      DashboardCompetitionsCompIdSettingsIndexRoute,
+    DashboardContentCompetitionsCompIdSettingsDivisionsRoute:
+      DashboardContentCompetitionsCompIdSettingsDivisionsRoute,
+    DashboardContentCompetitionsCompIdSettingsImagesRoute:
+      DashboardContentCompetitionsCompIdSettingsImagesRoute,
+    DashboardContentCompetitionsCompIdSettingsIndexRoute:
+      DashboardContentCompetitionsCompIdSettingsIndexRoute,
   }
 
-const DashboardCompetitionsCompIdSettingsRouteRouteWithChildren =
-  DashboardCompetitionsCompIdSettingsRouteRoute._addFileChildren(
-    DashboardCompetitionsCompIdSettingsRouteRouteChildren,
+const DashboardContentCompetitionsCompIdSettingsRouteRouteWithChildren =
+  DashboardContentCompetitionsCompIdSettingsRouteRoute._addFileChildren(
+    DashboardContentCompetitionsCompIdSettingsRouteRouteChildren,
   )
 
-interface DashboardCompetitionsCompIdStatsRouteRouteChildren {
-  DashboardCompetitionsCompIdStatsTeamsRoute: typeof DashboardCompetitionsCompIdStatsTeamsRoute
-  DashboardCompetitionsCompIdStatsIndexRoute: typeof DashboardCompetitionsCompIdStatsIndexRoute
+interface DashboardContentCompetitionsCompIdStatsRouteRouteChildren {
+  DashboardContentCompetitionsCompIdStatsTeamsRoute: typeof DashboardContentCompetitionsCompIdStatsTeamsRoute
+  DashboardContentCompetitionsCompIdStatsIndexRoute: typeof DashboardContentCompetitionsCompIdStatsIndexRoute
 }
 
-const DashboardCompetitionsCompIdStatsRouteRouteChildren: DashboardCompetitionsCompIdStatsRouteRouteChildren =
+const DashboardContentCompetitionsCompIdStatsRouteRouteChildren: DashboardContentCompetitionsCompIdStatsRouteRouteChildren =
   {
-    DashboardCompetitionsCompIdStatsTeamsRoute:
-      DashboardCompetitionsCompIdStatsTeamsRoute,
-    DashboardCompetitionsCompIdStatsIndexRoute:
-      DashboardCompetitionsCompIdStatsIndexRoute,
+    DashboardContentCompetitionsCompIdStatsTeamsRoute:
+      DashboardContentCompetitionsCompIdStatsTeamsRoute,
+    DashboardContentCompetitionsCompIdStatsIndexRoute:
+      DashboardContentCompetitionsCompIdStatsIndexRoute,
   }
 
-const DashboardCompetitionsCompIdStatsRouteRouteWithChildren =
-  DashboardCompetitionsCompIdStatsRouteRoute._addFileChildren(
-    DashboardCompetitionsCompIdStatsRouteRouteChildren,
+const DashboardContentCompetitionsCompIdStatsRouteRouteWithChildren =
+  DashboardContentCompetitionsCompIdStatsRouteRoute._addFileChildren(
+    DashboardContentCompetitionsCompIdStatsRouteRouteChildren,
   )
 
-interface DashboardCompetitionsCompIdFixturesFixIdRouteRouteChildren {
-  DashboardCompetitionsCompIdFixturesFixIdPlayerStatsRoute: typeof DashboardCompetitionsCompIdFixturesFixIdPlayerStatsRoute
-  DashboardCompetitionsCompIdFixturesFixIdRawEventsRoute: typeof DashboardCompetitionsCompIdFixturesFixIdRawEventsRoute
-  DashboardCompetitionsCompIdFixturesFixIdReviewRoute: typeof DashboardCompetitionsCompIdFixturesFixIdReviewRoute
-  DashboardCompetitionsCompIdFixturesFixIdIndexRoute: typeof DashboardCompetitionsCompIdFixturesFixIdIndexRoute
+interface DashboardContentCompetitionsCompIdFixturesFixIdRouteRouteChildren {
+  DashboardContentCompetitionsCompIdFixturesFixIdPlayerStatsRoute: typeof DashboardContentCompetitionsCompIdFixturesFixIdPlayerStatsRoute
+  DashboardContentCompetitionsCompIdFixturesFixIdRawEventsRoute: typeof DashboardContentCompetitionsCompIdFixturesFixIdRawEventsRoute
+  DashboardContentCompetitionsCompIdFixturesFixIdReviewRoute: typeof DashboardContentCompetitionsCompIdFixturesFixIdReviewRoute
+  DashboardContentCompetitionsCompIdFixturesFixIdIndexRoute: typeof DashboardContentCompetitionsCompIdFixturesFixIdIndexRoute
 }
 
-const DashboardCompetitionsCompIdFixturesFixIdRouteRouteChildren: DashboardCompetitionsCompIdFixturesFixIdRouteRouteChildren =
+const DashboardContentCompetitionsCompIdFixturesFixIdRouteRouteChildren: DashboardContentCompetitionsCompIdFixturesFixIdRouteRouteChildren =
   {
-    DashboardCompetitionsCompIdFixturesFixIdPlayerStatsRoute:
-      DashboardCompetitionsCompIdFixturesFixIdPlayerStatsRoute,
-    DashboardCompetitionsCompIdFixturesFixIdRawEventsRoute:
-      DashboardCompetitionsCompIdFixturesFixIdRawEventsRoute,
-    DashboardCompetitionsCompIdFixturesFixIdReviewRoute:
-      DashboardCompetitionsCompIdFixturesFixIdReviewRoute,
-    DashboardCompetitionsCompIdFixturesFixIdIndexRoute:
-      DashboardCompetitionsCompIdFixturesFixIdIndexRoute,
+    DashboardContentCompetitionsCompIdFixturesFixIdPlayerStatsRoute:
+      DashboardContentCompetitionsCompIdFixturesFixIdPlayerStatsRoute,
+    DashboardContentCompetitionsCompIdFixturesFixIdRawEventsRoute:
+      DashboardContentCompetitionsCompIdFixturesFixIdRawEventsRoute,
+    DashboardContentCompetitionsCompIdFixturesFixIdReviewRoute:
+      DashboardContentCompetitionsCompIdFixturesFixIdReviewRoute,
+    DashboardContentCompetitionsCompIdFixturesFixIdIndexRoute:
+      DashboardContentCompetitionsCompIdFixturesFixIdIndexRoute,
   }
 
-const DashboardCompetitionsCompIdFixturesFixIdRouteRouteWithChildren =
-  DashboardCompetitionsCompIdFixturesFixIdRouteRoute._addFileChildren(
-    DashboardCompetitionsCompIdFixturesFixIdRouteRouteChildren,
+const DashboardContentCompetitionsCompIdFixturesFixIdRouteRouteWithChildren =
+  DashboardContentCompetitionsCompIdFixturesFixIdRouteRoute._addFileChildren(
+    DashboardContentCompetitionsCompIdFixturesFixIdRouteRouteChildren,
   )
 
-interface DashboardCompetitionsCompIdRouteRouteChildren {
-  DashboardCompetitionsCompIdSettingsRouteRoute: typeof DashboardCompetitionsCompIdSettingsRouteRouteWithChildren
-  DashboardCompetitionsCompIdStatsRouteRoute: typeof DashboardCompetitionsCompIdStatsRouteRouteWithChildren
-  DashboardCompetitionsCompIdFixturesFixIdRouteRoute: typeof DashboardCompetitionsCompIdFixturesFixIdRouteRouteWithChildren
-  DashboardCompetitionsCompIdFixturesReviewRoute: typeof DashboardCompetitionsCompIdFixturesReviewRoute
-  DashboardCompetitionsCompIdPlayersCreateRoute: typeof DashboardCompetitionsCompIdPlayersCreateRoute
-  DashboardCompetitionsCompIdFixturesIndexRoute: typeof DashboardCompetitionsCompIdFixturesIndexRoute
-  DashboardCompetitionsCompIdLeaguesIndexRoute: typeof DashboardCompetitionsCompIdLeaguesIndexRoute
-  DashboardCompetitionsCompIdPlayersIndexRoute: typeof DashboardCompetitionsCompIdPlayersIndexRoute
-  DashboardCompetitionsCompIdTeamsIndexRoute: typeof DashboardCompetitionsCompIdTeamsIndexRoute
-  DashboardCompetitionsCompIdPlayersPlayerIdEditRoute: typeof DashboardCompetitionsCompIdPlayersPlayerIdEditRoute
-  DashboardCompetitionsCompIdTeamsTeamIdIndexRoute: typeof DashboardCompetitionsCompIdTeamsTeamIdIndexRoute
+interface DashboardContentCompetitionsCompIdRouteRouteChildren {
+  DashboardContentCompetitionsCompIdSettingsRouteRoute: typeof DashboardContentCompetitionsCompIdSettingsRouteRouteWithChildren
+  DashboardContentCompetitionsCompIdStatsRouteRoute: typeof DashboardContentCompetitionsCompIdStatsRouteRouteWithChildren
+  DashboardContentCompetitionsCompIdFixturesFixIdRouteRoute: typeof DashboardContentCompetitionsCompIdFixturesFixIdRouteRouteWithChildren
+  DashboardContentCompetitionsCompIdFixturesReviewRoute: typeof DashboardContentCompetitionsCompIdFixturesReviewRoute
+  DashboardContentCompetitionsCompIdPlayersCreateRoute: typeof DashboardContentCompetitionsCompIdPlayersCreateRoute
+  DashboardContentCompetitionsCompIdFixturesIndexRoute: typeof DashboardContentCompetitionsCompIdFixturesIndexRoute
+  DashboardContentCompetitionsCompIdLeaguesIndexRoute: typeof DashboardContentCompetitionsCompIdLeaguesIndexRoute
+  DashboardContentCompetitionsCompIdPlayersIndexRoute: typeof DashboardContentCompetitionsCompIdPlayersIndexRoute
+  DashboardContentCompetitionsCompIdTeamsIndexRoute: typeof DashboardContentCompetitionsCompIdTeamsIndexRoute
+  DashboardContentCompetitionsCompIdPlayersPlayerIdEditRoute: typeof DashboardContentCompetitionsCompIdPlayersPlayerIdEditRoute
+  DashboardContentCompetitionsCompIdTeamsTeamIdIndexRoute: typeof DashboardContentCompetitionsCompIdTeamsTeamIdIndexRoute
 }
 
-const DashboardCompetitionsCompIdRouteRouteChildren: DashboardCompetitionsCompIdRouteRouteChildren =
+const DashboardContentCompetitionsCompIdRouteRouteChildren: DashboardContentCompetitionsCompIdRouteRouteChildren =
   {
-    DashboardCompetitionsCompIdSettingsRouteRoute:
-      DashboardCompetitionsCompIdSettingsRouteRouteWithChildren,
-    DashboardCompetitionsCompIdStatsRouteRoute:
-      DashboardCompetitionsCompIdStatsRouteRouteWithChildren,
-    DashboardCompetitionsCompIdFixturesFixIdRouteRoute:
-      DashboardCompetitionsCompIdFixturesFixIdRouteRouteWithChildren,
-    DashboardCompetitionsCompIdFixturesReviewRoute:
-      DashboardCompetitionsCompIdFixturesReviewRoute,
-    DashboardCompetitionsCompIdPlayersCreateRoute:
-      DashboardCompetitionsCompIdPlayersCreateRoute,
-    DashboardCompetitionsCompIdFixturesIndexRoute:
-      DashboardCompetitionsCompIdFixturesIndexRoute,
-    DashboardCompetitionsCompIdLeaguesIndexRoute:
-      DashboardCompetitionsCompIdLeaguesIndexRoute,
-    DashboardCompetitionsCompIdPlayersIndexRoute:
-      DashboardCompetitionsCompIdPlayersIndexRoute,
-    DashboardCompetitionsCompIdTeamsIndexRoute:
-      DashboardCompetitionsCompIdTeamsIndexRoute,
-    DashboardCompetitionsCompIdPlayersPlayerIdEditRoute:
-      DashboardCompetitionsCompIdPlayersPlayerIdEditRoute,
-    DashboardCompetitionsCompIdTeamsTeamIdIndexRoute:
-      DashboardCompetitionsCompIdTeamsTeamIdIndexRoute,
+    DashboardContentCompetitionsCompIdSettingsRouteRoute:
+      DashboardContentCompetitionsCompIdSettingsRouteRouteWithChildren,
+    DashboardContentCompetitionsCompIdStatsRouteRoute:
+      DashboardContentCompetitionsCompIdStatsRouteRouteWithChildren,
+    DashboardContentCompetitionsCompIdFixturesFixIdRouteRoute:
+      DashboardContentCompetitionsCompIdFixturesFixIdRouteRouteWithChildren,
+    DashboardContentCompetitionsCompIdFixturesReviewRoute:
+      DashboardContentCompetitionsCompIdFixturesReviewRoute,
+    DashboardContentCompetitionsCompIdPlayersCreateRoute:
+      DashboardContentCompetitionsCompIdPlayersCreateRoute,
+    DashboardContentCompetitionsCompIdFixturesIndexRoute:
+      DashboardContentCompetitionsCompIdFixturesIndexRoute,
+    DashboardContentCompetitionsCompIdLeaguesIndexRoute:
+      DashboardContentCompetitionsCompIdLeaguesIndexRoute,
+    DashboardContentCompetitionsCompIdPlayersIndexRoute:
+      DashboardContentCompetitionsCompIdPlayersIndexRoute,
+    DashboardContentCompetitionsCompIdTeamsIndexRoute:
+      DashboardContentCompetitionsCompIdTeamsIndexRoute,
+    DashboardContentCompetitionsCompIdPlayersPlayerIdEditRoute:
+      DashboardContentCompetitionsCompIdPlayersPlayerIdEditRoute,
+    DashboardContentCompetitionsCompIdTeamsTeamIdIndexRoute:
+      DashboardContentCompetitionsCompIdTeamsTeamIdIndexRoute,
   }
 
-const DashboardCompetitionsCompIdRouteRouteWithChildren =
-  DashboardCompetitionsCompIdRouteRoute._addFileChildren(
-    DashboardCompetitionsCompIdRouteRouteChildren,
+const DashboardContentCompetitionsCompIdRouteRouteWithChildren =
+  DashboardContentCompetitionsCompIdRouteRoute._addFileChildren(
+    DashboardContentCompetitionsCompIdRouteRouteChildren,
+  )
+
+interface DashboardContentRouteRouteChildren {
+  DashboardContentCompetitionsCompIdRouteRoute: typeof DashboardContentCompetitionsCompIdRouteRouteWithChildren
+  DashboardContentAgentsFixturesRoute: typeof DashboardContentAgentsFixturesRoute
+  DashboardContentAdminIndexRoute: typeof DashboardContentAdminIndexRoute
+  DashboardContentAgentsIndexRoute: typeof DashboardContentAgentsIndexRoute
+  DashboardContentArticlesIndexRoute: typeof DashboardContentArticlesIndexRoute
+  DashboardContentCompetitionsIndexRoute: typeof DashboardContentCompetitionsIndexRoute
+  DashboardContentPlayersIndexRoute: typeof DashboardContentPlayersIndexRoute
+  DashboardContentTeamsIndexRoute: typeof DashboardContentTeamsIndexRoute
+  DashboardContentTicketsIndexRoute: typeof DashboardContentTicketsIndexRoute
+  DashboardContentWalletIndexRoute: typeof DashboardContentWalletIndexRoute
+  DashboardContentArticlesArticleIdEditRoute: typeof DashboardContentArticlesArticleIdEditRoute
+  DashboardContentArticlesCreateIndexRoute: typeof DashboardContentArticlesCreateIndexRoute
+}
+
+const DashboardContentRouteRouteChildren: DashboardContentRouteRouteChildren = {
+  DashboardContentCompetitionsCompIdRouteRoute:
+    DashboardContentCompetitionsCompIdRouteRouteWithChildren,
+  DashboardContentAgentsFixturesRoute: DashboardContentAgentsFixturesRoute,
+  DashboardContentAdminIndexRoute: DashboardContentAdminIndexRoute,
+  DashboardContentAgentsIndexRoute: DashboardContentAgentsIndexRoute,
+  DashboardContentArticlesIndexRoute: DashboardContentArticlesIndexRoute,
+  DashboardContentCompetitionsIndexRoute:
+    DashboardContentCompetitionsIndexRoute,
+  DashboardContentPlayersIndexRoute: DashboardContentPlayersIndexRoute,
+  DashboardContentTeamsIndexRoute: DashboardContentTeamsIndexRoute,
+  DashboardContentTicketsIndexRoute: DashboardContentTicketsIndexRoute,
+  DashboardContentWalletIndexRoute: DashboardContentWalletIndexRoute,
+  DashboardContentArticlesArticleIdEditRoute:
+    DashboardContentArticlesArticleIdEditRoute,
+  DashboardContentArticlesCreateIndexRoute:
+    DashboardContentArticlesCreateIndexRoute,
+}
+
+const DashboardContentRouteRouteWithChildren =
+  DashboardContentRouteRoute._addFileChildren(
+    DashboardContentRouteRouteChildren,
   )
 
 interface DashboardRouteRouteChildren {
-  DashboardCompetitionsCompIdRouteRoute: typeof DashboardCompetitionsCompIdRouteRouteWithChildren
-  DashboardAgentsFixturesRoute: typeof DashboardAgentsFixturesRoute
-  DashboardAdminIndexRoute: typeof DashboardAdminIndexRoute
-  DashboardAgentsIndexRoute: typeof DashboardAgentsIndexRoute
-  DashboardArticlesIndexRoute: typeof DashboardArticlesIndexRoute
-  DashboardCompetitionsIndexRoute: typeof DashboardCompetitionsIndexRoute
-  DashboardPlayersIndexRoute: typeof DashboardPlayersIndexRoute
-  DashboardTeamsIndexRoute: typeof DashboardTeamsIndexRoute
-  DashboardTicketsIndexRoute: typeof DashboardTicketsIndexRoute
-  DashboardWalletIndexRoute: typeof DashboardWalletIndexRoute
-  DashboardArticlesArticleIdEditRoute: typeof DashboardArticlesArticleIdEditRoute
-  DashboardArticlesCreateIndexRoute: typeof DashboardArticlesCreateIndexRoute
+  DashboardContentRouteRoute: typeof DashboardContentRouteRouteWithChildren
 }
 
 const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
-  DashboardCompetitionsCompIdRouteRoute:
-    DashboardCompetitionsCompIdRouteRouteWithChildren,
-  DashboardAgentsFixturesRoute: DashboardAgentsFixturesRoute,
-  DashboardAdminIndexRoute: DashboardAdminIndexRoute,
-  DashboardAgentsIndexRoute: DashboardAgentsIndexRoute,
-  DashboardArticlesIndexRoute: DashboardArticlesIndexRoute,
-  DashboardCompetitionsIndexRoute: DashboardCompetitionsIndexRoute,
-  DashboardPlayersIndexRoute: DashboardPlayersIndexRoute,
-  DashboardTeamsIndexRoute: DashboardTeamsIndexRoute,
-  DashboardTicketsIndexRoute: DashboardTicketsIndexRoute,
-  DashboardWalletIndexRoute: DashboardWalletIndexRoute,
-  DashboardArticlesArticleIdEditRoute: DashboardArticlesArticleIdEditRoute,
-  DashboardArticlesCreateIndexRoute: DashboardArticlesCreateIndexRoute,
+  DashboardContentRouteRoute: DashboardContentRouteRouteWithChildren,
 }
 
 const DashboardRouteRouteWithChildren = DashboardRouteRoute._addFileChildren(

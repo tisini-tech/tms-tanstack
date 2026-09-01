@@ -456,6 +456,13 @@ export function parseIdDocumentType(
   return ''
 }
 
+export interface PlayerMeasurement {
+  id: number
+  height: string
+  weight: string
+  measured_on: string
+}
+
 export interface Player {
   name: string
   nationality: string

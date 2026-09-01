@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
+import { getLastModulePath } from './last-module'
 import { MODULE_ROUTES } from './module-routes'
 import type { EventSequence, Module, TeamStats } from './types'
 
@@ -42,6 +43,27 @@ export function resolvePostLoginPath(
   // 2) last module the user was in before logout
   // 3) first allowed module
   return pickAllowed(redirect) ?? pickAllowed(lastPath) ?? defaultHome
+}
+
+/** First allowed module home for error-page navigation. */
+export function getFirstModuleHomePath(modules?: Module[]) {
+  if (modules?.length) {
+    for (const mod of modules) {
+      const home = MODULE_ROUTES[mod.name]
+      if (home) return home
+    }
+  }
+
+  const last = getLastModulePath()
+  if (last) {
+    for (const home of Object.values(MODULE_ROUTES)) {
+      if (last === home || last.startsWith(`${home}/`)) {
+        return home
+      }
+    }
+  }
+
+  return '/'
 }
 
 export function formatE164Phone(

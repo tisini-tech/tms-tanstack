@@ -3,7 +3,12 @@ import { createServerFn } from '@tanstack/react-start'
 import { authFnMiddleware } from '#/middlewares/auth'
 import { apiService } from '#/lib/api'
 import type { UpdatePlayerSchema } from '#/lib/schemas'
-import type { IdDocumentType, Player, TeamPlayer } from '#/lib/types'
+import type {
+  IdDocumentType,
+  Player,
+  PlayerMeasurement,
+  TeamPlayer,
+} from '#/lib/types'
 
 export const getPlayersFn = createServerFn({ method: 'GET' })
   .validator((data: { teamId: string; seasonId?: number }) => data)
@@ -172,7 +177,6 @@ export type UpdatePlayerBody = {
   id_document?: string
   id_no?: string
   passportphoto?: string
-  nationality?: string
   fifa_id?: string
   preferred_foot?: string
   height?: string
@@ -229,11 +233,6 @@ export function getPlayerPatch(
     current.id_document_type,
     initial.id_document_type,
   )
-  setIfChanged(
-    'nationality',
-    current.nationality.trim(),
-    initial.nationality.trim(),
-  )
   setIfChanged('fifa_id', current.fifa_id.trim(), initial.fifa_id.trim())
   setIfChanged(
     'preferred_foot',
@@ -268,4 +267,18 @@ export const updatePlayerFn = createServerFn({ method: 'POST' })
       return null
     }
     return apiService.patch<Player>(`/teams/${team}/players/${id}`, patch)
+  })
+
+export const addPlayerMeasurementsFn = createServerFn({ method: 'POST' })
+  .middleware([authFnMiddleware])
+  .validator(
+    (data: { playerId: string; height: number; weight: number }) => data,
+  )
+  .handler(async ({ data }) => {
+    const { playerId, height, weight } = data
+
+    return apiService.post<PlayerMeasurement>(
+      `/players/${playerId}/measurements`,
+      { height, weight },
+    )
   })

@@ -1,13 +1,14 @@
-import { Link, useRouter } from '@tanstack/react-router'
+import { Link } from '@tanstack/react-router'
 import {
-  ArrowLeftIcon,
   GraduationCapIcon,
-  HouseIcon,
   SparklesIcon,
   TrophyIcon,
 } from 'lucide-react'
 
-import { Button } from '#/components/ui/button'
+import {
+  ErrorPageNavButtons,
+  useErrorPageHomePath,
+} from '#/components/general/errors/error-page-nav'
 
 const pillars = [
   { icon: TrophyIcon, label: 'Sports' },
@@ -16,7 +17,7 @@ const pillars = [
 ]
 
 export const NotFound = () => {
-  const router = useRouter()
+  const homePath = useErrorPageHomePath()
 
   return (
     <div className="relative flex min-h-svh flex-col overflow-hidden bg-background">
@@ -26,7 +27,7 @@ export const NotFound = () => {
       />
 
       <header className="relative z-10 px-6 py-5 md:px-10">
-        <Link to="/" className="inline-flex items-center">
+        <Link to={homePath} className="inline-flex items-center">
           <img
             src="/tisini.png"
             alt="Tisini"
@@ -54,28 +55,7 @@ export const NotFound = () => {
             There are still plenty of numbers worth exploring.
           </p>
 
-          <div className="mt-8 flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
-            <Button
-              render={<Link to="/" />}
-              nativeButton={false}
-              size="lg"
-              className="h-11 gap-2 rounded-xl px-5"
-            >
-              <HouseIcon className="size-4" aria-hidden />
-              Back to home
-            </Button>
-
-            <Button
-              type="button"
-              variant="outline"
-              size="lg"
-              onClick={() => router.history.back()}
-              className="h-11 gap-2 rounded-xl px-5"
-            >
-              <ArrowLeftIcon className="size-4" aria-hidden />
-              Go back
-            </Button>
-          </div>
+          <ErrorPageNavButtons homePath={homePath} />
 
           <div className="mt-12 flex flex-col items-center gap-4">
             <ul className="flex flex-wrap items-center justify-center gap-2">

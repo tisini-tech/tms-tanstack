@@ -1,9 +1,11 @@
 import { useEffect } from 'react'
 import { createFileRoute, Outlet, useRouterState } from '@tanstack/react-router'
 
+import { cn } from '#/lib/utils'
 import { getAuthContextFn } from '#/data/auth'
 import { Separator } from '#/components/ui/separator'
 import { AppSidebar } from '#/components/sidebar/app-sidebar'
+import { isCompetitionModulePath } from '#/lib/competition-context'
 import { CompetitionContextSwitcher } from '#/components/competitions/competition-context-switcher'
 import {
   SidebarInset,
@@ -11,8 +13,6 @@ import {
   SidebarTrigger,
   useSidebar,
 } from '#/components/ui/sidebar'
-import { cn } from '#/lib/utils'
-import { isCompetitionModulePath } from '#/lib/competition-context'
 
 export const Route = createFileRoute('/_dashboard')({
   beforeLoad: async () => {
@@ -55,9 +55,7 @@ function RouteComponent() {
       <AppSidebar user={user} modules={modules} />
 
       <SidebarInset
-        className={cn(
-          focusLayout && 'min-h-svh lg:h-svh lg:overflow-hidden',
-        )}
+        className={cn(focusLayout && 'min-h-svh lg:h-svh lg:overflow-hidden')}
       >
         {!focusLayout ? (
           <header className="flex min-h-14 shrink-0 items-start transition-[width,height] ease-linear sm:h-16 sm:items-center group-has-data-[collapsible=icon]/sidebar-wrapper:sm:h-12">
