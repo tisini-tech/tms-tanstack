@@ -49,9 +49,11 @@ import { Route as DashboardContentCompetitionsCompIdFixturesFixIdRouteRouteImpor
 import { Route as DashboardContentCompetitionsCompIdTeamsTeamIdIndexRouteImport } from './routes/_dashboard/_content/competitions/$compId/teams/$teamId/index'
 import { Route as DashboardContentCompetitionsCompIdFixturesFixIdIndexRouteImport } from './routes/_dashboard/_content/competitions/$compId/fixtures/$fixId/index'
 import { Route as DashboardContentCompetitionsCompIdPlayersPlayerIdEditRouteImport } from './routes/_dashboard/_content/competitions/$compId/players/$playerId/edit'
+import { Route as DashboardContentCompetitionsCompIdFixturesFixIdVideoAnalysisRouteImport } from './routes/_dashboard/_content/competitions/$compId/fixtures/$fixId/video-analysis'
 import { Route as DashboardContentCompetitionsCompIdFixturesFixIdReviewRouteImport } from './routes/_dashboard/_content/competitions/$compId/fixtures/$fixId/review'
 import { Route as DashboardContentCompetitionsCompIdFixturesFixIdRawEventsRouteImport } from './routes/_dashboard/_content/competitions/$compId/fixtures/$fixId/raw-events'
 import { Route as DashboardContentCompetitionsCompIdFixturesFixIdPlayerStatsRouteImport } from './routes/_dashboard/_content/competitions/$compId/fixtures/$fixId/player-stats'
+import { Route as DashboardContentCompetitionsCompIdFixturesFixIdPassSequenceRouteImport } from './routes/_dashboard/_content/competitions/$compId/fixtures/$fixId/pass-sequence'
 
 const DashboardRouteRoute = DashboardRouteRouteImport.update({
   id: '/_dashboard',
@@ -279,6 +281,15 @@ const DashboardContentCompetitionsCompIdPlayersPlayerIdEditRoute =
     path: '/players/$playerId/edit',
     getParentRoute: () => DashboardContentCompetitionsCompIdRouteRoute,
   } as any)
+const DashboardContentCompetitionsCompIdFixturesFixIdVideoAnalysisRoute =
+  DashboardContentCompetitionsCompIdFixturesFixIdVideoAnalysisRouteImport.update(
+    {
+      id: '/video-analysis',
+      path: '/video-analysis',
+      getParentRoute: () =>
+        DashboardContentCompetitionsCompIdFixturesFixIdRouteRoute,
+    } as any,
+  )
 const DashboardContentCompetitionsCompIdFixturesFixIdReviewRoute =
   DashboardContentCompetitionsCompIdFixturesFixIdReviewRouteImport.update({
     id: '/review',
@@ -300,6 +311,15 @@ const DashboardContentCompetitionsCompIdFixturesFixIdPlayerStatsRoute =
     getParentRoute: () =>
       DashboardContentCompetitionsCompIdFixturesFixIdRouteRoute,
   } as any)
+const DashboardContentCompetitionsCompIdFixturesFixIdPassSequenceRoute =
+  DashboardContentCompetitionsCompIdFixturesFixIdPassSequenceRouteImport.update(
+    {
+      id: '/pass-sequence',
+      path: '/pass-sequence',
+      getParentRoute: () =>
+        DashboardContentCompetitionsCompIdFixturesFixIdRouteRoute,
+    } as any,
+  )
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -335,9 +355,11 @@ export interface FileRoutesByFullPath {
   '/competitions/$compId/players/': typeof DashboardContentCompetitionsCompIdPlayersIndexRoute
   '/competitions/$compId/stats/': typeof DashboardContentCompetitionsCompIdStatsIndexRoute
   '/competitions/$compId/teams/': typeof DashboardContentCompetitionsCompIdTeamsIndexRoute
+  '/competitions/$compId/fixtures/$fixId/pass-sequence': typeof DashboardContentCompetitionsCompIdFixturesFixIdPassSequenceRoute
   '/competitions/$compId/fixtures/$fixId/player-stats': typeof DashboardContentCompetitionsCompIdFixturesFixIdPlayerStatsRoute
   '/competitions/$compId/fixtures/$fixId/raw-events': typeof DashboardContentCompetitionsCompIdFixturesFixIdRawEventsRoute
   '/competitions/$compId/fixtures/$fixId/review': typeof DashboardContentCompetitionsCompIdFixturesFixIdReviewRoute
+  '/competitions/$compId/fixtures/$fixId/video-analysis': typeof DashboardContentCompetitionsCompIdFixturesFixIdVideoAnalysisRoute
   '/competitions/$compId/players/$playerId/edit': typeof DashboardContentCompetitionsCompIdPlayersPlayerIdEditRoute
   '/competitions/$compId/fixtures/$fixId/': typeof DashboardContentCompetitionsCompIdFixturesFixIdIndexRoute
   '/competitions/$compId/teams/$teamId/': typeof DashboardContentCompetitionsCompIdTeamsTeamIdIndexRoute
@@ -373,9 +395,11 @@ export interface FileRoutesByTo {
   '/competitions/$compId/players': typeof DashboardContentCompetitionsCompIdPlayersIndexRoute
   '/competitions/$compId/stats': typeof DashboardContentCompetitionsCompIdStatsIndexRoute
   '/competitions/$compId/teams': typeof DashboardContentCompetitionsCompIdTeamsIndexRoute
+  '/competitions/$compId/fixtures/$fixId/pass-sequence': typeof DashboardContentCompetitionsCompIdFixturesFixIdPassSequenceRoute
   '/competitions/$compId/fixtures/$fixId/player-stats': typeof DashboardContentCompetitionsCompIdFixturesFixIdPlayerStatsRoute
   '/competitions/$compId/fixtures/$fixId/raw-events': typeof DashboardContentCompetitionsCompIdFixturesFixIdRawEventsRoute
   '/competitions/$compId/fixtures/$fixId/review': typeof DashboardContentCompetitionsCompIdFixturesFixIdReviewRoute
+  '/competitions/$compId/fixtures/$fixId/video-analysis': typeof DashboardContentCompetitionsCompIdFixturesFixIdVideoAnalysisRoute
   '/competitions/$compId/players/$playerId/edit': typeof DashboardContentCompetitionsCompIdPlayersPlayerIdEditRoute
   '/competitions/$compId/fixtures/$fixId': typeof DashboardContentCompetitionsCompIdFixturesFixIdIndexRoute
   '/competitions/$compId/teams/$teamId': typeof DashboardContentCompetitionsCompIdTeamsTeamIdIndexRoute
@@ -419,9 +443,11 @@ export interface FileRoutesById {
   '/_dashboard/_content/competitions/$compId/players/': typeof DashboardContentCompetitionsCompIdPlayersIndexRoute
   '/_dashboard/_content/competitions/$compId/stats/': typeof DashboardContentCompetitionsCompIdStatsIndexRoute
   '/_dashboard/_content/competitions/$compId/teams/': typeof DashboardContentCompetitionsCompIdTeamsIndexRoute
+  '/_dashboard/_content/competitions/$compId/fixtures/$fixId/pass-sequence': typeof DashboardContentCompetitionsCompIdFixturesFixIdPassSequenceRoute
   '/_dashboard/_content/competitions/$compId/fixtures/$fixId/player-stats': typeof DashboardContentCompetitionsCompIdFixturesFixIdPlayerStatsRoute
   '/_dashboard/_content/competitions/$compId/fixtures/$fixId/raw-events': typeof DashboardContentCompetitionsCompIdFixturesFixIdRawEventsRoute
   '/_dashboard/_content/competitions/$compId/fixtures/$fixId/review': typeof DashboardContentCompetitionsCompIdFixturesFixIdReviewRoute
+  '/_dashboard/_content/competitions/$compId/fixtures/$fixId/video-analysis': typeof DashboardContentCompetitionsCompIdFixturesFixIdVideoAnalysisRoute
   '/_dashboard/_content/competitions/$compId/players/$playerId/edit': typeof DashboardContentCompetitionsCompIdPlayersPlayerIdEditRoute
   '/_dashboard/_content/competitions/$compId/fixtures/$fixId/': typeof DashboardContentCompetitionsCompIdFixturesFixIdIndexRoute
   '/_dashboard/_content/competitions/$compId/teams/$teamId/': typeof DashboardContentCompetitionsCompIdTeamsTeamIdIndexRoute
@@ -462,9 +488,11 @@ export interface FileRouteTypes {
     | '/competitions/$compId/players/'
     | '/competitions/$compId/stats/'
     | '/competitions/$compId/teams/'
+    | '/competitions/$compId/fixtures/$fixId/pass-sequence'
     | '/competitions/$compId/fixtures/$fixId/player-stats'
     | '/competitions/$compId/fixtures/$fixId/raw-events'
     | '/competitions/$compId/fixtures/$fixId/review'
+    | '/competitions/$compId/fixtures/$fixId/video-analysis'
     | '/competitions/$compId/players/$playerId/edit'
     | '/competitions/$compId/fixtures/$fixId/'
     | '/competitions/$compId/teams/$teamId/'
@@ -500,9 +528,11 @@ export interface FileRouteTypes {
     | '/competitions/$compId/players'
     | '/competitions/$compId/stats'
     | '/competitions/$compId/teams'
+    | '/competitions/$compId/fixtures/$fixId/pass-sequence'
     | '/competitions/$compId/fixtures/$fixId/player-stats'
     | '/competitions/$compId/fixtures/$fixId/raw-events'
     | '/competitions/$compId/fixtures/$fixId/review'
+    | '/competitions/$compId/fixtures/$fixId/video-analysis'
     | '/competitions/$compId/players/$playerId/edit'
     | '/competitions/$compId/fixtures/$fixId'
     | '/competitions/$compId/teams/$teamId'
@@ -545,9 +575,11 @@ export interface FileRouteTypes {
     | '/_dashboard/_content/competitions/$compId/players/'
     | '/_dashboard/_content/competitions/$compId/stats/'
     | '/_dashboard/_content/competitions/$compId/teams/'
+    | '/_dashboard/_content/competitions/$compId/fixtures/$fixId/pass-sequence'
     | '/_dashboard/_content/competitions/$compId/fixtures/$fixId/player-stats'
     | '/_dashboard/_content/competitions/$compId/fixtures/$fixId/raw-events'
     | '/_dashboard/_content/competitions/$compId/fixtures/$fixId/review'
+    | '/_dashboard/_content/competitions/$compId/fixtures/$fixId/video-analysis'
     | '/_dashboard/_content/competitions/$compId/players/$playerId/edit'
     | '/_dashboard/_content/competitions/$compId/fixtures/$fixId/'
     | '/_dashboard/_content/competitions/$compId/teams/$teamId/'
@@ -843,6 +875,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardContentCompetitionsCompIdPlayersPlayerIdEditRouteImport
       parentRoute: typeof DashboardContentCompetitionsCompIdRouteRoute
     }
+    '/_dashboard/_content/competitions/$compId/fixtures/$fixId/video-analysis': {
+      id: '/_dashboard/_content/competitions/$compId/fixtures/$fixId/video-analysis'
+      path: '/video-analysis'
+      fullPath: '/competitions/$compId/fixtures/$fixId/video-analysis'
+      preLoaderRoute: typeof DashboardContentCompetitionsCompIdFixturesFixIdVideoAnalysisRouteImport
+      parentRoute: typeof DashboardContentCompetitionsCompIdFixturesFixIdRouteRoute
+    }
     '/_dashboard/_content/competitions/$compId/fixtures/$fixId/review': {
       id: '/_dashboard/_content/competitions/$compId/fixtures/$fixId/review'
       path: '/review'
@@ -862,6 +901,13 @@ declare module '@tanstack/react-router' {
       path: '/player-stats'
       fullPath: '/competitions/$compId/fixtures/$fixId/player-stats'
       preLoaderRoute: typeof DashboardContentCompetitionsCompIdFixturesFixIdPlayerStatsRouteImport
+      parentRoute: typeof DashboardContentCompetitionsCompIdFixturesFixIdRouteRoute
+    }
+    '/_dashboard/_content/competitions/$compId/fixtures/$fixId/pass-sequence': {
+      id: '/_dashboard/_content/competitions/$compId/fixtures/$fixId/pass-sequence'
+      path: '/pass-sequence'
+      fullPath: '/competitions/$compId/fixtures/$fixId/pass-sequence'
+      preLoaderRoute: typeof DashboardContentCompetitionsCompIdFixturesFixIdPassSequenceRouteImport
       parentRoute: typeof DashboardContentCompetitionsCompIdFixturesFixIdRouteRoute
     }
   }
@@ -927,20 +973,26 @@ const DashboardContentCompetitionsCompIdStatsRouteRouteWithChildren =
   )
 
 interface DashboardContentCompetitionsCompIdFixturesFixIdRouteRouteChildren {
+  DashboardContentCompetitionsCompIdFixturesFixIdPassSequenceRoute: typeof DashboardContentCompetitionsCompIdFixturesFixIdPassSequenceRoute
   DashboardContentCompetitionsCompIdFixturesFixIdPlayerStatsRoute: typeof DashboardContentCompetitionsCompIdFixturesFixIdPlayerStatsRoute
   DashboardContentCompetitionsCompIdFixturesFixIdRawEventsRoute: typeof DashboardContentCompetitionsCompIdFixturesFixIdRawEventsRoute
   DashboardContentCompetitionsCompIdFixturesFixIdReviewRoute: typeof DashboardContentCompetitionsCompIdFixturesFixIdReviewRoute
+  DashboardContentCompetitionsCompIdFixturesFixIdVideoAnalysisRoute: typeof DashboardContentCompetitionsCompIdFixturesFixIdVideoAnalysisRoute
   DashboardContentCompetitionsCompIdFixturesFixIdIndexRoute: typeof DashboardContentCompetitionsCompIdFixturesFixIdIndexRoute
 }
 
 const DashboardContentCompetitionsCompIdFixturesFixIdRouteRouteChildren: DashboardContentCompetitionsCompIdFixturesFixIdRouteRouteChildren =
   {
+    DashboardContentCompetitionsCompIdFixturesFixIdPassSequenceRoute:
+      DashboardContentCompetitionsCompIdFixturesFixIdPassSequenceRoute,
     DashboardContentCompetitionsCompIdFixturesFixIdPlayerStatsRoute:
       DashboardContentCompetitionsCompIdFixturesFixIdPlayerStatsRoute,
     DashboardContentCompetitionsCompIdFixturesFixIdRawEventsRoute:
       DashboardContentCompetitionsCompIdFixturesFixIdRawEventsRoute,
     DashboardContentCompetitionsCompIdFixturesFixIdReviewRoute:
       DashboardContentCompetitionsCompIdFixturesFixIdReviewRoute,
+    DashboardContentCompetitionsCompIdFixturesFixIdVideoAnalysisRoute:
+      DashboardContentCompetitionsCompIdFixturesFixIdVideoAnalysisRoute,
     DashboardContentCompetitionsCompIdFixturesFixIdIndexRoute:
       DashboardContentCompetitionsCompIdFixturesFixIdIndexRoute,
   }

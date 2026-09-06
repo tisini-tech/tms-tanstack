@@ -1,4 +1,9 @@
-import { Link, Outlet, createFileRoute } from '@tanstack/react-router'
+import {
+  Link,
+  Outlet,
+  createFileRoute,
+  useRouterState,
+} from '@tanstack/react-router'
 
 import { getFixturePlayerStatsFn } from '#/data/stats'
 import { Loading } from '#/components/general/errors/loading'
@@ -8,6 +13,7 @@ import {
   getFixtureReviewStatsFn,
   getFixtureTeamStatsFn,
 } from '#/data/fixtures'
+import { cn } from '#/lib/utils'
 
 const navItems = [
   {
@@ -28,6 +34,16 @@ const navItems = [
   {
     label: 'Raw Events',
     to: '/competitions/$compId/fixtures/$fixId/raw-events',
+    exact: true,
+  },
+  {
+    label: 'Video Analysis',
+    to: '/competitions/$compId/fixtures/$fixId/video-analysis',
+    exact: true,
+  },
+  {
+    label: 'Pass Sequences',
+    to: '/competitions/$compId/fixtures/$fixId/pass-sequence',
     exact: true,
   },
 ] as const
@@ -62,6 +78,8 @@ function RouteComponent() {
   const { reviewStats, fixId } = Route.useLoaderData()
   const { compId } = Route.useParams()
   const { fixture } = reviewStats
+  const pathname = useRouterState({ select: (s) => s.location.pathname })
+  const compactHeader = pathname.includes('/video-analysis')
 
   const homeAgent = reviewStats.agents.find(
     (agent) => agent.team_id === fixture.home_team_id,
@@ -79,53 +97,88 @@ function RouteComponent() {
     : null
 
   return (
-    <div className="space-y-6">
+    <div className={cn(compactHeader ? 'space-y-3' : 'space-y-6')}>
       <section className="overflow-hidden rounded-xl border border-border bg-card">
-        <div className="flex items-center justify-between border-b border-border bg-muted/40 px-4 py-2.5">
-          <p className="text-center text-sm font-medium text-muted-foreground">
-            Match
-          </p>
-          <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            Full Time
-          </span>
-        </div>
-
-        <div className="grid items-center gap-6 p-4 md:grid-cols-[1fr_auto_1fr] md:p-6">
-          <div className="flex flex-col items-center gap-3 text-center md:items-end md:text-right">
-            <div className="space-y-1">
-              <h2 className="text-lg font-semibold text-primary md:text-xl">
+        {compactHeader ? (
+          <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-border px-3 py-2 sm:px-4">
+            <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-3 gap-y-1 text-sm">
+              <span className="truncate font-semibold text-primary">
                 {fixture.home_team}
-              </h2>
-              <p className="text-sm text-muted-foreground">
-                Agent:{' '}
-                <span className="text-foreground">{homeAgent?.agent_name}</span>
-              </p>
-            </div>
-          </div>
-
-          <div className="flex flex-col items-center gap-1 rounded-lg border border-border bg-muted/20 px-6 py-4">
-            <div className="text-3xl font-bold tabular-nums text-foreground">
-              {fixture.home_score} - {fixture.away_score}
-            </div>
-            {matchDate ? (
-              <span className="text-sm text-muted-foreground">{matchDate}</span>
-            ) : null}
-          </div>
-
-          <div className="flex flex-col items-center gap-3 text-center md:items-start md:text-left">
-            <div className="space-y-1">
-              <h2 className="text-lg font-semibold text-destructive md:text-xl">
+              </span>
+              <span className="shrink-0 rounded-md border border-border bg-muted/30 px-2 py-0.5 font-bold tabular-nums text-foreground">
+                {fixture.home_score} - {fixture.away_score}
+              </span>
+              <span className="truncate font-semibold text-destructive">
                 {fixture.away_team}
-              </h2>
-              <p className="text-sm text-muted-foreground">
-                Agent:{' '}
-                <span className="text-foreground">{awayAgent?.agent_name}</span>
-              </p>
+              </span>
+              {matchDate ? (
+                <span className="text-xs text-muted-foreground">{matchDate}</span>
+              ) : null}
             </div>
+            <span className="text-[11px] font-medium tracking-wide text-muted-foreground uppercase">
+              Full time
+            </span>
           </div>
-        </div>
+        ) : (
+          <>
+            <div className="flex items-center justify-between border-b border-border bg-muted/40 px-4 py-2.5">
+              <p className="text-center text-sm font-medium text-muted-foreground">
+                Match
+              </p>
+              <span className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+                Full Time
+              </span>
+            </div>
 
-        <div className="grid grid-cols-4 border-t border-border">
+            <div className="grid items-center gap-6 p-4 md:grid-cols-[1fr_auto_1fr] md:p-6">
+              <div className="flex flex-col items-center gap-3 text-center md:items-end md:text-right">
+                <div className="space-y-1">
+                  <h2 className="text-lg font-semibold text-primary md:text-xl">
+                    {fixture.home_team}
+                  </h2>
+                  <p className="text-sm text-muted-foreground">
+                    Agent:{' '}
+                    <span className="text-foreground">
+                      {homeAgent?.agent_name}
+                    </span>
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex flex-col items-center gap-1 rounded-lg border border-border bg-muted/20 px-6 py-4">
+                <div className="text-3xl font-bold tabular-nums text-foreground">
+                  {fixture.home_score} - {fixture.away_score}
+                </div>
+                {matchDate ? (
+                  <span className="text-sm text-muted-foreground">
+                    {matchDate}
+                  </span>
+                ) : null}
+              </div>
+
+              <div className="flex flex-col items-center gap-3 text-center md:items-start md:text-left">
+                <div className="space-y-1">
+                  <h2 className="text-lg font-semibold text-destructive md:text-xl">
+                    {fixture.away_team}
+                  </h2>
+                  <p className="text-sm text-muted-foreground">
+                    Agent:{' '}
+                    <span className="text-foreground">
+                      {awayAgent?.agent_name}
+                    </span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+
+        <div
+          className={cn(
+            'grid grid-cols-2 border-t border-border sm:grid-cols-3 lg:grid-cols-6',
+            compactHeader && '[&_a]:px-2 [&_a]:py-2 [&_a]:text-xs',
+          )}
+        >
           {navItems.map((item) => (
             <Link
               key={item.to}

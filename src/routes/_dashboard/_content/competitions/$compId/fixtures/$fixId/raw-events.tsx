@@ -18,8 +18,7 @@ export const Route = createFileRoute(
   loader: async ({ params, context, parentMatchPromise }) => {
     const parentMatch = await parentMatchPromise
     const parentData = parentMatch?.loaderData as
-      | { reviewStats: ReviewStats }
-      | undefined
+      { reviewStats: ReviewStats } | undefined
 
     const fixture = parentData?.reviewStats.fixture
     const homeTeamId = fixture?.home_team_id
@@ -50,6 +49,8 @@ export const Route = createFileRoute(
 function RouteComponent() {
   const { fixId } = Route.useParams()
   const { data: rawEvents } = useSuspenseQuery(rawEventsQuery(fixId))
+
+  console.log(rawEvents)
 
   return (
     <Suspense fallback={<div>Loading...</div>}>

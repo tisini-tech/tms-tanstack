@@ -156,6 +156,8 @@ export interface SimpleFixture {
   away_score: number
   home_ht_score: number
   away_ht_score: number
+  video_url: string
+  video_url2: string
 }
 
 export interface TimelineEvent {
