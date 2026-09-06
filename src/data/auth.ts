@@ -7,7 +7,7 @@ import { useAppSession } from '#/lib/session'
 import { formatApiError, formatE164Phone } from '#/lib/utils'
 import type {
   LoginSchema,
-  RegisterSchema,
+  RegisterPayload,
   ResetPasswordSchema,
 } from '#/lib/schemas'
 
@@ -25,6 +25,7 @@ export const loginFn = createServerFn({ method: 'POST' })
       body: JSON.stringify({
         email_or_phone_number: data.identifier,
         password: data.password,
+        turnstile_token: data.turnstileToken,
       }),
     })
 
@@ -96,7 +97,7 @@ export const logoutFn = createServerFn({ method: 'POST' }).handler(async () => {
 })
 
 export const registerFn = createServerFn({ method: 'POST' })
-  .validator((data: RegisterSchema) => data)
+  .validator((data: RegisterPayload) => data)
   .handler(async ({ data }) => {
     const url = process.env.API_URL
     if (!url) {
@@ -114,6 +115,7 @@ export const registerFn = createServerFn({ method: 'POST' })
         sir_name: '',
         username: data.username,
         password: data.password,
+        turnstile_token: data.turnstileToken,
       }),
     })
 

@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Loader2Icon } from 'lucide-react'
 import { useForm } from '@tanstack/react-form'
+import type { TurnstileInstance } from '@marsidev/react-turnstile'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 
 import { registerSchema } from '#/lib/schemas'
@@ -8,6 +9,7 @@ import { Button } from '#/components/ui/button'
 import { getCountriesFn, registerFn } from '#/data/auth'
 import { PhoneField } from '#/components/general/forms/phone-field'
 import { InputField } from '#/components/general/forms/input-field'
+import { TurnstileField } from '#/components/general/forms/turnstile-field'
 import {
   Field,
   FieldDescription,
@@ -27,6 +29,8 @@ export const Route = createFileRoute('/_auth/register')({
 function Register() {
   const { countries } = Route.useLoaderData()
   const [submitError, setSubmitError] = useState<string | null>(null)
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
+  const turnstileRef = useRef<TurnstileInstance>(null)
 
   const navigate = useNavigate()
 
@@ -47,10 +51,22 @@ function Register() {
     onSubmit: async ({ value }) => {
       setSubmitError(null)
 
+      if (!turnstileToken) {
+        setSubmitError('Please complete the security check')
+        return
+      }
+
       try {
-        await registerFn({ data: value })
+        await registerFn({
+          data: {
+            ...value,
+            turnstileToken,
+          },
+        })
         void navigate({ to: '/verify' })
       } catch (error) {
+        turnstileRef.current?.reset()
+        setTurnstileToken(null)
         setSubmitError(
           error instanceof Error
             ? error.message
@@ -202,6 +218,11 @@ function Register() {
             />
           </div>
 
+          <TurnstileField
+            ref={turnstileRef}
+            onTokenChange={setTurnstileToken}
+          />
+
           {submitError ? (
             <Field>
               <FieldError errors={[{ message: submitError }]} />
@@ -214,7 +235,7 @@ function Register() {
             selector={(state) => state.isSubmitting}
             children={(isSubmitting) => (
               <Button
-                disabled={isSubmitting}
+                disabled={isSubmitting || !turnstileToken}
                 type="submit"
                 size="lg"
                 className="h-12 w-full rounded-xl text-sm font-semibold tracking-wide"

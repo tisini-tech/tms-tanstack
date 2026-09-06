@@ -13,6 +13,7 @@ export type LoginMethod = 'phone' | 'email'
 export const loginPayloadSchema = z.object({
   identifier: z.string().min(1, 'Email or phone is required'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
+  turnstileToken: z.string().min(1, 'Complete the security check'),
 })
 
 export type LoginSchema = z.infer<typeof loginPayloadSchema>
@@ -106,6 +107,11 @@ export const verifySchema = z.object({
 export type ResetPasswordSchema = z.infer<typeof resetPasswordSchema>
 
 export type RegisterSchema = z.infer<typeof registerSchema>
+
+/** Register form values + Turnstile token for the API. */
+export type RegisterPayload = RegisterSchema & {
+  turnstileToken: string
+}
 
 export const ARTICLE_EXCERPT_MAX_CHARS = 500
 

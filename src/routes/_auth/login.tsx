@@ -1,6 +1,7 @@
 import { z } from 'zod'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useForm } from '@tanstack/react-form'
+import type { TurnstileInstance } from '@marsidev/react-turnstile'
 import { Loader2Icon, MailIcon, SmartphoneIcon } from 'lucide-react'
 import {
   createFileRoute,
@@ -14,6 +15,7 @@ import { Button } from '#/components/ui/button'
 import { cn, resolvePostLoginPath } from '@/lib/utils'
 import { getLastModulePath } from '#/lib/last-module'
 import { InputField } from '#/components/general/forms/input-field'
+import { TurnstileField } from '#/components/general/forms/turnstile-field'
 import { createLoginSchema, type LoginMethod } from '#/lib/schemas'
 import {
   Field,
@@ -34,6 +36,8 @@ export const Route = createFileRoute('/_auth/login')({
 function Login() {
   const [method, setMethod] = useState<LoginMethod>('email')
   const [submitError, setSubmitError] = useState<string | null>(null)
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
+  const turnstileRef = useRef<TurnstileInstance>(null)
 
   const navigate = useNavigate()
   const { redirect } = Route.useSearch()
@@ -50,6 +54,11 @@ function Login() {
     onSubmit: async ({ value }) => {
       setSubmitError(null)
 
+      if (!turnstileToken) {
+        setSubmitError('Please complete the security check')
+        return
+      }
+
       const identifier =
         method === 'email' ? value.email.trim() : value.phone.trim()
 
@@ -58,15 +67,18 @@ function Login() {
           data: {
             identifier,
             password: value.password,
+            turnstileToken,
           },
         })
-        console.log(modules)
         await navigate({
           to: resolvePostLoginPath(redirect, modules, getLastModulePath()),
           replace: true,
         })
       } catch (error) {
         if (isRedirect(error)) throw error
+
+        turnstileRef.current?.reset()
+        setTurnstileToken(null)
 
         const message =
           error instanceof Error ? error.message : 'An unknown error occurred'
@@ -195,6 +207,11 @@ function Login() {
             )}
           />
 
+          <TurnstileField
+            ref={turnstileRef}
+            onTokenChange={setTurnstileToken}
+          />
+
           {submitError ? (
             <Field>
               <FieldError errors={[{ message: submitError }]} />
@@ -207,7 +224,7 @@ function Login() {
             selector={(state) => state.isSubmitting}
             children={(isSubmitting) => (
               <Button
-                disabled={isSubmitting}
+                disabled={isSubmitting || !turnstileToken}
                 type="submit"
                 size="lg"
                 className="h-12 w-full rounded-xl text-sm font-semibold tracking-wide"
