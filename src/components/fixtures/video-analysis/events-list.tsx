@@ -29,9 +29,14 @@ export function VideoAnalysisEventsList({
       {events.map((event) => {
         const isHome = event.team === homeTeamId
         const teamName = isHome ? homeTeamName : awayTeamName
-        const eventName =
-          event.metric_detail?.name || event.metric?.name || 'Event'
-        const subName = event.metric_sub_detail?.name
+        const title = [
+          event.metric?.name,
+          event.metric_detail?.name,
+          event.metric_sub_detail?.name,
+        ]
+          .map((name) => name?.trim())
+          .filter((name): name is string => Boolean(name))
+          .join(' - ')
         const playerName = event.player?.name || 'Unknown player'
         const isActive = activeEventId === event.id
 
@@ -49,13 +54,7 @@ export function VideoAnalysisEventsList({
             >
               <div className="flex items-start justify-between gap-2">
                 <p className="text-sm font-medium text-foreground">
-                  {eventName}
-                  {subName ? (
-                    <span className="font-normal text-muted-foreground">
-                      {' '}
-                      · {subName}
-                    </span>
-                  ) : null}
+                  {title || 'Event'}
                 </p>
                 <span className="shrink-0 text-xs tabular-nums text-muted-foreground">
                   {formatClock(event.minute, event.second)}

@@ -23,6 +23,14 @@ const ALL_EVENTS = 'all-events'
 const ALL_PLAYERS = 'all-players'
 const ALL_TEAMS = 'all-teams'
 
+/** Fixtures after this id store `video_timestamp` in milliseconds (new app). */
+const VIDEO_TIMESTAMP_MS_AFTER_FIXTURE_ID = 13495
+
+/** Seconds before the event marker when starting the clip. */
+const CLIP_BEFORE_SECONDS = 2
+/** Seconds after the event marker when pausing the clip. */
+const CLIP_AFTER_SECONDS = 4
+
 type VideoAnalysisProps = {
   fixture: SimpleFixture
   events: RawFixtureEvent[]
@@ -38,9 +46,21 @@ type UniqueEvent = {
   name: string
 }
 
-function resolveSeekSeconds(event: RawFixtureEvent, videoUrl: string) {
+/** Normalize event video timestamp to seconds for HTML5 / YouTube seek. */
+function toSeekSeconds(videoTimestamp: number, fixtureId: number) {
+  if (fixtureId > VIDEO_TIMESTAMP_MS_AFTER_FIXTURE_ID) {
+    return videoTimestamp / 1000
+  }
+  return videoTimestamp
+}
+
+function resolveSeekSeconds(
+  event: RawFixtureEvent,
+  videoUrl: string,
+  fixtureId: number,
+) {
   if (Number.isFinite(event.video_timestamp) && event.video_timestamp > 0) {
-    return event.video_timestamp
+    return toSeekSeconds(event.video_timestamp, fixtureId)
   }
 
   const fromUrl = parseTimestampFromUrl(videoUrl)
@@ -74,6 +94,8 @@ export function VideoAnalysis({ fixture, events }: VideoAnalysisProps) {
     () => stripVideoTimestamp(fixture.video_url || fixture.video_url2 || ''),
   )
   const [currentTime, setCurrentTime] = useState(0)
+  const [clipEnd, setClipEnd] = useState<number | null>(null)
+  const [playbackKey, setPlaybackKey] = useState(0)
   const [autoplay, setAutoplay] = useState(false)
 
   const teamItems = useMemo(
@@ -181,6 +203,7 @@ export function VideoAnalysis({ fixture, events }: VideoAnalysisProps) {
     setSelectedPlayer(ALL_PLAYERS)
     setActiveEventId(null)
     setCurrentTime(0)
+    setClipEnd(null)
     setAutoplay(false)
     setVideoUrl(
       stripVideoTimestamp(fixture.video_url || fixture.video_url2 || ''),
@@ -189,12 +212,16 @@ export function VideoAnalysis({ fixture, events }: VideoAnalysisProps) {
 
   function handleEventClick(event: RawFixtureEvent) {
     const nextUrl = resolveEventVideoUrl(event, fixture)
-    const seekAt = Math.max(0, resolveSeekSeconds(event, nextUrl) - 2)
+    const eventAt = resolveSeekSeconds(event, nextUrl, fixture.id)
+    const seekAt = Math.max(0, eventAt - CLIP_BEFORE_SECONDS)
+    const endAt = eventAt + CLIP_AFTER_SECONDS
 
     setActiveEventId(event.id)
     setVideoUrl(nextUrl)
     setCurrentTime(seekAt)
+    setClipEnd(endAt)
     setAutoplay(true)
+    setPlaybackKey((key) => key + 1)
   }
 
   if (!events.length) {
@@ -219,6 +246,8 @@ export function VideoAnalysis({ fixture, events }: VideoAnalysisProps) {
         <VideoPlayer
           url={videoUrl}
           currentTime={currentTime}
+          clipEnd={clipEnd}
+          playbackKey={playbackKey}
           autoplay={autoplay}
           className="w-full max-w-full"
         />

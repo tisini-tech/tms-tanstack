@@ -16,6 +16,7 @@ import type {
 import { BrandPage } from './brand-page'
 import type { TeamChartImages } from '#/lib/charts/team-quarter-types'
 import { PassMatrixTable } from './pass-matrix-table'
+import { PassSequenceReportPage } from './pass-sequence-report-page'
 import { PlayerChartsPages } from './player-charts-pages'
 import { PlayerStatsTable } from './player-stats-table'
 import type { ReportTeam } from './pdf-types'
@@ -89,6 +90,9 @@ export function MatchReportPDF({
     teamId,
   )
   const teamPassMatrix = getPassMatrixForTeam(passMatrix, team)
+  const teamSequences =
+    (team === 'home' ? teamStats.sequences?.home : teamStats.sequences?.away) ??
+    []
 
   return (
     <Document>
@@ -208,6 +212,12 @@ export function MatchReportPDF({
           </View>
         </View>
       </BrandPage>
+
+      <PassSequenceReportPage
+        fixture={fixture}
+        teamName={teamName}
+        sequences={teamSequences}
+      />
 
       <BrandPage fixture={fixture}>
         <View style={styles.passMatrixContainer}>

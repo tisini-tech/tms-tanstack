@@ -4,8 +4,13 @@ import {
   getDashTotal,
   playerStatsToResult,
 } from '#/lib/dashboard/stats'
+import {
+  detectSport as detectSportKind,
+  type SportKind as FullSportKind,
+} from '#/lib/sports/detect-sport'
 import { getPercent } from '#/lib/utils'
 
+/** Player-stats column sports supported in the on-screen table today. */
 export type SportKind = 'football' | 'rugby' | 'basketball'
 
 export type StatColumn = {
@@ -333,14 +338,11 @@ const BASKETBALL_EVENT_MAP: Record<string, string[]> = {
   fouls: ['foul'],
 }
 
+/** Maps full sport detection onto player-stats column sets we support today. */
 export function detectSport(matchType?: string | null): SportKind {
-  const value = matchType?.toLowerCase() ?? ''
-  if (value.includes('rugby') || value.includes('7s') || value.includes('sevens')) {
-    return 'rugby'
-  }
-  if (value.includes('basket')) {
-    return 'basketball'
-  }
+  const sport: FullSportKind = detectSportKind(matchType)
+  if (sport === 'rugby') return 'rugby'
+  if (sport === 'basketball') return 'basketball'
   return 'football'
 }
 

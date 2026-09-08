@@ -14,7 +14,7 @@ import {
 import { Button } from '../ui/button'
 import { DownloadIcon } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
-import { PlayerReportPDF } from '../pdf-reports/player/player-report'
+import { getSportReportModule } from '../pdf-reports/sports'
 import { transformSinglePlayerReportStats } from '../pdf-reports/transform-report-data'
 import { ensurePdfPolyfills } from '#/lib/pdf-polyfills'
 import {
@@ -46,13 +46,19 @@ export const PlayerReportDownload = ({
   const [playerChart, setPlayerChart] = useState<string | null>(null)
   const [isGeneratingChart, setIsGeneratingChart] = useState(false)
 
+  const reportModule = useMemo(
+    () => getSportReportModule(fixture.match_type),
+    [fixture.match_type],
+  )
+  const needsCharts = reportModule.sport === 'football'
+
   const isHomeTeam = player?.team.team_id === fixture.home_team_id
 
-  const opponetName = isHomeTeam ? fixture.away_team : fixture.home_team
+  const opponentName = isHomeTeam ? fixture.away_team : fixture.home_team
   const playerName = [player?.first_name, player?.sir_name, player?.other_name]
     .filter(Boolean)
     .join(' ')
-  const fileName = `${playerName} vs ${opponetName} - ${fixture.match_date.toString()}`
+  const fileName = `${playerName || 'player'}_vs_${opponentName}-${reportModule.sport}-${fixture.match_date}`
 
   const teamQuarterStats = useMemo(() => {
     if (!player) {
@@ -89,16 +95,22 @@ export const PlayerReportDownload = ({
 
   useEffect(() => {
     if (playerId) {
-      const player = playerStats.find(
-        (player) => player.id.toString() === playerId,
+      const nextPlayer = playerStats.find(
+        (entry) => entry.id.toString() === playerId,
       )
-      setPlayer(player as FixturePlayerStats)
+      setPlayer(nextPlayer ?? null)
     }
   }, [playerId, playerStats])
 
   useEffect(() => {
     if (!isClient || !polyfillsReady || !player || !teamQuarterStats) {
       setPlayerChart(null)
+      return
+    }
+
+    if (!needsCharts) {
+      setPlayerChart('')
+      setIsGeneratingChart(false)
       return
     }
 
@@ -145,19 +157,24 @@ export const PlayerReportDownload = ({
     return () => {
       cancelled = true
     }
-  }, [isClient, polyfillsReady, player, teamQuarterStats])
+  }, [isClient, polyfillsReady, player, teamQuarterStats, needsCharts])
 
   if (!isClient || !polyfillsReady) {
     return (
       <Button variant="outline" disabled>
         <DownloadIcon size={16} />
-        {playerName} report
+        Player report
       </Button>
     )
   }
 
+  const canDownload =
+    Boolean(player) &&
+    Boolean(playerReportStats) &&
+    (!needsCharts || (Boolean(playerChart) && !isGeneratingChart))
+
   return (
-    <div className="flex gap-4">
+    <div className="flex flex-wrap gap-4">
       <div>
         <Select
           value={playerId}
@@ -167,46 +184,43 @@ export const PlayerReportDownload = ({
             <SelectValue placeholder="Select a player" />
           </SelectTrigger>
           <SelectContent>
-            {playerStats.map((player) => (
-              <SelectItem key={player.id} value={player.id.toString()}>
-                {player.first_name} {player.sir_name}
+            {playerStats.map((entry) => (
+              <SelectItem key={entry.id} value={entry.id.toString()}>
+                {entry.first_name} {entry.sir_name}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
       </div>
 
-      {player && playerReportStats && (
+      {player && playerReportStats ? (
         <PDFDownloadLink
-          document={
-            <PlayerReportPDF
-              fixture={fixture}
-              playerChart={playerChart ?? ''}
-              playerName={playerName}
-              teamName={player.team.team_name}
-              jerseyNumber={player.jersey_number}
-              minutesPlayed={player.minutes_played}
-              rating={player.rating}
-              photoUrl={player.passportphoto || undefined}
-              attackingStats={playerReportStats.attacking}
-              defensiveStats={playerReportStats.defensive}
-              goalkeepingStats={playerReportStats.goalkeeping}
-            />
-          }
+          document={reportModule.renderPlayerReport({
+            fixture,
+            playerChart: playerChart ?? '',
+            playerName,
+            teamName: player.team.team_name,
+            jerseyNumber: player.jersey_number,
+            minutesPlayed: player.minutes_played,
+            rating: player.rating,
+            photoUrl: player.passportphoto || undefined,
+            attackingStats: playerReportStats.attacking,
+            defensiveStats: playerReportStats.defensive,
+            goalkeepingStats: playerReportStats.goalkeeping,
+          })}
           fileName={fileName}
           style={{ textDecoration: 'none' }}
         >
           {({ loading }) => (
-            <Button
-              variant="outline"
-              disabled={loading || isGeneratingChart || !playerChart}
-            >
+            <Button variant="outline" disabled={loading || !canDownload}>
               <DownloadIcon size={16} />
-              {loading ? 'Preparing...' : `${playerName} report`}
+              {loading
+                ? 'Preparing...'
+                : `${playerName} ${reportModule.label.toLowerCase()} report`}
             </Button>
           )}
         </PDFDownloadLink>
-      )}
+      ) : null}
     </div>
   )
 }

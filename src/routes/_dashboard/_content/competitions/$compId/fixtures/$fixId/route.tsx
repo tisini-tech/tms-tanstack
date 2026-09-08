@@ -112,7 +112,9 @@ function RouteComponent() {
                 {fixture.away_team}
               </span>
               {matchDate ? (
-                <span className="text-xs text-muted-foreground">{matchDate}</span>
+                <span className="text-xs text-muted-foreground">
+                  {matchDate}
+                </span>
               ) : null}
             </div>
             <span className="text-[11px] font-medium tracking-wide text-muted-foreground uppercase">

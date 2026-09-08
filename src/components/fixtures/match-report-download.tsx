@@ -6,10 +6,9 @@ import { Button } from '#/components/ui/button'
 import { useTeamCharts } from '#/hooks/use-team-charts'
 import { ensurePdfPolyfills } from '#/lib/pdf-polyfills'
 import { usePlayerCharts } from '#/hooks/use-player-charts'
-import { GenerateTeamStatsPDF } from '../gen-simple-ts-pdf'
 import type { ReportTeam } from '#/components/pdf-reports/pdf-types'
 import type { TeamChartImages } from '#/lib/charts/team-quarter-types'
-import { MatchReportPDF } from '#/components/pdf-reports/match-report-pdf'
+import { getSportReportModule } from '#/components/pdf-reports/sports'
 import { getTeamQuarterStatsForCharts } from '#/lib/charts/team-quarter-adapters'
 import {
   toAverageQuarterStats,
@@ -45,6 +44,11 @@ function ReportDownloadButton({
   const [isClient, setIsClient] = useState(false)
   const [polyfillsReady, setPolyfillsReady] = useState(false)
 
+  const reportModule = useMemo(
+    () => getSportReportModule(teamStats.fixture.match_type),
+    [teamStats.fixture.match_type],
+  )
+
   useEffect(() => {
     let cancelled = false
 
@@ -60,30 +64,37 @@ function ReportDownloadButton({
     }
   }, [])
 
+  const needsCharts = reportModule.needsMatchCharts
+
   const teamQuarterStats = useMemo(
-    () => (isClient ? getTeamQuarterStatsForCharts(quarterStats, team) : {}),
-    [isClient, quarterStats, team],
+    () =>
+      isClient && needsCharts
+        ? getTeamQuarterStatsForCharts(quarterStats, team)
+        : {},
+    [isClient, needsCharts, quarterStats, team],
   )
 
   const playerQuarterStats = useMemo(
     () =>
-      isClient
+      isClient && needsCharts
         ? getPlayerQuarterCharts(quarterStats, team).map(toPlayerQuarterStat)
         : [],
-    [isClient, quarterStats, team],
+    [isClient, needsCharts, quarterStats, team],
   )
 
   const averageQuarterStats = useMemo(
     () =>
-      isClient
+      isClient && needsCharts
         ? toAverageQuarterStats(getPlayerQuarterAverage(quarterStats, team))
         : ({} as ReturnType<typeof toAverageQuarterStats>),
-    [isClient, quarterStats, team],
+    [isClient, needsCharts, quarterStats, team],
   )
 
-  const { teamCharts, isGeneratingChart } = useTeamCharts(teamQuarterStats)
+  const { teamCharts, isGeneratingChart } = useTeamCharts(
+    needsCharts ? teamQuarterStats : {},
+  )
   const { playerCharts, isGeneratingPlayerCharts } = usePlayerCharts(
-    playerQuarterStats,
+    needsCharts ? playerQuarterStats : [],
     averageQuarterStats,
   )
 
@@ -92,9 +103,10 @@ function ReportDownloadButton({
   const hasTeamPlayerStats = playerStats.some(
     (player) => player.team.team_id === teamId,
   )
+  const mode = hasTeamPlayerStats ? 'full' : 'team-only'
   const fileName = hasTeamPlayerStats
-    ? `${teamName.replace(/\s+/g, '_')} - ${teamStats.fixture.matchday}_match_report.pdf`
-    : `${teamStats.fixture.home_team} vs ${teamStats.fixture.away_team} - ${teamStats.fixture.matchday}_match_report.pdf`
+    ? `${teamName.replace(/\s+/g, '_')}-${reportModule.sport}-${teamStats.fixture.matchday}_match_report.pdf`
+    : `${teamStats.fixture.home_team}_vs_${teamStats.fixture.away_team}-${reportModule.sport}-${teamStats.fixture.matchday}_match_report.pdf`
 
   const isTeamChartsReady =
     Boolean(teamCharts.shots) &&
@@ -102,12 +114,12 @@ function ReportDownloadButton({
     Boolean(teamCharts.defense) &&
     Boolean(teamCharts.possession)
 
-  if (
-    !isClient ||
-    !polyfillsReady ||
-    (hasTeamPlayerStats &&
-      (isGeneratingChart || isGeneratingPlayerCharts || !isTeamChartsReady))
-  ) {
+  const waitingForCharts =
+    needsCharts &&
+    hasTeamPlayerStats &&
+    (isGeneratingChart || isGeneratingPlayerCharts || !isTeamChartsReady)
+
+  if (!isClient || !polyfillsReady || waitingForCharts) {
     return (
       <Button variant="outline" disabled>
         <DownloadIcon size={16} />
@@ -116,29 +128,29 @@ function ReportDownloadButton({
     )
   }
 
+  const document = reportModule.renderMatchReport({
+    mode,
+    team,
+    teamStats,
+    playerStats,
+    quarterStats,
+    passMatrix,
+    teamCharts: teamCharts as TeamChartImages,
+    playerCharts,
+  })
+
   return (
     <PDFDownloadLink
-      document={
-        hasTeamPlayerStats ? (
-          <MatchReportPDF
-            teamStats={teamStats}
-            playerStats={playerStats}
-            passMatrix={passMatrix}
-            team={team}
-            teamCharts={teamCharts as TeamChartImages}
-            playerCharts={playerCharts}
-          />
-        ) : (
-          <GenerateTeamStatsPDF teamStats={teamStats} />
-        )
-      }
+      document={document}
       fileName={fileName}
       style={{ textDecoration: 'none' }}
     >
       {({ loading }) => (
         <Button variant="outline" disabled={loading}>
           <DownloadIcon size={16} />
-          {loading ? 'Preparing...' : `${teamName} report`}
+          {loading
+            ? 'Preparing...'
+            : `${teamName} ${reportModule.label.toLowerCase()} report`}
         </Button>
       )}
     </PDFDownloadLink>

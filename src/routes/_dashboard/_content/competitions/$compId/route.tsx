@@ -21,7 +21,9 @@ export const competitionContextSearchSchema = z.object({
   categoryId: z.coerce.number().optional(),
 })
 
-export const Route = createFileRoute('/_dashboard/_content/competitions/$compId')({
+export const Route = createFileRoute(
+  '/_dashboard/_content/competitions/$compId',
+)({
   validateSearch: competitionContextSearchSchema,
   loader: async ({ context, params }) => {
     const competitions = await context.queryClient.ensureQueryData(

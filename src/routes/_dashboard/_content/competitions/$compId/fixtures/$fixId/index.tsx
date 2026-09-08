@@ -3,7 +3,9 @@ import { createFileRoute, getRouteApi } from '@tanstack/react-router'
 import { MatchReportDownload } from '#/components/fixtures/match-report-download'
 import { PlayerReportDownload } from '#/components/fixtures/player-report-download'
 
-const fixIdRoute = getRouteApi('/_dashboard/_content/competitions/$compId/fixtures/$fixId')
+const fixIdRoute = getRouteApi(
+  '/_dashboard/_content/competitions/$compId/fixtures/$fixId',
+)
 
 export const Route = createFileRoute(
   '/_dashboard/_content/competitions/$compId/fixtures/$fixId/',
@@ -19,7 +21,9 @@ function RouteComponent() {
     <div className="space-y-6">
       <div className="space-y-1">
         <p className="text-sm text-muted-foreground">
-          Download the match report for either team.
+          Download the match report for either team. Football and hockey get
+          analytics PDFs; other sports download a fixture-type placeholder shell
+          for now.
         </p>
       </div>
 
