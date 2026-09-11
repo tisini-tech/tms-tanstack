@@ -1,8 +1,14 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { FilterIcon } from 'lucide-react'
+import type { ReactSketchCanvasRef } from 'react-sketch-canvas'
 
 import { VideoPlayer } from '#/components/fixtures/video-analysis/video-player'
 import { VideoAnalysisEventsList } from '#/components/fixtures/video-analysis/events-list'
+import {
+  ANNOTATE_COLORS,
+  VideoAnnotateToolbar,
+  type AnnotateColorId,
+} from '#/components/fixtures/video-analysis/video-annotate-toolbar'
 import { Button } from '#/components/ui/button'
 import { Separator } from '#/components/ui/separator'
 import {
@@ -27,9 +33,9 @@ const ALL_TEAMS = 'all-teams'
 const VIDEO_TIMESTAMP_MS_AFTER_FIXTURE_ID = 13495
 
 /** Seconds before the event marker when starting the clip. */
-const CLIP_BEFORE_SECONDS = 2
+const CLIP_BEFORE_SECONDS = 3
 /** Seconds after the event marker when pausing the clip. */
-const CLIP_AFTER_SECONDS = 4
+const CLIP_AFTER_SECONDS = 10
 
 type VideoAnalysisProps = {
   fixture: SimpleFixture
@@ -90,13 +96,26 @@ export function VideoAnalysis({ fixture, events }: VideoAnalysisProps) {
   const [selectedEvent, setSelectedEvent] = useState(ALL_EVENTS)
   const [selectedPlayer, setSelectedPlayer] = useState(ALL_PLAYERS)
   const [activeEventId, setActiveEventId] = useState<number | null>(null)
-  const [videoUrl, setVideoUrl] = useState(
-    () => stripVideoTimestamp(fixture.video_url || fixture.video_url2 || ''),
+  const [videoUrl, setVideoUrl] = useState(() =>
+    stripVideoTimestamp(fixture.video_url || fixture.video_url2 || ''),
   )
   const [currentTime, setCurrentTime] = useState(0)
   const [clipEnd, setClipEnd] = useState<number | null>(null)
   const [playbackKey, setPlaybackKey] = useState(0)
   const [autoplay, setAutoplay] = useState(false)
+  const [annotating, setAnnotating] = useState(false)
+  const [annotateColorId, setAnnotateColorId] =
+    useState<AnnotateColorId>('yellow')
+  const [erasing, setErasing] = useState(false)
+  const annotateCanvasRef = useRef<ReactSketchCanvasRef>(null)
+
+  const annotateStrokeColor =
+    ANNOTATE_COLORS.find((color) => color.id === annotateColorId)?.value ??
+    ANNOTATE_COLORS[0].value
+
+  useEffect(() => {
+    annotateCanvasRef.current?.eraseMode(erasing)
+  }, [erasing])
 
   const teamItems = useMemo(
     () => [
@@ -242,15 +261,36 @@ export function VideoAnalysis({ fixture, events }: VideoAnalysisProps) {
 
   return (
     <div className="grid h-[min(calc(100svh-11rem),56rem)] grid-cols-1 overflow-hidden rounded-xl border border-border bg-card lg:grid-cols-[minmax(0,1fr)_18rem]">
-      <div className="flex min-h-0 min-w-0 items-center justify-center bg-muted/20 p-2 sm:p-3">
-        <VideoPlayer
-          url={videoUrl}
-          currentTime={currentTime}
-          clipEnd={clipEnd}
-          playbackKey={playbackKey}
-          autoplay={autoplay}
-          className="w-full max-w-full"
-        />
+      <div className="flex min-h-0 min-w-0 flex-col gap-3 overflow-hidden bg-muted/20 p-2 sm:p-3">
+        <div className="shrink-0">
+          <VideoAnnotateToolbar
+            enabled={annotating}
+            onEnabledChange={(enabled) => {
+              setAnnotating(enabled)
+              if (!enabled) setErasing(false)
+            }}
+            colorId={annotateColorId}
+            onColorChange={setAnnotateColorId}
+            erasing={erasing}
+            onErasingChange={setErasing}
+            onUndo={() => annotateCanvasRef.current?.undo()}
+            onClear={() => annotateCanvasRef.current?.clearCanvas()}
+          />
+        </div>
+        <div className="flex min-h-0 min-w-0 flex-1 items-start justify-center overflow-hidden">
+          <VideoPlayer
+            url={videoUrl}
+            currentTime={currentTime}
+            clipEnd={clipEnd}
+            playbackKey={playbackKey}
+            autoplay={autoplay}
+            annotating={annotating}
+            annotateStrokeColor={annotateStrokeColor}
+            annotateResetKey={playbackKey}
+            annotateCanvasRef={annotateCanvasRef}
+            className="max-h-full w-full"
+          />
+        </div>
       </div>
 
       <div className="flex min-h-0 flex-col overflow-hidden border-t border-border lg:border-t-0 lg:border-l">
