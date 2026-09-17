@@ -4,6 +4,7 @@ import { Loader2Icon, UploadIcon } from 'lucide-react'
 import { DocumentPreview } from '#/components/players/preview-id-document'
 import { Button } from '#/components/ui/button'
 import { Field, FieldLabel } from '#/components/ui/field'
+import { compressImage } from '#/lib/compress-image'
 import { tagPdfUploadUrl } from '#/lib/document-url'
 import { uploadFiles } from '#/lib/uploadthing'
 
@@ -61,17 +62,23 @@ export function UploadFileField({
     onUploadingChange?.(true)
 
     try {
-      const result = await uploadFiles('imageUploader', { files: [file] })
+      const isPdf =
+        file.type === 'application/pdf' || /\.pdf$/i.test(file.name)
+
+      const uploadFile = isPdf
+        ? file
+        : await compressImage(file, 1024 * 1024)
+
+      const result = await uploadFiles('imageUploader', {
+        files: [uploadFile],
+      })
       const uploaded = result[0]
       const url = uploaded?.ufsUrl
       if (!url) throw new Error('Upload failed')
 
-      const isPdf =
-        file.type === 'application/pdf' ||
-        /\.pdf$/i.test(file.name) ||
-        uploaded.type === 'application/pdf'
+      const uploadedPdf = isPdf || uploaded.type === 'application/pdf'
 
-      onChange(isPdf ? tagPdfUploadUrl(url) : url)
+      onChange(uploadedPdf ? tagPdfUploadUrl(url) : url)
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : 'Upload failed')
     } finally {

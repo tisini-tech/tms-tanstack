@@ -78,9 +78,14 @@ export async function apiFetch(
     throw new Error('API_KEY is not set')
   }
 
+  const isFormData = options.body instanceof FormData
   const headers: Record<string, string> = {
     ...(options.headers as Record<string, string> | undefined),
-    'Content-Type': 'application/json',
+  }
+
+  // Let the runtime set multipart boundary for FormData.
+  if (!isFormData && !headers['Content-Type']) {
+    headers['Content-Type'] = 'application/json'
   }
 
   if (accessToken) {
@@ -159,12 +164,11 @@ export const apiService = {
   },
 
   async post<T>(path: string, data?: unknown, withApiKey = false) {
+    const body =
+      data instanceof FormData ? data : JSON.stringify(data ?? {})
+
     return parseResponse<T>(
-      await apiFetch(
-        path,
-        { method: 'POST', body: JSON.stringify(data) },
-        withApiKey,
-      ),
+      await apiFetch(path, { method: 'POST', body }, withApiKey),
     )
   },
 

@@ -3,6 +3,7 @@ import { useRouter } from '@tanstack/react-router'
 import { Loader2Icon, PlusIcon } from 'lucide-react'
 
 import { Button } from '#/components/ui/button'
+import { compressImage } from '#/lib/compress-image'
 import { UploadDropzone } from '#/lib/uploadthing'
 import { createCompetitionImageFn } from '#/data/competitions'
 import {
@@ -77,6 +78,11 @@ export function AddCompImagesModal({
         ) : (
           <UploadDropzone
             endpoint="imageUploader"
+            onBeforeUploadBegin={async (files) => {
+              return Promise.all(
+                files.map((file) => compressImage(file, 1024 * 1024)),
+              )
+            }}
             onClientUploadComplete={async (files) => {
               if (!seasonId) return
 

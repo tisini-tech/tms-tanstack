@@ -8,6 +8,7 @@ import {
 import { Button } from '../ui/button'
 import { PencilIcon } from 'lucide-react'
 import type { Team } from '#/lib/types'
+import { compressImage } from '#/lib/compress-image'
 import { UploadButton } from '#/lib/uploadthing'
 import { updateTeamFn } from '#/data/teams'
 
@@ -24,6 +25,11 @@ export const EditTeamModal = ({ team }: { team: Team }) => {
 
         <UploadButton
           endpoint="imageUploader"
+          onBeforeUploadBegin={async (files) => {
+            return Promise.all(
+              files.map((file) => compressImage(file, 1024 * 1024)),
+            )
+          }}
           onClientUploadComplete={async (result) => {
             const response = await updateTeamFn({
               data: { team: { ...team, teamlogo: result[0]?.ufsUrl ?? '' } },
