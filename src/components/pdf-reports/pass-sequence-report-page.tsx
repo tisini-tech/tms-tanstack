@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from '@react-pdf/renderer'
 
 import { BrandPage } from '#/components/pdf-reports/brand-page'
-import { getPassSeqs } from '#/lib/utils'
+import { getPassSeqs, isCrossEndingEvent } from '#/lib/utils'
 import type { EventSequence, SimpleFixture } from '#/lib/types'
 
 const MAX_ALL_SEQUENCE_ROWS = 40
@@ -60,7 +60,7 @@ export function PassSequenceReportPage({
       : '0.0'
 
   const crossSequences = sequences
-    .filter((seq) => seq.next_event.toLowerCase().includes('cross'))
+    .filter((seq) => isCrossEndingEvent(seq.next_event))
     .sort(byPassCountDesc)
   const crossComplete = crossSequences.filter(
     (seq) => seq.outcome.toLowerCase() === 'positive',

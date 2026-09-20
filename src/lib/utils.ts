@@ -162,6 +162,11 @@ export const getSubEventCount = (
   )
 }
 
+/** Offensive cross endings only — excludes defensive events like "Blocks Cross". */
+export function isCrossEndingEvent(nextEvent: string) {
+  return /^\s*cross\b/i.test(nextEvent)
+}
+
 export const getPassSeqs = (sequences: EventSequence[]) => {
   const sequencesOver10 = sequences.filter(
     (item) => item.pass_count >= 10,

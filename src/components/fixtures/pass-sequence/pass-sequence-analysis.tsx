@@ -15,8 +15,9 @@ import {
   TableHeader,
   TableRow,
 } from '#/components/ui/table'
-import { getPassSeqs, cn } from '#/lib/utils'
+import { getPassSeqs, isCrossEndingEvent, cn } from '#/lib/utils'
 import type { EventSequence, FixtureTeamStats } from '#/lib/types'
+import { getSequencesForTeam } from '#/components/pdf-reports/transform-report-data'
 import type { ReactNode } from 'react'
 
 const ALL = 'all'
@@ -97,7 +98,8 @@ export function PassSequenceAnalysis({ teamStats }: PassSequenceAnalysisProps) {
   const [selectedKeyword, setSelectedKeyword] = useState(ALL)
   const [selectedPlayer, setSelectedPlayer] = useState(ALL)
 
-  const teamSequences = side === 'home' ? sequences.home : sequences.away
+  const teamId = side === 'home' ? fixture.home_team_id : fixture.away_team_id
+  const teamSequences = getSequencesForTeam(sequences, teamId)
   const teamName = side === 'home' ? fixture.home_team : fixture.away_team
 
   const lengthBuckets = getPassSeqs(teamSequences)
@@ -117,7 +119,7 @@ export function PassSequenceAnalysis({ teamStats }: PassSequenceAnalysisProps) {
   const shotAccuracy = shots.length > 0 ? (shotsOnTarget / shots.length) * 100 : 0
 
   const crosses = teamSequences.filter((seq) =>
-    seq.next_event.toLowerCase().includes('cross'),
+    isCrossEndingEvent(seq.next_event),
   )
   const crossComplete = crosses.filter(
     (seq) => seq.outcome.toLowerCase() === 'positive',

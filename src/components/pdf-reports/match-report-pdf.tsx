@@ -25,6 +25,7 @@ import { TimelineChart } from './timeline-chart'
 import {
   filterTimelineForTeam,
   getPassMatrixForTeam,
+  getSequencesForTeam,
   getTeamId,
   getTeamName,
   transformAttackingTeamStats,
@@ -90,9 +91,7 @@ export function MatchReportPDF({
     teamId,
   )
   const teamPassMatrix = getPassMatrixForTeam(passMatrix, team)
-  const teamSequences =
-    (team === 'home' ? teamStats.sequences?.home : teamStats.sequences?.away) ??
-    []
+  const teamSequences = getSequencesForTeam(teamStats.sequences, teamId)
 
   return (
     <Document>

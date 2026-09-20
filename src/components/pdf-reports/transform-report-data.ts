@@ -128,6 +128,15 @@ export function filterTimelineForTeam(
   return timeline.filter((event) => event.team === teamId)
 }
 
+/** Prefer seq.team over home/away buckets — API lists can include the other side. */
+export function getSequencesForTeam(
+  sequences: FixtureTeamStats['sequences'] | undefined,
+  teamId: number,
+) {
+  const combined = [...(sequences?.home ?? []), ...(sequences?.away ?? [])]
+  return combined.filter((seq) => seq.team === teamId)
+}
+
 function quarterKeys(stats: TeamQuarterStats) {
   const fromQuarters = Object.keys(stats.quarters ?? {})
   if (fromQuarters.length) {
