@@ -1,7 +1,7 @@
 import { apiService } from '#/lib/api'
 import { authFnMiddleware } from '#/middlewares/auth'
 import { createServerFn } from '@tanstack/react-start'
-import type { PaginatedResponse, Team } from '#/lib/types'
+import type { PaginatedResponse, Team, TeamDashboard } from '#/lib/types'
 
 function teamsPath(opts?: {
   competitionId?: string
@@ -114,4 +114,27 @@ export const searchTeamsFn = createServerFn({ method: 'GET' })
       teamsPath({ search: data.search }),
     )
     return response.results
+  })
+
+export const getTeamDashboardFn = createServerFn({ method: 'GET' })
+  .middleware([authFnMiddleware])
+  .validator(
+    (data: {
+      competitionId: string
+      seasonId: string
+      divisionId?: string
+      teamId: string
+      eventIds: number[]
+    }) => data,
+  )
+  .handler(async ({ data }) => {
+    const params = new URLSearchParams()
+    if (data.divisionId) params.set('division_id', data.divisionId)
+    for (const eventId of data.eventIds) {
+      params.append('event_ids', String(eventId))
+    }
+    const query = params.toString()
+    return apiService.get<TeamDashboard>(
+      `/competitions/${data.competitionId}/seasons/${data.seasonId}/teams/${data.teamId}/dashboard${query ? `?${query}` : ''}`,
+    )
   })

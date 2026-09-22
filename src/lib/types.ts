@@ -537,3 +537,106 @@ export interface CompetitionImage {
   caption: string
   division: number
 }
+
+export interface DashboardMatch {
+  match_id: number
+  match_date: string
+  matchday: string
+  home_team_id: number
+  away_team_id: number
+  label: string
+  home_score: number
+  away_score: number
+}
+
+export interface PlayerAppearanceMatch {
+  match_id: number
+  minutes_played: number
+  rating: number
+  jersey_number: number
+}
+
+export interface PlayerAppearance {
+  player_id: number
+  name: string
+  img: string
+  matches: PlayerAppearanceMatch[]
+  total_minutes: number
+  matches_played: number
+}
+
+export interface DashboardPlayerStatsMatch {
+  match_id: number
+  total: number
+  sub_events: DashboardPlayerStatsSubEvent[]
+}
+
+export interface DashboardPlayerStatsSubEvent {
+  sub_event_id: number
+  sub_event_name: string
+  total: number
+}
+
+export interface DashboardPlayerStats {
+  event_id: number
+  event_name: string
+  players: DashboardPlayerStatsPlayer[]
+}
+
+export interface DashboardPlayerStatsPlayer {
+  player_id: number
+  total: number
+  matches: DashboardPlayerStatsMatch[]
+}
+
+export interface DashboardQuarterStatsMatch {
+  match_id: number
+  total: number
+  sub_events: DashboardQuarterStatsSubEvent[]
+}
+
+export interface DashboardQuarterStatsSubEvent {
+  sub_event_id: number
+  sub_event_name: string
+  total: number
+}
+
+export interface DashboardQuarterStats {
+  event_id: number
+  event_name: string
+  quarters: DashboardQuarterStatsQuarter[]
+}
+
+export interface DashboardQuarterStatsQuarter {
+  quarter: string
+  total: number
+  matches: DashboardQuarterStatsMatch[]
+}
+
+export interface DashboardTeamStatsMatch {
+  match_id: number
+  total: number
+}
+
+export interface DashboardTeamStatsSubEvent {
+  sub_event_id: number
+  sub_event_name: string
+  total: number
+  matches: DashboardTeamStatsMatch[]
+}
+
+export interface DashboardTeamStats {
+  event_id: number
+  event_name: string
+  total: number
+  matches: DashboardTeamStatsMatch[]
+  sub_events: DashboardTeamStatsSubEvent[]
+}
+
+export interface TeamDashboard {
+  matches: DashboardMatch[]
+  player_appearances: PlayerAppearance[]
+  player_stats: DashboardPlayerStats[]
+  quarter_stats: DashboardQuarterStats[]
+  team_stats: DashboardTeamStats[]
+}
