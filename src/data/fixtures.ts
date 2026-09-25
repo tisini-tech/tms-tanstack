@@ -14,9 +14,12 @@ import type {
 
 export const getFixturesFn = createServerFn({ method: 'GET' })
   .middleware([authFnMiddleware])
-  .handler(async () => {
-    const fixtures =
-      await apiService.get<PaginatedResponse<Fixture>>('/fixtures')
+  .validator((data?: { pageSize?: number }) => data ?? {})
+  .handler(async ({ data }) => {
+    const pageSize = data.pageSize ?? 100
+    const fixtures = await apiService.get<PaginatedResponse<Fixture>>(
+      `/fixtures?page_size=${pageSize}`,
+    )
 
     return fixtures
   })
@@ -25,8 +28,12 @@ export const searchFixturesFn = createServerFn({ method: 'GET' })
   .middleware([authFnMiddleware])
   .validator((data: { search: string }) => data)
   .handler(async ({ data }) => {
+    const params = new URLSearchParams({
+      search: data.search,
+      page_size: '100',
+    })
     const fixtures = await apiService.get<PaginatedResponse<Fixture>>(
-      `/fixtures?search=${data.search}`,
+      `/fixtures?${params.toString()}`,
     )
     return fixtures
   })

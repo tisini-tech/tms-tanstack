@@ -27,31 +27,11 @@ export const Route = createFileRoute('/_dashboard/_content/competitions/$compId/
     teamId,
     teamName,
   }),
-  loader: async ({ params: { compId }, deps: { teamId, teamName } }) => {
-    const fixturesData = await getFixturesFn()
-    let fixtures = (fixturesData.results ?? []).filter(
-      (fixture) => String(fixture.competition.id) === String(compId),
-    )
+  loader: async ({ deps: { teamId, teamName } }) => {
+    const fixturesData = await getFixturesFn({ data: { pageSize: 100 } })
+    let fixtures = fixturesData.results ?? []
 
     if (teamId) {
-      if (teamName?.trim()) {
-        const searchData = await searchFixturesFn({
-          data: { search: teamName.trim() },
-        }).catch(() => null)
-        if (searchData?.results?.length) {
-          const byId = new Map<number, Fixture>()
-          for (const fixture of [
-            ...fixtures,
-            ...searchData.results.filter(
-              (fixture) => String(fixture.competition.id) === String(compId),
-            ),
-          ]) {
-            byId.set(fixture.id, fixture)
-          }
-          fixtures = [...byId.values()]
-        }
-      }
-
       fixtures = filterFixturesByTeam(fixtures, teamId)
     }
 
