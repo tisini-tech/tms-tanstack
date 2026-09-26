@@ -15,6 +15,36 @@ function filterFixturesByTeam(fixtures: Fixture[], teamId: number) {
   )
 }
 
+function filterFixturesByContext(
+  fixtures: Fixture[],
+  filters: {
+    compId: string
+    seasonId?: number
+    divisionId?: number
+    categoryId?: number
+  },
+) {
+  return fixtures.filter((fixture) => {
+    if (String(fixture.competition.id) !== String(filters.compId)) return false
+    if (filters.seasonId != null && fixture.season?.id !== filters.seasonId) {
+      return false
+    }
+    if (
+      filters.divisionId != null &&
+      fixture.division?.id !== filters.divisionId
+    ) {
+      return false
+    }
+    if (
+      filters.categoryId != null &&
+      fixture.category?.id !== filters.categoryId
+    ) {
+      return false
+    }
+    return true
+  })
+}
+
 export const Route = createFileRoute('/_dashboard/_content/competitions/$compId/fixtures/')({
   validateSearch: z.object({
     teamId: z.coerce.number().optional(),
@@ -47,13 +77,17 @@ export const Route = createFileRoute('/_dashboard/_content/competitions/$compId/
 function RouteComponent() {
   const { fixturesData, teamId, teamName } = Route.useLoaderData()
   const { compId } = Route.useParams()
+  const { seasonId, divisionId, categoryId } = Route.useSearch()
 
   // null = show loader data; array = show search results
   const [searchResults, setSearchResults] = useState<Fixture[] | null>(null)
   const [search, setSearch] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
-  const fixtures = searchResults ?? fixturesData.results ?? []
+  const fixtures = filterFixturesByContext(
+    searchResults ?? fixturesData.results ?? [],
+    { compId, seasonId, divisionId, categoryId },
+  )
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value

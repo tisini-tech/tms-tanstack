@@ -112,6 +112,10 @@ export interface Fixture {
     id: number
     name: string
   }
+  category: {
+    id: number
+    name: string
+  }
   stage: {
     id: number
     name: string

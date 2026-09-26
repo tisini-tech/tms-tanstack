@@ -59,6 +59,7 @@ export const Route = createFileRoute(
     const parentMatch = await parentMatchPromise
     const teams =
       (parentMatch?.loaderData as { teams: Team[] } | undefined)?.teams ?? []
+
     const selectedTeamId = teamId ?? teams[0]?.id
     const resolvedEventIds = resolveDashboardEventIds(eventIds)
 

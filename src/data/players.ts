@@ -15,12 +15,14 @@ export const getPlayersFn = createServerFn({ method: 'GET' })
   .middleware([authFnMiddleware])
   .handler(async ({ data }) => {
     const { teamId, seasonId } = data
+
     const params = new URLSearchParams()
     if (seasonId != null) params.set('season_id', String(seasonId))
     const query = params.toString()
     const players = await apiService.get<TeamPlayer[]>(
       `/teams/${teamId}/players${query ? `?${query}` : ''}`,
     )
+
     return players
   })
 

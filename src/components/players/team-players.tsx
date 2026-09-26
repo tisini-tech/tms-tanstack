@@ -52,6 +52,8 @@ interface TeamPlayersProps {
   players: TeamPlayer[]
   teamId?: number
   seasonId?: number
+  divisionId?: number
+  categoryId?: number
   selectedTeam: Team | null
   isLoading?: boolean
   canSelect?: boolean
@@ -75,6 +77,8 @@ export function TeamPlayers({
   players,
   teamId,
   seasonId,
+  divisionId,
+  categoryId,
   selectedTeam,
   isLoading = false,
   canSelect = false,
@@ -139,18 +143,39 @@ export function TeamPlayers({
     }
   }, [resolvedTeam]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  const teamQuery = debouncedTeamSearch.trim()
+
   const { data: searchedTeams, isFetching: isSearchingTeams } = useQuery({
-    queryKey: ['teams', 'search', debouncedTeamSearch],
-    queryFn: () => getTeamsFn({ data: { search: debouncedTeamSearch } }),
+    queryKey: [
+      'teams',
+      'search',
+      compId,
+      seasonId,
+      divisionId,
+      categoryId,
+      teamQuery,
+    ],
+    enabled: teamQuery.length > 0 && Boolean(compId),
+    queryFn: () =>
+      getTeamsFn({
+        data: {
+          competitionId: compId,
+          search: teamQuery,
+          ...(seasonId != null ? { seasonId: String(seasonId) } : {}),
+          ...(divisionId != null ? { divisionId: String(divisionId) } : {}),
+          ...(categoryId != null ? { categoryId: String(categoryId) } : {}),
+        },
+      }),
   })
 
   const teamOptions = useMemo(() => {
-    const list = searchedTeams ?? teams
+    const list =
+      teamQuery.length > 0 && searchedTeams != null ? searchedTeams : teams
     const extra = pickedTeam ?? selectedTeam
     if (!extra) return list
     if (list.some((team) => team.id === extra.id)) return list
     return [extra, ...list]
-  }, [pickedTeam, searchedTeams, selectedTeam, teams])
+  }, [pickedTeam, searchedTeams, selectedTeam, teamQuery, teams])
 
   const activeTeam = useMemo(() => {
     if (teamId) {
@@ -452,13 +477,23 @@ export function TeamPlayers({
               rememberTeam(team)
               setPickedTeam(team)
               setQuery('')
+              setTeamSearch('')
               onTeamChange(team)
             }}
             items={teamOptions}
             filter={null}
             itemToStringLabel={(item) => item?.name ?? ''}
             isItemEqualToValue={(a, b) => a?.id === b?.id}
-            onInputValueChange={(value) => {
+            onOpenChange={(open) => {
+              if (!open) setTeamSearch('')
+            }}
+            onInputValueChange={(value, details) => {
+              if (
+                details.reason !== 'input-change' &&
+                details.reason !== 'input-clear'
+              ) {
+                return
+              }
               setTeamSearch(value)
             }}
           >

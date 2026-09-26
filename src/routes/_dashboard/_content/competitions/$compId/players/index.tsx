@@ -69,6 +69,7 @@ export const Route = createFileRoute(
     const teams = await getTeamsFn({
       data: { competitionId: compId },
     })
+
     const selectedTeamId = teamId ?? teams[0]?.id
     const urlName = teamName?.trim()
     const resolvedName =
@@ -109,7 +110,7 @@ export const Route = createFileRoute(
 
     const teamIdStr = String(selectedTeamId)
     const roster = await getPlayersFn({
-      data: { teamId: teamIdStr },
+      data: { teamId: teamIdStr, seasonId },
     })
 
     const players =
@@ -142,6 +143,7 @@ export const Route = createFileRoute(
 function RouteComponent() {
   const { teams, players, teamId, seasonId, selectedTeam } =
     Route.useLoaderData()
+  const { divisionId, categoryId } = Route.useSearch()
   const { role } = Route.useRouteContext()
   const navigate = Route.useNavigate()
   const isLoading = useRouterState({ select: (s) => s.isLoading })
@@ -152,6 +154,8 @@ function RouteComponent() {
       players={players}
       teamId={teamId}
       seasonId={seasonId}
+      divisionId={divisionId}
+      categoryId={categoryId}
       selectedTeam={selectedTeam}
       isLoading={isLoading}
       canSelect={canSelectPlayers(role)}
