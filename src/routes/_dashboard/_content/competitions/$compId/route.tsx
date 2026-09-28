@@ -4,6 +4,7 @@ import {
   Outlet,
   createFileRoute,
   notFound,
+  redirect,
   useNavigate,
 } from '@tanstack/react-router'
 
@@ -25,6 +26,39 @@ export const Route = createFileRoute(
   '/_dashboard/_content/competitions/$compId',
 )({
   validateSearch: competitionContextSearchSchema,
+  beforeLoad: async ({ context, params, search, location }) => {
+    const competitions = await context.queryClient.ensureQueryData(
+      competitionQueryOptions,
+    )
+    const competition = competitions.find(
+      (entry) => entry.id === Number(params.compId),
+    )
+    if (!competition) return
+
+    const resolved = resolveCompetitionFilters(competition, search)
+    const changed =
+      resolved.seasonId !== search.seasonId ||
+      resolved.divisionId !== search.divisionId ||
+      resolved.categoryId !== search.categoryId
+    if (!changed) return
+
+    const next = new URLSearchParams(location.searchStr)
+    if (resolved.seasonId != null) {
+      next.set('seasonId', String(resolved.seasonId))
+    }
+    if (resolved.divisionId != null) {
+      next.set('divisionId', String(resolved.divisionId))
+    }
+    if (resolved.categoryId != null) {
+      next.set('categoryId', String(resolved.categoryId))
+    }
+    const query = next.toString()
+
+    throw redirect({
+      href: query ? `${location.pathname}?${query}` : location.pathname,
+      replace: true,
+    })
+  },
   loader: async ({ context, params }) => {
     const competitions = await context.queryClient.ensureQueryData(
       competitionQueryOptions,

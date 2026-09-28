@@ -706,3 +706,61 @@ export interface LeagueDashboard {
   teams: LeagueDashboardTeam[]
   events: LeagueDashboardEvent[]
 }
+
+export interface StandingTeam {
+  id: number
+  team_name: string
+  short_name: string | null
+  logo: string | null
+  P: number
+  W: number
+  D: number
+  L: number
+  GF: number
+  GA: number
+  GD: number
+  Pts: number
+  seq_points: number | null
+  live: {
+    opponent: string
+    score: string
+    status: string
+  } | null
+}
+
+export interface StandingStage {
+  id: number
+  name: string
+  standings: StandingTeam[]
+}
+
+export interface DivisionStanding {
+  position: number
+  team_id: number
+  team_name: string
+  team_short_name: string
+  team_logo: string
+  points: number
+}
+
+export interface OverallStanding {
+  position: number
+  team_id: number
+  team_name: string
+  team_short_name: string
+  team_logo: string
+  total_points: number
+  division_points: DivisionStanding[]
+}
+
+export interface CompetitionStandings {
+  competition: number
+  season: number
+  division: number | null
+  type: string
+  matches_played: number
+  standings: StandingTeam[]
+  stages: StandingStage[] | null
+  division_standings: DivisionStanding[] | null
+  overall_standings: OverallStanding[] | null
+}

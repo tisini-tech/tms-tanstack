@@ -279,7 +279,9 @@ export const resetPasswordFn = createServerFn({ method: 'POST' })
 
 export const getCountriesFn = createServerFn({ method: 'GET' }).handler(
   async () => {
-    const countries = await apiService.get<Country[]>('/countries', true)
+    const countries = await apiService.get<Country[]>('/countries', {
+      withApiKey: true,
+    })
 
     return countries
   },

@@ -55,8 +55,8 @@ export function AppSidebar({
     : undefined
 
   useEffect(() => {
-    rememberLastModulePath(pathname)
-  }, [pathname])
+    rememberLastModulePath(`${pathname}${window.location.search}`)
+  }, [pathname, search])
 
   const initialModule = useMemo(() => {
     const match = modules.find(

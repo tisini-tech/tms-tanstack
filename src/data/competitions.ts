@@ -6,6 +6,7 @@ import { authFnMiddleware } from '#/middlewares/auth'
 import type {
   Competition,
   CompetitionImage,
+  CompetitionStandings,
   LeagueDashboard,
 } from '#/lib/types'
 
@@ -130,4 +131,41 @@ export const getLeagueDashboardFn = createServerFn({ method: 'GET' })
     )
 
     return dashboard
+  })
+
+export const getCompetitionStandingsFn = createServerFn({ method: 'GET' })
+  .middleware([authFnMiddleware])
+  .validator(
+    (data: {
+      competitionId: string
+      seasonId: string
+      divisionId?: string
+      categoryId?: string
+      addSeqPoints?: boolean
+    }) => data,
+  )
+  .handler(async ({ data }) => {
+    const { competitionId, seasonId, divisionId, categoryId, addSeqPoints } =
+      data
+
+    const params = new URLSearchParams()
+    if (divisionId) {
+      params.set('division_id', divisionId)
+    }
+    if (categoryId) {
+      params.set('category_id', categoryId)
+    }
+    if (addSeqPoints) {
+      params.set('add_seq_points', 'true')
+    }
+
+    const query = params.toString()
+    const path = `/competitions/${competitionId}/seasons/${seasonId}/standings`
+
+    const standings = await apiService.get<CompetitionStandings>(
+      query ? `${path}?${query}` : path,
+      { base: 'scores', withApiKey: true },
+    )
+
+    return standings
   })

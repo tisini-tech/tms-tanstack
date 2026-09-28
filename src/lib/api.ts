@@ -1,7 +1,31 @@
 import { useAppSession } from '@/lib/session'
 
+export type ApiBase = 'manage' | 'scores'
+
+export type ApiRequestOptions = {
+  /** Defaults to `manage` (`API_URL`). Use `scores` for `API_SCORES_URL`. */
+  base?: ApiBase
+  withApiKey?: boolean
+}
+
 // Prevent multiple refresh requests at the same time
 let refreshPromise: Promise<string> | null = null
+
+function resolveApiBaseUrl(base: ApiBase = 'manage') {
+  if (base === 'scores') {
+    const url = process.env.API_SCORES_URL
+    if (!url) {
+      throw new Error('API_SCORES_URL is not set')
+    }
+    return url.replace(/\/$/, '')
+  }
+
+  const url = process.env.API_URL
+  if (!url) {
+    throw new Error('API_URL is not set')
+  }
+  return url.replace(/\/$/, '')
+}
 
 // Function to refresh the access token
 // Returns a promise that resolves to the new access token
@@ -16,10 +40,7 @@ async function refreshAccessToken() {
       throw new Error('No refresh token found')
     }
 
-    const url = process.env.API_URL
-    if (!url) {
-      throw new Error('API_URL is not set')
-    }
+    const url = resolveApiBaseUrl('manage')
 
     const res = await fetch(`${url}/auth/refresh-token`, {
       method: 'POST',
@@ -57,9 +78,10 @@ async function refreshAccessToken() {
 export async function apiFetch(
   path: string,
   options: RequestInit = {},
-  withApiKey = false,
+  requestOptions: ApiRequestOptions = {},
   retried = false,
 ): Promise<Response> {
+  const { base = 'manage', withApiKey = false } = requestOptions
   const session = await useAppSession()
   const accessToken = session.data.accessToken
 
@@ -68,10 +90,7 @@ export async function apiFetch(
     throw new Error('No access token found')
   }
 
-  const url = process.env.API_URL
-  if (!url) {
-    throw new Error('API_URL is not set')
-  }
+  const url = resolveApiBaseUrl(base)
 
   const apiKey = process.env.API_KEY
   if (withApiKey && !apiKey) {
@@ -103,7 +122,7 @@ export async function apiFetch(
 
   if (res.status === 401 && accessToken && !retried) {
     await refreshAccessToken()
-    return apiFetch(path, options, withApiKey, true)
+    return apiFetch(path, options, requestOptions, true)
   }
 
   return res
@@ -159,42 +178,53 @@ async function parseResponse<T>(res: Response): Promise<T> {
 }
 
 export const apiService = {
-  async get<T>(path: string, withApiKey = false) {
-    return parseResponse<T>(await apiFetch(path, { method: 'GET' }, withApiKey))
+  async get<T>(path: string, options: ApiRequestOptions = {}) {
+    return parseResponse<T>(await apiFetch(path, { method: 'GET' }, options))
   },
 
-  async post<T>(path: string, data?: unknown, withApiKey = false) {
-    const body =
-      data instanceof FormData ? data : JSON.stringify(data ?? {})
+  async post<T>(
+    path: string,
+    data?: unknown,
+    options: ApiRequestOptions = {},
+  ) {
+    const body = data instanceof FormData ? data : JSON.stringify(data ?? {})
 
     return parseResponse<T>(
-      await apiFetch(path, { method: 'POST', body }, withApiKey),
+      await apiFetch(path, { method: 'POST', body }, options),
     )
   },
 
-  async put<T>(path: string, data?: unknown, withApiKey = false) {
+  async put<T>(
+    path: string,
+    data?: unknown,
+    options: ApiRequestOptions = {},
+  ) {
     return parseResponse<T>(
       await apiFetch(
         path,
         { method: 'PUT', body: JSON.stringify(data) },
-        withApiKey,
+        options,
       ),
     )
   },
 
-  async patch<T>(path: string, data?: unknown, withApiKey = false) {
+  async patch<T>(
+    path: string,
+    data?: unknown,
+    options: ApiRequestOptions = {},
+  ) {
     return parseResponse<T>(
       await apiFetch(
         path,
         { method: 'PATCH', body: JSON.stringify(data) },
-        withApiKey,
+        options,
       ),
     )
   },
 
-  async delete<T>(path: string, withApiKey = false) {
+  async delete<T>(path: string, options: ApiRequestOptions = {}) {
     return parseResponse<T>(
-      await apiFetch(path, { method: 'DELETE' }, withApiKey),
+      await apiFetch(path, { method: 'DELETE' }, options),
     )
   },
 }

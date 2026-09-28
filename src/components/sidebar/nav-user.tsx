@@ -31,7 +31,7 @@ export function NavUser({ user }: { user: User }) {
   const navigate = useNavigate()
 
   async function handleLogout() {
-    rememberLastModulePath(window.location.pathname)
+    rememberLastModulePath(window.location.pathname + window.location.search)
     await logoutFn()
     navigate({ to: '/', replace: true })
   }

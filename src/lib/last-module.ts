@@ -2,17 +2,18 @@ import { MODULE_ROUTES } from './module-routes'
 
 const LAST_MODULE_PATH_KEY = 'tisini:last-module-path'
 
-function isModulePath(pathname: string) {
+function isModulePath(path: string) {
+  const pathname = path.split('?')[0] ?? path
   return Object.values(MODULE_ROUTES).some(
     (home) => pathname === home || pathname.startsWith(`${home}/`),
   )
 }
 
-/** Persist last module URL so it survives logout (session is cleared). */
-export function rememberLastModulePath(pathname: string) {
+/** Persist last module URL, including search, so it survives logout. */
+export function rememberLastModulePath(path: string) {
   if (typeof window === 'undefined') return
-  if (!isModulePath(pathname)) return
-  localStorage.setItem(LAST_MODULE_PATH_KEY, pathname)
+  if (!isModulePath(path)) return
+  localStorage.setItem(LAST_MODULE_PATH_KEY, path)
 }
 
 export function getLastModulePath(): string | undefined {

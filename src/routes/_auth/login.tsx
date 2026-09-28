@@ -71,7 +71,7 @@ function Login() {
           },
         })
         await navigate({
-          to: resolvePostLoginPath(redirect, modules, getLastModulePath()),
+          href: resolvePostLoginPath(redirect, modules, getLastModulePath()),
           replace: true,
         })
       } catch (error) {
