@@ -123,6 +123,7 @@ export const getTeamDashboardFn = createServerFn({ method: 'GET' })
       competitionId: string
       seasonId: string
       divisionId?: string
+      categoryId?: string
       teamId: string
       eventIds: number[]
     }) => data,
@@ -130,6 +131,7 @@ export const getTeamDashboardFn = createServerFn({ method: 'GET' })
   .handler(async ({ data }) => {
     const params = new URLSearchParams()
     if (data.divisionId) params.set('division_id', data.divisionId)
+    if (data.categoryId) params.set('category_id', data.categoryId)
     for (const eventId of data.eventIds) {
       params.append('event_ids', String(eventId))
     }

@@ -1,23 +1,27 @@
-import z from 'zod'
+import { z } from 'zod'
 import { useMemo, useState } from 'react'
-import { createFileRoute, getRouteApi } from '@tanstack/react-router'
+import { createFileRoute, getRouteApi, redirect, useRouterState } from '@tanstack/react-router'
+
+import { cn } from '#/lib/utils'
 
 import type { Team } from '#/lib/types'
 import { getMetricsFn } from '#/data/metrics'
 import { getTeamDashboardFn } from '#/data/teams'
-import EventsTable from '#/components/dashboard/events-table'
-import PlayersTable from '#/components/dashboard/players-table'
-import QuartersTable from '#/components/dashboard/quarters-table'
+import { getCompetitionsFn } from '#/data/competitions'
+import TeamDashboard from '#/components/dashboard/team-dashboard'
+import TeamDashboardSimple from '#/components/dashboard/team-dash'
 import { DashboardKpiCards } from '#/components/dashboard/dashboard-kpi-cards'
 import { MetricsMultiSelect } from '#/components/dashboard/metrics-multi-select'
+import { SimpleTeamReportDownload } from '#/components/dashboard/simple-team-report-download'
+import {
+  resolveDashboardEventIds,
+  serializeEventIdsSearch,
+  simpleDashboardEventIds,
+} from '#/components/dashboard/initial-events'
 import {
   EMPTY_FILTERS,
   type DashboardFilters,
 } from '#/components/dashboard/dashboard-filters'
-import {
-  resolveDashboardEventIds,
-  serializeEventIdsSearch,
-} from '#/components/dashboard/initial-events'
 import {
   Select,
   SelectContent,
@@ -26,13 +30,12 @@ import {
   SelectValue,
 } from '#/components/ui/select'
 
-/** Layout route (no trailing slash) — owns `teams`. */
 const dashboardLayoutRoute = getRouteApi(
-  '/_dashboard/_content/competitions/$compId/dashboard',
+  '/_dashboard/_content/competitions/$compId/_dashboards',
 )
 
 export const Route = createFileRoute(
-  '/_dashboard/_content/competitions/$compId/dashboard/',
+  '/_dashboard/_content/competitions/$compId/_dashboards/team-dashboard',
 )({
   validateSearch: z.object({
     teamId: z.coerce.number().optional(),
@@ -53,15 +56,39 @@ export const Route = createFileRoute(
   }),
   loader: async ({
     params: { compId },
-    deps: { teamId, seasonId, divisionId, eventIds },
+    deps: { teamId, seasonId, divisionId, categoryId, eventIds },
     parentMatchPromise,
   }) => {
     const parentMatch = await parentMatchPromise
     const teams =
       (parentMatch?.loaderData as { teams: Team[] } | undefined)?.teams ?? []
 
-    const selectedTeamId = teamId ?? teams[0]?.id
-    const resolvedEventIds = resolveDashboardEventIds(eventIds)
+    const categoryName = await categoryNameFor(compId, categoryId)
+    const visibleTeams = teamsInCategory(teams, categoryName)
+    const selectedTeamId =
+      teamId != null && visibleTeams.some((team) => team.id === teamId)
+        ? teamId
+        : visibleTeams[0]?.id
+
+    if (selectedTeamId != null && selectedTeamId !== teamId) {
+      throw redirect({
+        to: '/competitions/$compId/team-dashboard',
+        params: { compId },
+        search: {
+          teamId: selectedTeamId,
+          seasonId,
+          divisionId,
+          categoryId,
+          eventIds,
+        },
+        replace: true,
+      })
+    }
+
+    const resolvedEventIds =
+      compId === '252'
+        ? simpleDashboardEventIds
+        : resolveDashboardEventIds(eventIds)
 
     const metricsPromise = getMetricsFn({
       data: {
@@ -76,6 +103,7 @@ export const Route = createFileRoute(
       return {
         dashboardData: null,
         selectedTeamId: undefined as number | undefined,
+        categoryName,
         metrics: await metricsPromise,
         eventIds: resolvedEventIds,
       }
@@ -88,6 +116,7 @@ export const Route = createFileRoute(
           seasonId: seasonId?.toString() ?? '',
           teamId: selectedTeamId.toString(),
           divisionId: divisionId?.toString() ?? '',
+          categoryId: categoryId?.toString() ?? '',
           eventIds: resolvedEventIds,
         },
       }),
@@ -97,6 +126,7 @@ export const Route = createFileRoute(
     return {
       dashboardData,
       selectedTeamId,
+      categoryName,
       metrics,
       eventIds: resolvedEventIds,
     }
@@ -105,12 +135,16 @@ export const Route = createFileRoute(
 })
 
 function RouteComponent() {
+  const { compId } = Route.useParams()
+
   const navigate = Route.useNavigate()
+  const isLoading = useRouterState({ select: (state) => state.isLoading })
 
   const { teams } = dashboardLayoutRoute.useLoaderData()
   const {
     dashboardData,
     selectedTeamId,
+    categoryName,
     metrics = [],
     eventIds,
   } = Route.useLoaderData()
@@ -121,8 +155,11 @@ function RouteComponent() {
 
   const teamItems = useMemo(
     () =>
-      teams.map((team) => ({ value: team.id.toString(), label: team.name })),
-    [teams],
+      teamsInCategory(teams, categoryName).map((team) => ({
+        value: team.id.toString(),
+        label: team.name,
+      })),
+    [teams, categoryName],
   )
 
   function handleTeamChange(value: string | null) {
@@ -167,7 +204,45 @@ function RouteComponent() {
         <div className="flex flex-1 items-center justify-center p-8 text-sm text-muted-foreground">
           {teams.length === 0
             ? 'No teams in this competition yet.'
-            : 'Select a team to view the dashboard.'}
+            : teamItems.length === 0
+              ? `No teams match ${categoryName}.`
+              : 'Select a team to view the dashboard.'}
+        </div>
+      </div>
+    )
+  }
+
+  if (compId === '252') {
+    return (
+      <div className="flex h-[calc(100dvh-7rem)] flex-col gap-2">
+        <div className="ml-auto flex flex-wrap items-center justify-end gap-2">
+          <SimpleTeamReportDownload
+            teamName={
+              teams.find((team) => team.id === selectedTeamId)?.name ?? ''
+            }
+            matches={matches}
+            teamStats={teamStats}
+            sequences={dashboardData.sequences}
+            opponentStats={dashboardData.opponent_stats}
+          />
+          <TeamSelect
+            items={teamItems}
+            value={selectedTeamId.toString()}
+            onValueChange={handleTeamChange}
+          />
+        </div>
+        <div
+          className={cn(
+            'flex min-h-0 flex-1 flex-col transition-opacity',
+            isLoading && 'pointer-events-none opacity-50',
+          )}
+        >
+          <TeamDashboardSimple
+            matches={matches}
+            teamStats={teamStats}
+            sequences={dashboardData.sequences}
+            opponentStats={dashboardData.opponent_stats}
+          />
         </div>
       </div>
     )
@@ -190,41 +265,49 @@ function RouteComponent() {
           />
           <TeamSelect
             items={teamItems}
-            value={selectedTeamId?.toString()}
+            value={selectedTeamId.toString()}
             onValueChange={handleTeamChange}
           />
         </div>
       </div>
 
-      <div className="grid min-h-0 flex-1 grid-cols-1 items-stretch gap-4 lg:grid-cols-5">
-        <div className="flex min-h-0 min-w-0 flex-col gap-4 lg:col-span-4">
-          <div className="min-h-0 flex-1">
-            <EventsTable
-              matches={matches}
-              teamStats={teamStats}
-              filters={filters}
-              onFiltersChange={setFilters}
-            />
-          </div>
-          <div className="min-h-0 basis-[28%] shrink-0 grow-0">
-            <QuartersTable
-              matches={matches}
-              quarterStats={dashboardData.quarter_stats ?? []}
-              filters={filters}
-            />
-          </div>
-        </div>
-
-        <div className="min-h-0 min-w-0 lg:col-span-1">
-          <PlayersTable
-            playerStats={dashboardData.player_stats ?? []}
-            appearances={dashboardData.player_appearances ?? []}
-            filters={filters}
-          />
-        </div>
+      <div
+        className={cn(
+          'flex min-h-0 flex-1 flex-col transition-opacity',
+          isLoading && 'pointer-events-none opacity-50',
+        )}
+      >
+        <TeamDashboard
+          matches={matches}
+          teamStats={teamStats}
+          filters={filters}
+          setFilters={setFilters}
+          quarterStats={dashboardData.quarter_stats ?? []}
+          playerStats={dashboardData.player_stats ?? []}
+          playerAppearances={dashboardData.player_appearances ?? []}
+        />
       </div>
     </div>
   )
+}
+
+async function categoryNameFor(
+  compId: string,
+  categoryId: number | undefined,
+) {
+  if (categoryId == null) return ''
+  const competitions = await getCompetitionsFn()
+  return (
+    competitions
+      .find((competition) => String(competition.id) === compId)
+      ?.categories.find((category) => category.id === categoryId)?.name ?? ''
+  )
+}
+
+function teamsInCategory(teams: Team[], categoryName: string) {
+  const needle = categoryName.trim().toUpperCase()
+  if (!needle) return teams
+  return teams.filter((team) => team.name.toUpperCase().includes(needle))
 }
 
 function TeamSelect({

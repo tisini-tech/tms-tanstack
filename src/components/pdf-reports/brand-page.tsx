@@ -5,18 +5,27 @@ import type { SimpleFixture } from '#/lib/types'
 interface BrandPageProps {
   isLandscape?: boolean
   isPageNumber?: boolean
-  fixture: SimpleFixture
+  footerLabel?: string
+  headerTitle?: string
+  dense?: boolean
+  fixture?: SimpleFixture
   children: React.ReactNode
 }
 
 export function BrandPage({
   isLandscape = true,
   isPageNumber = true,
+  footerLabel = 'Player Report',
+  headerTitle,
+  dense = false,
   fixture,
   children,
 }: BrandPageProps) {
-  const homeTeam = fixture.home_team || 'Home Team'
-  const awayTeam = fixture.away_team || 'Away Team'
+  const homeTeam = fixture?.home_team || 'Home Team'
+  const awayTeam = fixture?.away_team || 'Away Team'
+  const title =
+    headerTitle ??
+    `${homeTeam} ${fixture?.home_score || 0} - ${fixture?.away_score || 0} ${awayTeam}`
 
   return (
     <Page
@@ -27,10 +36,7 @@ export function BrandPage({
       <View style={styles.pageHeader} fixed>
         <View style={styles.headerContent}>
           <Image src="/tisini.png" style={styles.headerLogo} />
-          <Text style={styles.headerScore}>
-            {homeTeam} {fixture.home_score || 0} - {fixture.away_score || 0}{' '}
-            {awayTeam}
-          </Text>
+          <Text style={styles.headerScore}>{title}</Text>
         </View>
       </View>
 
@@ -41,7 +47,7 @@ export function BrandPage({
             render={({ pageNumber, totalPages }) =>
               isPageNumber
                 ? `Page ${pageNumber}${totalPages > 1 ? ` of ${totalPages}` : ''}`
-                : 'Player Report'
+                : footerLabel
             }
           />
 
@@ -51,7 +57,9 @@ export function BrandPage({
         </View>
       </View>
 
-      <View style={styles.pageContent}>{children}</View>
+      <View style={dense ? styles.pageContentDense : styles.pageContent}>
+        {children}
+      </View>
     </Page>
   )
 }
@@ -124,5 +132,11 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     paddingHorizontal: 20,
     paddingVertical: 10,
+  },
+  pageContentDense: {
+    marginTop: 35,
+    marginBottom: 26,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
   },
 })

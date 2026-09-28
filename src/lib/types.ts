@@ -637,10 +637,72 @@ export interface DashboardTeamStats {
   sub_events: DashboardTeamStatsSubEvent[]
 }
 
+export interface MatchSequence {
+  match_id: number
+  total: number
+  below3: number
+  btwn4to6: number
+  btwn7to9: number
+  over10: number
+  average: number
+}
+
+export interface DashboardSequences {
+  below3: number
+  btwn4to6: number
+  btwn7to9: number
+  over10: number
+  total: number
+  average: number
+  matches: MatchSequence[]
+}
+
 export interface TeamDashboard {
   matches: DashboardMatch[]
   player_appearances: PlayerAppearance[]
   player_stats: DashboardPlayerStats[]
   quarter_stats: DashboardQuarterStats[]
   team_stats: DashboardTeamStats[]
+  sequences: DashboardSequences | null
+  /** Opponent events, usually shots. The API may return one event or a list. */
+  opponent_stats: DashboardTeamStats[] | DashboardTeamStats | null
+}
+
+export interface LeagueDashboardSequence {
+  below3: number
+  btwn4to6: number
+  btwn7to9: number
+  over10: number
+  total: number
+  average: number
+}
+
+export interface LeagueDashboardTeam {
+  team_id: number
+  name: string
+  games: number
+  sequences: LeagueDashboardSequence | null
+}
+
+export interface SimpleLeagueDashboardTeam {
+  team_id: number
+  total: number
+}
+
+export interface LeagueDashboardSubEvent {
+  sub_event_id: number
+  sub_event_name: string
+  teams: SimpleLeagueDashboardTeam[]
+}
+
+export interface LeagueDashboardEvent {
+  event_id: number
+  event_name: string
+  teams: SimpleLeagueDashboardTeam[]
+  sub_events: LeagueDashboardSubEvent[]
+}
+
+export interface LeagueDashboard {
+  teams: LeagueDashboardTeam[]
+  events: LeagueDashboardEvent[]
 }

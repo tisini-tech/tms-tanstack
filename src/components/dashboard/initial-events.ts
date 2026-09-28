@@ -1,5 +1,8 @@
 export const initialEvents = [19, 238, 155, 154, 203, 240, 7, 25, 31]
 
+/** Pass, shot, foul, throw-in. Pass and shot also return sequences and opponent shots. */
+export const simpleDashboardEventIds = [7, 238, 11, 12]
+
 export function parseEventIdsSearch(
   value: string | undefined,
 ): number[] | null {

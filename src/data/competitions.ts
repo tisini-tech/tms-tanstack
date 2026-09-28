@@ -3,7 +3,11 @@ import { createServerFn } from '@tanstack/react-start'
 
 import { apiService } from '#/lib/api'
 import { authFnMiddleware } from '#/middlewares/auth'
-import type { Competition, CompetitionImage } from '#/lib/types'
+import type {
+  Competition,
+  CompetitionImage,
+  LeagueDashboard,
+} from '#/lib/types'
 
 export const getCompetitionsFn = createServerFn({ method: 'GET' })
   .middleware([authFnMiddleware])
@@ -91,4 +95,39 @@ export const createCompetitionImageFn = createServerFn({ method: 'POST' })
     )
 
     return res
+  })
+
+export const getLeagueDashboardFn = createServerFn({ method: 'GET' })
+  .middleware([authFnMiddleware])
+  .validator(
+    (data: {
+      competitionId: string
+      seasonId: string
+      divisionId?: string
+      categoryId?: string
+      eventIds: number[]
+    }) => data,
+  )
+  .handler(async ({ data }) => {
+    const { competitionId, seasonId, divisionId, categoryId, eventIds } = data
+
+    const params = new URLSearchParams()
+    if (divisionId) {
+      params.set('division_id', divisionId)
+    }
+    if (categoryId) {
+      params.set('category_id', categoryId)
+    }
+    for (const eventId of eventIds) {
+      params.append('event_ids', String(eventId))
+    }
+
+    const query = params.toString()
+    const path = `/competitions/${competitionId}/seasons/${seasonId}/dashboard`
+
+    const dashboard = await apiService.get<LeagueDashboard>(
+      query ? `${path}?${query}` : path,
+    )
+
+    return dashboard
   })
