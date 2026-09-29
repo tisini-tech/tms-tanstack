@@ -1,6 +1,11 @@
 import { z } from 'zod'
 import { useMemo, useState } from 'react'
-import { createFileRoute, getRouteApi, redirect, useRouterState } from '@tanstack/react-router'
+import {
+  createFileRoute,
+  getRouteApi,
+  redirect,
+  useRouterState,
+} from '@tanstack/react-router'
 
 import { cn } from '#/lib/utils'
 
@@ -32,6 +37,9 @@ import {
 
 const dashboardLayoutRoute = getRouteApi(
   '/_dashboard/_content/competitions/$compId/_dashboards',
+)
+const competitionRoute = getRouteApi(
+  '/_dashboard/_content/competitions/$compId',
 )
 
 export const Route = createFileRoute(
@@ -141,6 +149,7 @@ function RouteComponent() {
   const isLoading = useRouterState({ select: (state) => state.isLoading })
 
   const { teams } = dashboardLayoutRoute.useLoaderData()
+  const { competition } = competitionRoute.useLoaderData()
   const {
     dashboardData,
     selectedTeamId,
@@ -220,6 +229,7 @@ function RouteComponent() {
             teamName={
               teams.find((team) => team.id === selectedTeamId)?.name ?? ''
             }
+            competitionName={competition.name}
             matches={matches}
             teamStats={teamStats}
             sequences={dashboardData.sequences}
@@ -291,10 +301,7 @@ function RouteComponent() {
   )
 }
 
-async function categoryNameFor(
-  compId: string,
-  categoryId: number | undefined,
-) {
+async function categoryNameFor(compId: string, categoryId: number | undefined) {
   if (categoryId == null) return ''
   const competitions = await getCompetitionsFn()
   return (

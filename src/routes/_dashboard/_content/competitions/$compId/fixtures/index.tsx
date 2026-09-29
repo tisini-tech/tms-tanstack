@@ -45,7 +45,9 @@ function filterFixturesByContext(
   })
 }
 
-export const Route = createFileRoute('/_dashboard/_content/competitions/$compId/fixtures/')({
+export const Route = createFileRoute(
+  '/_dashboard/_content/competitions/$compId/fixtures/',
+)({
   validateSearch: z.object({
     teamId: z.coerce.number().optional(),
     teamName: z.string().optional(),
@@ -58,7 +60,7 @@ export const Route = createFileRoute('/_dashboard/_content/competitions/$compId/
     teamName,
   }),
   loader: async ({ deps: { teamId, teamName } }) => {
-    const fixturesData = await getFixturesFn({ data: { pageSize: 100 } })
+    const fixturesData = await getFixturesFn({ data: { pageSize: 300 } })
     let fixtures = fixturesData.results ?? []
 
     if (teamId) {
@@ -79,15 +81,19 @@ function RouteComponent() {
   const { compId } = Route.useParams()
   const { seasonId, divisionId, categoryId } = Route.useSearch()
 
-  // null = show loader data; array = show search results
+  // null = show loader data (league/team scoped); array = unscoped search results
   const [searchResults, setSearchResults] = useState<Fixture[] | null>(null)
   const [search, setSearch] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
-  const fixtures = filterFixturesByContext(
-    searchResults ?? fixturesData.results ?? [],
-    { compId, seasonId, divisionId, categoryId },
-  )
+  const fixtures =
+    searchResults ??
+    filterFixturesByContext(fixturesData.results ?? [], {
+      compId,
+      seasonId,
+      divisionId,
+      categoryId,
+    })
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
@@ -106,11 +112,7 @@ function RouteComponent() {
     setIsLoading(true)
     try {
       const response = await searchFixturesFn({ data: { search } })
-      let results = response.results ?? []
-      if (teamId) {
-        results = filterFixturesByTeam(results, teamId)
-      }
-      setSearchResults(results)
+      setSearchResults(response.results ?? [])
     } finally {
       setIsLoading(false)
     }

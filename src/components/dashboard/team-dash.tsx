@@ -1,17 +1,12 @@
+import { useState, type ReactNode } from 'react'
+
 import type {
   DashboardMatch,
   DashboardSequences,
   DashboardTeamStats,
   MatchSequence,
 } from '#/lib/types'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '#/components/ui/table'
+import { cn } from '#/lib/utils'
 
 const SHOT = 238
 const FOUL = 11
@@ -19,107 +14,45 @@ const THROW_IN = 12
 const FOUL_THROW_SUB = 521
 const ON_TARGET_SUB_IDS = new Set([606, 610, 422, 405])
 
-type SequenceKey = keyof Pick<
+const SEQ_SEGMENTS = [
+  {
+    key: 'below3' as const,
+    label: 'Below 3',
+    className: 'bg-slate-400 dark:bg-slate-500',
+  },
+  {
+    key: 'btwn4to6' as const,
+    label: '4–6',
+    className: 'bg-sky-500',
+  },
+  {
+    key: 'btwn7to9' as const,
+    label: '7–9',
+    className: 'bg-violet-500',
+  },
+  {
+    key: 'over10' as const,
+    label: 'Over 10',
+    className: 'bg-amber-500',
+  },
+]
+
+type SeqSlice = Pick<
   MatchSequence,
   'below3' | 'btwn4to6' | 'btwn7to9' | 'over10' | 'total' | 'average'
 >
 
-const sequenceRows: { label: string; key: SequenceKey }[] = [
-  { label: 'Below 3', key: 'below3' },
-  { label: '4–6', key: 'btwn4to6' },
-  { label: '7–9', key: 'btwn7to9' },
-  { label: 'Over 10', key: 'over10' },
-  { label: 'Total', key: 'total' },
-  { label: 'Average', key: 'average' },
-]
-
-export type SimpleTeamResult = {
-  title?: string
-  total: number
-  stat?: number
-  percent?: number
-  below3?: number
-  btwn4to6?: number
-  btwn7to9?: number
-  over10?: number
-  average?: number
-}
-
-export function buildSimpleTeamReport({
-  matches,
-  teamStats,
-  sequences,
-  opponentStats,
-}: {
-  matches: DashboardMatch[]
-  teamStats: DashboardTeamStats[]
-  sequences: DashboardSequences | null
-  opponentStats: DashboardTeamStats[] | DashboardTeamStats | null
-}) {
-  const columns = matchColumns(matches)
-  const opponents = opponentList(opponentStats)
-  const sequenceByMatch = new Map(
-    (sequences?.matches ?? []).map((entry) => [entry.match_id, entry]),
-  )
-  const tableData: Record<string, Record<string, SimpleTeamResult>> = {}
-
-  const sequencesRow: Record<string, SimpleTeamResult> = {}
-  const attemptsRow: Record<string, SimpleTeamResult> = {}
-  const facedRow: Record<string, SimpleTeamResult> = {}
-  const foulsRow: Record<string, SimpleTeamResult> = {}
-  const throwInsRow: Record<string, SimpleTeamResult> = {}
-
-  for (const column of columns) {
-    const key = `vs ${column.label}`
-    const matchId = column.match.match_id
-    const sequence = sequenceByMatch.get(matchId)
-    const attemptsOnTarget = subTotal(
-      teamStats,
-      SHOT,
-      ON_TARGET_SUB_IDS,
-      matchId,
-    )
-    const attempts = eventTotal(teamStats, SHOT, matchId)
-    const facedOnTarget = subTotal(opponents, SHOT, ON_TARGET_SUB_IDS, matchId)
-    const faced = eventTotal(opponents, SHOT, matchId)
-
-    sequencesRow[key] = {
-      total: sequence?.total ?? 0,
-      below3: sequence?.below3 ?? 0,
-      btwn4to6: sequence?.btwn4to6 ?? 0,
-      btwn7to9: sequence?.btwn7to9 ?? 0,
-      over10: sequence?.over10 ?? 0,
-      average: sequence?.average ?? 0,
-    }
-    attemptsRow[key] = {
-      title: 'On Target',
-      stat: attemptsOnTarget,
-      total: attempts,
-      percent: percent(attempts, attemptsOnTarget),
-    }
-    facedRow[key] = {
-      title: 'On Target',
-      stat: facedOnTarget,
-      total: faced,
-      percent: percent(faced, facedOnTarget),
-    }
-    foulsRow[key] = { total: eventTotal(teamStats, FOUL, matchId) }
-    throwInsRow[key] = {
-      total: subTotal(teamStats, THROW_IN, new Set([FOUL_THROW_SUB]), matchId),
-    }
-  }
-
-  tableData.Sequences = sequencesRow
-  tableData.Attempts = attemptsRow
-  tableData['Attempts Faced'] = facedRow
-  tableData['Fouls Committed'] = foulsRow
-  tableData['Foul Throwin'] = throwInsRow
-
-  return {
-    tableData,
-    opponents: columns.map((column) => column.label),
-    numberOfGames: columns.length,
-  }
+type MatchRow = {
+  id: number
+  label: string
+  sequence?: SeqSlice
+  shotOn: number
+  shotTotal: number
+  facedOn: number
+  facedTotal: number
+  fouls: number
+  foulThrows: number
+  seqPoints: number
 }
 
 export default function TeamDashboardSimple({
@@ -136,251 +69,477 @@ export default function TeamDashboardSimple({
   const opponents = opponentList(opponentStats)
   const columns = matchColumns(matches)
   const gameCount = columns.length || 1
-
   const sequenceByMatch = new Map(
     (sequences?.matches ?? []).map((entry) => [entry.match_id, entry]),
   )
 
+  const matchRows: MatchRow[] = columns.map((column) => {
+    const matchId = column.match.match_id
+    const sequence = sequenceByMatch.get(matchId)
+    return {
+      id: matchId,
+      label: `vs ${column.label}`,
+      sequence,
+      shotOn: subTotal(teamStats, SHOT, ON_TARGET_SUB_IDS, matchId),
+      shotTotal: eventTotal(teamStats, SHOT, matchId),
+      facedOn: subTotal(opponents, SHOT, ON_TARGET_SUB_IDS, matchId),
+      facedTotal: eventTotal(opponents, SHOT, matchId),
+      fouls: eventTotal(teamStats, FOUL, matchId),
+      foulThrows: subTotal(
+        teamStats,
+        THROW_IN,
+        new Set([FOUL_THROW_SUB]),
+        matchId,
+      ),
+      seqPoints: seqPoints(sequence),
+    }
+  })
+
+  const totalSeqPoints = matchRows.reduce((sum, row) => sum + row.seqPoints, 0)
+  const avgSeqPoints =
+    matchRows.length > 0 ? totalSeqPoints / matchRows.length : 0
+
+  const [selectedId, setSelectedId] = useState<number | null>(null)
+
+  const seasonSeq: SeqSlice | undefined = sequences
+    ? {
+        below3: sequences.below3,
+        btwn4to6: sequences.btwn4to6,
+        btwn7to9: sequences.btwn7to9,
+        over10: sequences.over10,
+        total: sequences.total,
+        average: sequences.average,
+      }
+    : undefined
+
+  const seasonRow: MatchRow = {
+    id: -1,
+    label: 'Season',
+    sequence: seasonSeq,
+    shotOn: subTotal(teamStats, SHOT, ON_TARGET_SUB_IDS),
+    shotTotal: eventTotal(teamStats, SHOT),
+    facedOn: subTotal(opponents, SHOT, ON_TARGET_SUB_IDS),
+    facedTotal: eventTotal(opponents, SHOT),
+    fouls: eventTotal(teamStats, FOUL),
+    foulThrows: subTotal(teamStats, THROW_IN, new Set([FOUL_THROW_SUB])),
+    seqPoints: avgSeqPoints,
+  }
+
+  const selected = matchRows.find((row) => row.id === selectedId) ?? null
+  const focus = selected ?? seasonRow
+  const isSeason = selected == null
+
+  function selectMatch(id: number) {
+    setSelectedId((current) => (current === id ? null : id))
+  }
+
   return (
-    <div className="min-h-0 flex-1 overflow-auto rounded-xl border border-border bg-card">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Event</TableHead>
-            <TableHead>Sub-event</TableHead>
-            {columns.map((column) => (
-              <TableHead key={column.match.match_id} className="text-center">
-                {`vs ${column.label}`}
-              </TableHead>
-            ))}
-            <TableHead className="text-center">Total</TableHead>
-            <TableHead className="text-center">Average</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {sequenceRows.map((row, index) => {
-            const values = columns.map(
-              (column) =>
-                sequenceByMatch.get(column.match.match_id)?.[row.key] ?? 0,
-            )
-            const total =
-              row.key === 'average'
-                ? (sequences?.average ?? 0)
-                : (sequences?.[row.key] ?? sum(values))
-            const average =
-              row.key === 'average' ? total : Math.round(total / gameCount)
+    <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-hidden">
+      <div className="shrink-0 space-y-4">
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+          <KpiCard
+            label="Games"
+            value={String(gameCount)}
+            hint="In this view"
+          />
+          <KpiCard
+            label="Seq. average"
+            value={formatNumber(seasonSeq?.average ?? 0, true)}
+            hint={`${seasonSeq?.total ?? 0} sequences`}
+          />
+          <KpiCard
+            label="Seq. points"
+            value={String(totalSeqPoints)}
+            hint={`avg ${formatNumber(avgSeqPoints, true)} / game`}
+          />
+          <KpiCard
+            label="Shot on target"
+            value={`${percent(seasonRow.shotTotal, seasonRow.shotOn)}%`}
+            hint={`${seasonRow.shotOn}/${seasonRow.shotTotal}`}
+          />
+          <KpiCard
+            label="Fouls"
+            value={String(seasonRow.fouls)}
+            hint={`avg ${Math.round(seasonRow.fouls / gameCount)} / game`}
+          />
+        </div>
 
-            return (
-              <TableRow
-                key={row.key}
-                className={
-                  row.key === 'total' || row.key === 'average'
-                    ? 'bg-muted/40 font-medium'
-                    : undefined
-                }
+        <Section
+          title={isSeason ? 'Season overview' : focus.label}
+          subtitle={
+            isSeason
+              ? 'Totals across all matches — select a row below to filter'
+              : 'Filtered to this match — click again or Season to clear'
+          }
+          action={
+            !isSeason ? (
+              <button
+                type="button"
+                onClick={() => setSelectedId(null)}
+                className="text-xs font-medium text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
               >
-                {index === 0 ? (
-                  <TableCell
-                    rowSpan={sequenceRows.length}
-                    className="font-medium"
-                  >
-                    Sequences
-                  </TableCell>
-                ) : null}
-                <TableCell>{row.label}</TableCell>
-                {values.map((value, valueIndex) => (
-                  <TableCell
-                    key={columns[valueIndex]?.match.match_id}
-                    className="text-center tabular-nums"
-                  >
-                    {formatNumber(value, row.key === 'average')}
-                  </TableCell>
-                ))}
-                <TableCell className="text-center tabular-nums">
-                  {formatNumber(total, row.key === 'average')}
-                </TableCell>
-                <TableCell className="text-center tabular-nums">
-                  {formatNumber(average, row.key === 'average')}
-                </TableCell>
-              </TableRow>
-            )
-          })}
-
-          <Spacer columns={columns.length} />
-
-          <RateRows
-            event="Attempts"
-            columns={columns}
-            onTarget={(matchId) =>
-              subTotal(teamStats, SHOT, ON_TARGET_SUB_IDS, matchId)
-            }
-            total={(matchId) => eventTotal(teamStats, SHOT, matchId)}
-            seasonOnTarget={subTotal(teamStats, SHOT, ON_TARGET_SUB_IDS)}
-            seasonTotal={eventTotal(teamStats, SHOT)}
+                Show season
+              </button>
+            ) : null
+          }
+        >
+          <OverviewPanel
+            row={focus}
+            isSeason={isSeason}
+            gameCount={gameCount}
           />
+        </Section>
+      </div>
 
-          <Spacer columns={columns.length} />
-
-          <RateRows
-            event="Attempts faced"
-            columns={columns}
-            onTarget={(matchId) =>
-              subTotal(opponents, SHOT, ON_TARGET_SUB_IDS, matchId)
-            }
-            total={(matchId) => eventTotal(opponents, SHOT, matchId)}
-            seasonOnTarget={subTotal(opponents, SHOT, ON_TARGET_SUB_IDS)}
-            seasonTotal={eventTotal(opponents, SHOT)}
-          />
-
-          <Spacer columns={columns.length} />
-
-          <CountRow
-            event="Fouls committed"
-            columns={columns}
-            value={(matchId) => eventTotal(teamStats, FOUL, matchId)}
-            seasonTotal={eventTotal(teamStats, FOUL)}
-          />
-
-          <Spacer columns={columns.length} />
-
-          <CountRow
-            event="Foul throw-in"
-            columns={columns}
-            value={(matchId) =>
-              subTotal(teamStats, THROW_IN, new Set([FOUL_THROW_SUB]), matchId)
-            }
-            seasonTotal={subTotal(
-              teamStats,
-              THROW_IN,
-              new Set([FOUL_THROW_SUB]),
-            )}
-          />
-        </TableBody>
-      </Table>
+      <Section
+        className="flex min-h-0 flex-1 flex-col overflow-hidden"
+        title="Match board"
+        subtitle="Compare every game — select a match to filter the overview"
+      >
+        <div className="min-h-0 flex-1 overflow-auto">
+          <div className="min-w-[52rem]">
+            <MatchBoardHeader />
+            {matchRows.map((row) => (
+              <MatchBoardRow
+                key={row.id}
+                row={row}
+                selected={row.id === selectedId}
+                onSelect={() => selectMatch(row.id)}
+              />
+            ))}
+            <MatchBoardRow
+              row={seasonRow}
+              selected={isSeason}
+              onSelect={() => setSelectedId(null)}
+              emphasize
+              isSeason
+            />
+          </div>
+        </div>
+      </Section>
     </div>
   )
 }
 
-function RateRows({
-  event,
-  columns,
+const BOARD_COLS =
+  'grid-cols-[minmax(9rem,1.5fr)_repeat(4,minmax(2.75rem,0.55fr))_minmax(6rem,0.95fr)_minmax(6.5rem,1fr)_minmax(6.5rem,1fr)_minmax(2.75rem,0.5fr)_minmax(3rem,0.55fr)]'
+
+function MatchBoardHeader() {
+  return (
+    <div
+      className={cn(
+        'sticky top-0 z-10 grid gap-2 border-b border-border bg-card px-2 py-2 text-[10px] tracking-wide text-muted-foreground uppercase',
+        BOARD_COLS,
+      )}
+    >
+      <span>Opponent</span>
+      <span className="text-center">Below 3</span>
+      <span className="text-center">4–6</span>
+      <span className="text-center">7–9</span>
+      <span className="text-center">10+</span>
+      <span className="text-center">Seq</span>
+      <span className="text-center">Attempts</span>
+      <span className="text-center">Faced</span>
+      <span className="text-center">Fouls</span>
+      <span className="text-center">Throw-in</span>
+    </div>
+  )
+}
+
+function MatchBoardRow({
+  row,
+  selected,
+  onSelect,
+  emphasize = false,
+  isSeason = false,
+}: {
+  row: MatchRow
+  selected: boolean
+  onSelect?: () => void
+  emphasize?: boolean
+  isSeason?: boolean
+}) {
+  const shotPct = percent(row.shotTotal, row.shotOn)
+  const facedPct = percent(row.facedTotal, row.facedOn)
+  const interactive = Boolean(onSelect)
+  const seqPtsLabel = isSeason
+    ? `${formatNumber(row.seqPoints, true)} pts`
+    : `${row.seqPoints} pts`
+
+  return (
+    <button
+      type="button"
+      disabled={!interactive}
+      onClick={onSelect}
+      className={cn(
+        'grid w-full gap-2 px-2 py-2 text-left transition-colors',
+        BOARD_COLS,
+        'items-center',
+        interactive && 'hover:bg-muted/50',
+        selected && 'bg-muted/60 ring-1 ring-border',
+        emphasize && !selected && 'bg-muted/30',
+      )}
+    >
+      <div className="truncate text-sm font-medium">{row.label}</div>
+      <div className="text-center text-sm tabular-nums">
+        {row.sequence?.below3 ?? 0}
+      </div>
+      <div className="text-center text-sm tabular-nums">
+        {row.sequence?.btwn4to6 ?? 0}
+      </div>
+      <div className="text-center text-sm tabular-nums">
+        {row.sequence?.btwn7to9 ?? 0}
+      </div>
+      <div className="text-center text-sm tabular-nums">
+        {row.sequence?.over10 ?? 0}
+      </div>
+      <div className="text-center">
+        <div className="text-sm font-semibold tabular-nums">{seqPtsLabel}</div>
+        <div className="text-[11px] tabular-nums text-muted-foreground">
+          {row.sequence?.total ?? 0} tot · avg{' '}
+          {formatNumber(row.sequence?.average ?? 0, true)}
+        </div>
+      </div>
+      <div className="text-center text-sm tabular-nums">
+        {row.shotOn}/{row.shotTotal}{' '}
+        <span className="text-muted-foreground">({shotPct}%)</span>
+      </div>
+      <div className="text-center text-sm tabular-nums">
+        {row.facedOn}/{row.facedTotal}{' '}
+        <span className="text-muted-foreground">({facedPct}%)</span>
+      </div>
+      <div className="text-center text-sm tabular-nums">{row.fouls}</div>
+      <div className="text-center text-sm tabular-nums text-muted-foreground">
+        {row.foulThrows}
+      </div>
+    </button>
+  )
+}
+
+function OverviewPanel({
+  row,
+  isSeason,
+  gameCount,
+}: {
+  row: MatchRow
+  isSeason: boolean
+  gameCount: number
+}) {
+  const shotPct = percent(row.shotTotal, row.shotOn)
+  const facedPct = percent(row.facedTotal, row.facedOn)
+  const seqMax = Math.max(
+    row.sequence?.below3 ?? 0,
+    row.sequence?.btwn4to6 ?? 0,
+    row.sequence?.btwn7to9 ?? 0,
+    row.sequence?.over10 ?? 0,
+    1,
+  )
+
+  return (
+    <div className="grid gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
+      <div>
+        <div className="mb-2 flex flex-wrap items-baseline justify-between gap-2">
+          <div className="text-xs font-medium text-muted-foreground">
+            Sequence mix
+          </div>
+          <div className="text-xs tabular-nums text-muted-foreground">
+            {row.sequence?.total ?? 0} sequences · avg{' '}
+            {formatNumber(row.sequence?.average ?? 0, true)} · seq pts{' '}
+            <span className="font-medium text-foreground">
+              {isSeason ? formatNumber(row.seqPoints, true) : row.seqPoints}
+            </span>
+          </div>
+        </div>
+        <div className="space-y-2 rounded-lg border border-border/70 bg-background/40 px-3 py-2.5">
+          {SEQ_SEGMENTS.map((segment) => {
+            const value = row.sequence?.[segment.key] ?? 0
+            const width = (value / seqMax) * 100
+            return (
+              <div
+                key={segment.key}
+                className="grid grid-cols-[5.5rem_minmax(0,1fr)_2.5rem] items-center gap-3"
+              >
+                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <span
+                    className={cn(
+                      'size-2 shrink-0 rounded-sm',
+                      segment.className,
+                    )}
+                  />
+                  {segment.label}
+                </div>
+                <div className="h-2.5 overflow-hidden rounded-full bg-muted">
+                  <div
+                    className={cn('h-full rounded-full', segment.className)}
+                    style={{ width: `${width}%` }}
+                  />
+                </div>
+                <div className="text-right text-sm font-semibold tabular-nums">
+                  {value}
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        <div className="grid grid-cols-2 gap-2">
+          <div className="rounded-lg border border-border/70 bg-background/40 px-3 py-2.5">
+            <OnTargetBar
+              label="Attempts"
+              onTarget={row.shotOn}
+              total={row.shotTotal}
+              pct={shotPct}
+            />
+          </div>
+          <div className="rounded-lg border border-border/70 bg-background/40 px-3 py-2.5">
+            <OnTargetBar
+              label="Attempts faced"
+              onTarget={row.facedOn}
+              total={row.facedTotal}
+              pct={facedPct}
+            />
+          </div>
+        </div>
+        <div className="grid grid-cols-3 gap-2">
+          <StatTile
+            label="Seq points"
+            value={isSeason ? formatNumber(row.seqPoints, true) : row.seqPoints}
+            hint={isSeason ? 'Avg earned / match' : 'Earned this match'}
+          />
+          <StatTile
+            label="Fouls committed"
+            value={row.fouls}
+            hint={
+              isSeason
+                ? `avg ${Math.round(row.fouls / gameCount)} / game`
+                : 'This match'
+            }
+          />
+          <StatTile
+            label="Foul throw-in"
+            value={row.foulThrows}
+            hint={
+              isSeason
+                ? `avg ${Math.round(row.foulThrows / gameCount)} / game`
+                : 'This match'
+            }
+          />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function OnTargetBar({
+  label,
   onTarget,
   total,
-  seasonOnTarget,
-  seasonTotal,
+  pct,
 }: {
-  event: string
-  columns: { match: DashboardMatch }[]
-  onTarget: (matchId: number) => number
-  total: (matchId: number) => number
-  seasonOnTarget: number
-  seasonTotal: number
+  label: string
+  onTarget: number
+  total: number
+  pct: number
 }) {
-  const onTargetValues = columns.map((column) =>
-    onTarget(column.match.match_id),
-  )
-  const totalValues = columns.map((column) => total(column.match.match_id))
-  const games = columns.length || 1
-  const seasonPercent = percent(seasonTotal, seasonOnTarget)
-
   return (
-    <>
-      <TableRow>
-        <TableCell rowSpan={3} className="font-medium">
-          {event}
-        </TableCell>
-        <TableCell>On target</TableCell>
-        {onTargetValues.map((value, index) => (
-          <TableCell
-            key={columns[index]?.match.match_id}
-            className="text-center tabular-nums"
-          >
-            {value}
-          </TableCell>
-        ))}
-        <TableCell className="text-center tabular-nums">
-          {seasonOnTarget}
-        </TableCell>
-        <TableCell className="text-center tabular-nums">
-          {Math.round(seasonOnTarget / games)}
-        </TableCell>
-      </TableRow>
-      <TableRow>
-        <TableCell>Total</TableCell>
-        {totalValues.map((value, index) => (
-          <TableCell
-            key={columns[index]?.match.match_id}
-            className="text-center tabular-nums"
-          >
-            {value}
-          </TableCell>
-        ))}
-        <TableCell className="text-center tabular-nums">
-          {seasonTotal}
-        </TableCell>
-        <TableCell className="text-center tabular-nums">
-          {Math.round(seasonTotal / games)}
-        </TableCell>
-      </TableRow>
-      <TableRow className="bg-muted/40 font-medium">
-        <TableCell>Percent</TableCell>
-        {columns.map((column, index) => (
-          <TableCell
-            key={column.match.match_id}
-            className="text-center tabular-nums"
-          >
-            {percent(totalValues[index] ?? 0, onTargetValues[index] ?? 0)}%
-          </TableCell>
-        ))}
-        <TableCell className="text-center tabular-nums">
-          {seasonPercent}%
-        </TableCell>
-        <TableCell className="text-center tabular-nums">
-          {seasonPercent}%
-        </TableCell>
-      </TableRow>
-    </>
+    <div>
+      <div className="mb-1.5 flex flex-wrap items-baseline justify-between gap-2">
+        <div className="text-xs font-medium text-muted-foreground">{label}</div>
+        <div className="text-xs tabular-nums text-muted-foreground">
+          <span className="font-medium text-foreground">
+            {onTarget}/{total}
+          </span>{' '}
+          · {pct}% on target
+        </div>
+      </div>
+      <div className="h-2.5 overflow-hidden rounded-full bg-muted">
+        <div
+          className="h-full rounded-full bg-emerald-500"
+          style={{ width: `${Math.min(pct, 100)}%` }}
+        />
+      </div>
+    </div>
   )
 }
 
-function CountRow({
-  event,
-  columns,
+function KpiCard({
+  label,
   value,
-  seasonTotal,
+  hint,
 }: {
-  event: string
-  columns: { match: DashboardMatch }[]
-  value: (matchId: number) => number
-  seasonTotal: number
+  label: string
+  value: string
+  hint: string
 }) {
-  const games = columns.length || 1
-
   return (
-    <TableRow>
-      <TableCell className="font-medium">{event}</TableCell>
-      <TableCell />
-      {columns.map((column) => (
-        <TableCell
-          key={column.match.match_id}
-          className="text-center tabular-nums"
-        >
-          {value(column.match.match_id)}
-        </TableCell>
-      ))}
-      <TableCell className="text-center tabular-nums">{seasonTotal}</TableCell>
-      <TableCell className="text-center tabular-nums">
-        {Math.round(seasonTotal / games)}
-      </TableCell>
-    </TableRow>
+    <div className="rounded-xl border border-border bg-card px-4 py-3">
+      <div className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+        {label}
+      </div>
+      <div className="mt-1 text-2xl font-semibold tabular-nums tracking-tight">
+        {value}
+      </div>
+      <div className="mt-1 text-xs text-muted-foreground">{hint}</div>
+    </div>
   )
 }
 
-function Spacer({ columns }: { columns: number }) {
+function Section({
+  title,
+  subtitle,
+  action,
+  className,
+  children,
+}: {
+  title: string
+  subtitle: string
+  action?: ReactNode
+  className?: string
+  children: ReactNode
+}) {
   return (
-    <TableRow className="hover:bg-transparent">
-      <TableCell colSpan={columns + 4} className="h-4 border-0 p-0" />
-    </TableRow>
+    <section
+      className={cn('rounded-xl border border-border bg-card p-4', className)}
+    >
+      <div className="mb-4 flex shrink-0 items-start justify-between gap-3">
+        <div>
+          <h2 className="text-sm font-semibold tracking-tight">{title}</h2>
+          <p className="text-xs text-muted-foreground">{subtitle}</p>
+        </div>
+        {action}
+      </div>
+      {children}
+    </section>
+  )
+}
+
+function StatTile({
+  label,
+  value,
+  hint,
+}: {
+  label: string
+  value: number | string
+  hint: string
+}) {
+  return (
+    <div className="rounded-lg border border-border/70 bg-background/40 px-3 py-2.5">
+      <div className="text-xs text-muted-foreground">{label}</div>
+      <div className="mt-0.5 text-xl font-semibold tabular-nums">{value}</div>
+      <div className="text-xs text-muted-foreground">{hint}</div>
+    </div>
+  )
+}
+
+/** Presence rule: ≥1 in 4–6 → +1, ≥1 in 7–9 → +2, ≥1 over 10 → +1 (max 4). */
+function seqPoints(sequence?: SeqSlice | null) {
+  if (!sequence) return 0
+  return (
+    ((sequence.btwn4to6 ?? 0) > 0 ? 1 : 0) +
+    ((sequence.btwn7to9 ?? 0) > 0 ? 2 : 0) +
+    ((sequence.over10 ?? 0) > 0 ? 1 : 0)
   )
 }
 
@@ -436,13 +595,19 @@ function matchColumns(matches: DashboardMatch[]) {
     bases.filter((label, index) => bases.indexOf(label) !== index),
   )
 
-  return matches.map((match, index) => {
-    const base = bases[index] ?? match.label
-    const label = duplicated.has(base)
-      ? `${base} (${match.matchday || match.match_id})`
-      : base
-    return { match, label }
-  })
+  return matches
+    .map((match, index) => {
+      const base = bases[index] ?? match.label
+      const label = duplicated.has(base)
+        ? `${base} (${match.matchday || match.match_id})`
+        : base
+      return { match, label }
+    })
+    .sort(
+      (a, b) =>
+        new Date(b.match.match_date).getTime() -
+        new Date(a.match.match_date).getTime(),
+    )
 }
 
 function opponentLabel(match: DashboardMatch) {
@@ -455,11 +620,7 @@ function percent(total: number, part: number) {
   return Math.round((part / total) * 100)
 }
 
-function sum(values: number[]) {
-  return values.reduce((total, value) => total + value, 0)
-}
-
 function formatNumber(value: number, decimal: boolean) {
-  if (!decimal) return Math.round(value)
-  return Math.round(value * 10) / 10
+  if (!decimal) return String(Math.round(value))
+  return String(Math.round(value * 10) / 10)
 }

@@ -1,323 +1,309 @@
-import React, { type FC } from 'react'
+import { type FC } from 'react'
 import { Table, TD, TH, TR } from '@ag-media/react-pdf-table'
-import { Document, StyleSheet, View } from '@react-pdf/renderer'
+import { Document, StyleSheet, Text, View } from '@react-pdf/renderer'
 
 import { BrandPage } from '#/components/pdf-reports/brand-page'
 
-export type TeamResultData = {
-  title?: string
-  total: number
-  stat?: number
-  percent?: number
-  below3?: number
-  btwn4to6?: number
-  btwn7to9?: number
-  over10?: number
-  average?: number
+export type SimpleTeamSeasonKpis = {
+  games: number
+  seqAverage: number
+  seqTotal: number
+  seqPointsTotal: number
+  seqPointsAvg: number
+  shotOn: number
+  shotTotal: number
+  fouls: number
+}
+
+export type SimpleTeamMatchOverview = {
+  label: string
+  matchDate?: string
+  below3: number
+  btwn4to6: number
+  btwn7to9: number
+  over10: number
+  seqTotal: number
+  seqAverage: number
+  seqPoints: number
+  shotOn: number
+  shotTotal: number
+  facedOn: number
+  facedTotal: number
+  fouls: number
+  foulThrows: number
 }
 
 export type GenSimpleTeamPDFProps = {
-  tableData: Record<string, Record<string, TeamResultData>>
   teamName: string
-  numberOfGames: number
-  opponents: string[]
+  competitionName?: string
+  season: SimpleTeamSeasonKpis
+  matches: SimpleTeamMatchOverview[]
 }
 
-const sequenceCategories: { label: string; key: keyof TeamResultData }[] = [
-  { label: 'Below 3', key: 'below3' },
-  { label: 'Btn 4-6', key: 'btwn4to6' },
-  { label: 'Btn 7-9', key: 'btwn7to9' },
-  { label: 'Over 10', key: 'over10' },
-  { label: 'Total', key: 'total' },
-  { label: 'Average', key: 'average' },
+const weightings = [
+  0.15, // opponent
+  0.06, // below3
+  0.06, // 4-6
+  0.06, // 7-9
+  0.06, // 10+
+  0.14, // seq (pts · tot · avg)
+  0.13, // attempts
+  0.14, // attempts faced
+  0.07, // fouls
+  0.07, // throwin
 ]
 
 export const GenSimpleTeamPDF: FC<GenSimpleTeamPDFProps> = ({
-  tableData,
   teamName,
-  numberOfGames,
-  opponents,
+  competitionName,
+  season,
+  matches,
 }) => {
-  const n = opponents.length || 1
-
-  const getSum = (
-    opponentsData: Record<string, TeamResultData>,
-    key: keyof TeamResultData,
-  ) =>
-    opponents.reduce(
-      (sum, opp) => sum + (Number(opponentsData[`vs ${opp}`]?.[key]) || 0),
-      0,
-    )
-
-  const getAvg = (
-    opponentsData: Record<string, TeamResultData>,
-    key: keyof TeamResultData,
-  ) => {
-    const sum = getSum(opponentsData, key)
-    return key === 'average'
-      ? Math.round((sum / n) * 10) / 10
-      : Math.round(sum / n)
-  }
-
-  const gamesLabel = `${numberOfGames} ${numberOfGames === 1 ? 'game' : 'games'}`
-  const eventWeight = 0.13
-  const subWeight = 0.08
-  const summaryWeight = 0.05
-  const opponentWeight =
-    (1 - eventWeight - subWeight - summaryWeight * 2) /
-    Math.max(opponents.length, 1)
+  const headerTitle = [teamName || 'Team', competitionName]
+    .filter(Boolean)
+    .join(' | ')
+  const shotPct = percent(season.shotTotal, season.shotOn)
+  const foulsAvg = Math.round(season.fouls / Math.max(season.games, 1))
 
   return (
     <Document>
       <BrandPage
-        headerTitle={`${teamName || 'Team'} Dashboard  ·  ${gamesLabel}`}
+        isLandscape
+        headerTitle={headerTitle}
         isPageNumber={false}
         footerLabel="Team Dashboard"
         dense
       >
-        <View style={styles.tableContainer} wrap={false}>
+        <View style={styles.content}>
+          <View style={styles.kpiRow} wrap={false}>
+            <KpiCard
+              label="Games"
+              value={String(season.games)}
+              hint="In this view"
+            />
+            <KpiCard
+              label="Seq. average"
+              value={formatNumber(season.seqAverage, true)}
+              hint={`${season.seqTotal} sequences`}
+            />
+            <KpiCard
+              label="Seq. points"
+              value={String(season.seqPointsTotal)}
+              hint={`avg ${formatNumber(season.seqPointsAvg, true)} / game`}
+            />
+            <KpiCard
+              label="Shot on target"
+              value={`${shotPct}%`}
+              hint={`${season.shotOn}/${season.shotTotal}`}
+            />
+            <KpiCard
+              label="Fouls"
+              value={String(season.fouls)}
+              hint={`avg ${foulsAvg} / game`}
+            />
+          </View>
+
+          <View style={styles.tableContainer}>
           <Table
             style={styles.table}
             tdStyle={styles.cell}
-            weightings={[
-              eventWeight,
-              subWeight,
-              ...opponents.map(() => opponentWeight),
-              summaryWeight,
-              summaryWeight,
-            ]}
+            weightings={weightings}
           >
             <TH>
-              <TD style={styles.th}>Event</TD>
-              <TD style={styles.th}>Sub-event</TD>
-              {opponents.map((opp) => (
-                <TD key={opp} style={styles.th}>
-                  {`vs ${opp}`}
-                </TD>
-              ))}
-              <TD style={styles.th}>Total</TD>
-              <TD style={styles.th}>Average</TD>
+              <TD style={styles.thLeft}>Opponent</TD>
+              <TD style={styles.th}>Below 3</TD>
+              <TD style={styles.th}>4–6</TD>
+              <TD style={styles.th}>7–9</TD>
+              <TD style={styles.th}>10+</TD>
+              <TD style={styles.th}>Seq</TD>
+              <TD style={styles.th}>Attempts</TD>
+              <TD style={styles.th}>Faced</TD>
+              <TD style={styles.th}>Fouls</TD>
+              <TD style={styles.th}>Throw-in</TD>
             </TH>
-            {Object.entries(tableData).map(([eventName, opponentsData]) => {
-              const first = Object.values(opponentsData)[0]
-              const isSequenceEvent = first?.below3 !== undefined
-              const hasSubEvent = first?.stat !== undefined
+            {matches.map((match, index) => {
+              const attempts = `${match.shotOn}/${match.shotTotal} (${percent(match.shotTotal, match.shotOn)}%)`
+              const faced = `${match.facedOn}/${match.facedTotal} (${percent(match.facedTotal, match.facedOn)}%)`
+              const rowStyle = index % 2 === 1 ? styles.tdAlt : styles.td
 
-              const spacerRow = (
-                <TR key={`${eventName}-spacer`}>
-                  <TD style={styles.tdSpacer} />
-                  <TD style={styles.tdSpacer} />
-                  {opponents.map((opp) => (
-                    <TD key={opp} style={styles.tdSpacer} />
-                  ))}
-                  <TD style={styles.tdSpacer} />
-                  <TD style={styles.tdSpacer} />
-                </TR>
-              )
-
-              if (isSequenceEvent) {
-                return (
-                  <React.Fragment key={eventName}>
-                    {sequenceCategories.map((cat, index) => (
-                      <TR key={`${eventName}-${cat.key}`}>
-                        <TD style={index === 0 ? styles.tdEvent : styles.td}>
-                          {index === 0 ? eventName : ''}
-                        </TD>
-                        <TD
-                          style={
-                            cat.label === 'Total' || cat.label === 'Average'
-                              ? styles.tdSummary
-                              : styles.tdSub
-                          }
-                        >
-                          {cat.label}
-                        </TD>
-                        {opponents.map((opp) => {
-                          const val =
-                            (opponentsData[`vs ${opp}`]?.[
-                              cat.key as keyof TeamResultData
-                            ] as number) ?? 0
-                          const display =
-                            cat.key === 'average'
-                              ? Math.round(Number(val) * 10) / 10
-                              : Number(val)
-                          return (
-                            <TD
-                              key={opp}
-                              style={
-                                cat.label === 'Total' || cat.label === 'Average'
-                                  ? styles.tdSummary
-                                  : styles.td
-                              }
-                            >
-                              {display}
-                            </TD>
-                          )
-                        })}
-                        <TD
-                          style={
-                            cat.label === 'Total' || cat.label === 'Average'
-                              ? styles.tdSummary
-                              : styles.td
-                          }
-                        >
-                          {cat.key === 'average'
-                            ? Math.round(
-                                getSum(
-                                  opponentsData,
-                                  cat.key as keyof TeamResultData,
-                                ) * 10,
-                              ) / 10
-                            : getSum(
-                                opponentsData,
-                                cat.key as keyof TeamResultData,
-                              )}
-                        </TD>
-                        <TD
-                          style={
-                            cat.label === 'Total' || cat.label === 'Average'
-                              ? styles.tdSummary
-                              : styles.td
-                          }
-                        >
-                          {getAvg(
-                            opponentsData,
-                            cat.key as keyof TeamResultData,
-                          )}
-                        </TD>
-                      </TR>
-                    ))}
-                    {spacerRow}
-                  </React.Fragment>
-                )
-              }
-
-              if (hasSubEvent) {
-                const totalStat = getSum(opponentsData, 'stat')
-                const totalTotal = getSum(opponentsData, 'total')
-                const totalPercent =
-                  totalTotal > 0
-                    ? Math.round((totalStat / totalTotal) * 100)
-                    : 0
-                return (
-                  <React.Fragment key={eventName}>
-                    <TR>
-                      <TD style={styles.tdEvent}>{eventName}</TD>
-                      <TD style={styles.tdSub}>{first?.title ?? ''}</TD>
-                      {opponents.map((opp) => (
-                        <TD key={opp} style={styles.td}>
-                          {opponentsData[`vs ${opp}`]?.stat ?? 0}
-                        </TD>
-                      ))}
-                      <TD style={styles.td}>{totalStat}</TD>
-                      <TD style={styles.td}>{Math.round(totalStat / n)}</TD>
-                    </TR>
-                    <TR>
-                      <TD style={styles.td} />
-                      <TD style={styles.tdSub}>Total</TD>
-                      {opponents.map((opp) => (
-                        <TD key={opp} style={styles.td}>
-                          {opponentsData[`vs ${opp}`]?.total ?? 0}
-                        </TD>
-                      ))}
-                      <TD style={styles.td}>{totalTotal}</TD>
-                      <TD style={styles.td}>{Math.round(totalTotal / n)}</TD>
-                    </TR>
-                    <TR>
-                      <TD style={styles.td} />
-                      <TD style={styles.tdSummary}>Percent</TD>
-                      {opponents.map((opp) => (
-                        <TD key={opp} style={styles.tdSummary}>
-                          {(opponentsData[`vs ${opp}`]?.percent ?? 0) + '%'}
-                        </TD>
-                      ))}
-                      <TD style={styles.tdSummary}>{totalPercent + '%'}</TD>
-                      <TD style={styles.tdSummary}>{totalPercent + '%'}</TD>
-                    </TR>
-                    {spacerRow}
-                  </React.Fragment>
-                )
-              }
-
-              const totalTotal = getSum(opponentsData, 'total')
               return (
-                <TR key={eventName}>
-                  <TD style={styles.tdEvent}>{eventName}</TD>
-                  <TD style={styles.tdSub} />
-                  {opponents.map((opp) => (
-                    <TD key={opp} style={styles.td}>
-                      {opponentsData[`vs ${opp}`]?.total ?? 0}
-                    </TD>
-                  ))}
-                  <TD style={styles.td}>{totalTotal}</TD>
-                  <TD style={styles.td}>{Math.round(totalTotal / n)}</TD>
+                <TR key={match.label}>
+                  <TD style={styles.tdOpponent}>
+                    <Text style={styles.opponentName}>{match.label}</Text>
+                    {match.matchDate ? (
+                      <Text style={styles.opponentDate}>{match.matchDate}</Text>
+                    ) : null}
+                  </TD>
+                  <TD style={rowStyle}>{match.below3}</TD>
+                  <TD style={rowStyle}>{match.btwn4to6}</TD>
+                  <TD style={rowStyle}>{match.btwn7to9}</TD>
+                  <TD style={rowStyle}>{match.over10}</TD>
+                  <TD style={styles.tdSeq}>
+                    <Text style={styles.seqPts}>{match.seqPoints} pts</Text>
+                    <Text style={styles.seqMeta}>
+                      {match.seqTotal} tot · avg{' '}
+                      {formatNumber(match.seqAverage, true)}
+                    </Text>
+                  </TD>
+                  <TD style={rowStyle}>{attempts}</TD>
+                  <TD style={rowStyle}>{faced}</TD>
+                  <TD style={rowStyle}>{match.fouls}</TD>
+                  <TD style={rowStyle}>{match.foulThrows}</TD>
                 </TR>
               )
             })}
           </Table>
+          </View>
         </View>
       </BrandPage>
     </Document>
   )
 }
 
+function KpiCard({
+  label,
+  value,
+  hint,
+}: {
+  label: string
+  value: string
+  hint: string
+}) {
+  return (
+    <View style={styles.kpiCard}>
+      <Text style={styles.kpiLabel}>{label}</Text>
+      <Text style={styles.kpiValue}>{value}</Text>
+      <Text style={styles.kpiHint}>{hint}</Text>
+    </View>
+  )
+}
+
+function percent(total: number, part: number) {
+  if (total <= 0) return 0
+  return Math.round((part / total) * 100)
+}
+
+function formatNumber(value: number, decimal: boolean) {
+  if (!decimal) return String(Math.round(value))
+  return String(Math.round(value * 10) / 10)
+}
+
 const styles = StyleSheet.create({
+  content: {
+    paddingTop: 8,
+  },
+  kpiRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 12,
+  },
+  kpiCard: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#cbd5e1',
+    borderRadius: 6,
+    paddingVertical: 8,
+    paddingHorizontal: 8,
+    backgroundColor: '#f8fafc',
+  },
+  kpiLabel: {
+    fontSize: 7,
+    fontWeight: 'bold',
+    color: '#64748b',
+    textTransform: 'uppercase',
+  },
+  kpiValue: {
+    marginTop: 3,
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#0f172a',
+  },
+  kpiHint: {
+    marginTop: 2,
+    fontSize: 7,
+    color: '#64748b',
+  },
   tableContainer: {
-    marginTop: 16,
+    flexGrow: 1,
   },
   table: {
     borderWidth: 0.5,
     borderColor: '#cbd5e1',
   },
   cell: {
-    paddingVertical: 6,
-    paddingHorizontal: 3,
-    fontSize: 10,
+    paddingVertical: 7,
+    paddingHorizontal: 4,
+    fontSize: 9,
   },
   th: {
     backgroundColor: '#1e40af',
     color: '#ffffff',
     fontSize: 8,
     fontWeight: 'bold',
-    paddingVertical: 5,
+    paddingVertical: 6,
     paddingHorizontal: 3,
     textAlign: 'center',
   },
-  td: {
+  thLeft: {
+    backgroundColor: '#1e40af',
+    color: '#ffffff',
+    fontSize: 8,
+    fontWeight: 'bold',
     paddingVertical: 6,
+    paddingHorizontal: 4,
+    textAlign: 'left',
+  },
+  td: {
+    paddingVertical: 7,
     paddingHorizontal: 3,
-    fontSize: 10,
+    fontSize: 9,
     textAlign: 'center',
     color: '#1e293b',
   },
-  tdEvent: {
-    paddingVertical: 6,
+  tdAlt: {
+    paddingVertical: 7,
     paddingHorizontal: 3,
-    fontSize: 10,
-    textAlign: 'left',
-    fontWeight: 'bold',
-    color: '#1e3a8a',
-  },
-  tdSub: {
-    paddingVertical: 6,
-    paddingHorizontal: 3,
-    fontSize: 10,
-    textAlign: 'left',
-    color: '#334155',
-  },
-  tdSummary: {
-    paddingVertical: 6,
-    paddingHorizontal: 3,
-    fontSize: 10,
+    fontSize: 9,
     textAlign: 'center',
-    fontWeight: 'bold',
-    backgroundColor: '#eff6ff',
-    color: '#1e3a8a',
+    color: '#1e293b',
+    backgroundColor: '#f8fafc',
   },
-  tdSpacer: {
+  tdOpponent: {
     paddingVertical: 5,
-    fontSize: 6,
-    borderBottomWidth: 0,
-    backgroundColor: '#ffffff',
+    paddingHorizontal: 4,
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+  },
+  opponentName: {
+    fontSize: 9,
+    fontWeight: 'bold',
+    color: '#1e3a8a',
+    textAlign: 'left',
+  },
+  opponentDate: {
+    marginTop: 1,
+    fontSize: 7,
+    color: '#64748b',
+    textAlign: 'left',
+  },
+  tdSeq: {
+    paddingVertical: 5,
+    paddingHorizontal: 3,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  seqPts: {
+    fontSize: 9,
+    fontWeight: 'bold',
+    color: '#1e3a8a',
+    textAlign: 'center',
+  },
+  seqMeta: {
+    marginTop: 1,
+    fontSize: 7,
+    color: '#64748b',
+    textAlign: 'center',
   },
 })
