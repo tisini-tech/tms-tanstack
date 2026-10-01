@@ -22,6 +22,7 @@ import { Route as AuthForgotPasswordRouteImport } from './routes/_auth/forgot-pa
 import { Route as DashboardContentRouteRouteImport } from './routes/_dashboard/_content/route'
 import { Route as DashboardContentWalletIndexRouteImport } from './routes/_dashboard/_content/wallet/index'
 import { Route as DashboardContentTicketsIndexRouteImport } from './routes/_dashboard/_content/tickets/index'
+import { Route as DashboardContentEngagementsIndexRouteImport } from './routes/_dashboard/_content/engagements/index'
 import { Route as DashboardContentCompetitionsIndexRouteImport } from './routes/_dashboard/_content/competitions/index'
 import { Route as DashboardContentArticlesIndexRouteImport } from './routes/_dashboard/_content/articles/index'
 import { Route as DashboardContentAdminIndexRouteImport } from './routes/_dashboard/_content/admin/index'
@@ -117,6 +118,12 @@ const DashboardContentTicketsIndexRoute =
   DashboardContentTicketsIndexRouteImport.update({
     id: '/tickets/',
     path: '/tickets/',
+    getParentRoute: () => DashboardContentRouteRoute,
+  } as any)
+const DashboardContentEngagementsIndexRoute =
+  DashboardContentEngagementsIndexRouteImport.update({
+    id: '/engagements/',
+    path: '/engagements/',
     getParentRoute: () => DashboardContentRouteRoute,
   } as any)
 const DashboardContentCompetitionsIndexRoute =
@@ -337,6 +344,7 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof DashboardContentAdminIndexRoute
   '/articles/': typeof DashboardContentArticlesIndexRoute
   '/competitions/': typeof DashboardContentCompetitionsIndexRoute
+  '/engagements/': typeof DashboardContentEngagementsIndexRoute
   '/tickets/': typeof DashboardContentTicketsIndexRoute
   '/wallet/': typeof DashboardContentWalletIndexRoute
   '/competitions/$compId/stats': typeof DashboardContentCompetitionsCompIdStatsRouteRouteWithChildren
@@ -379,6 +387,7 @@ export interface FileRoutesByTo {
   '/admin': typeof DashboardContentAdminIndexRoute
   '/articles': typeof DashboardContentArticlesIndexRoute
   '/competitions': typeof DashboardContentCompetitionsIndexRoute
+  '/engagements': typeof DashboardContentEngagementsIndexRoute
   '/tickets': typeof DashboardContentTicketsIndexRoute
   '/wallet': typeof DashboardContentWalletIndexRoute
   '/articles/$articleId/edit': typeof DashboardContentArticlesArticleIdEditRoute
@@ -422,6 +431,7 @@ export interface FileRoutesById {
   '/_dashboard/_content/admin/': typeof DashboardContentAdminIndexRoute
   '/_dashboard/_content/articles/': typeof DashboardContentArticlesIndexRoute
   '/_dashboard/_content/competitions/': typeof DashboardContentCompetitionsIndexRoute
+  '/_dashboard/_content/engagements/': typeof DashboardContentEngagementsIndexRoute
   '/_dashboard/_content/tickets/': typeof DashboardContentTicketsIndexRoute
   '/_dashboard/_content/wallet/': typeof DashboardContentWalletIndexRoute
   '/_dashboard/_content/competitions/$compId/_dashboards': typeof DashboardContentCompetitionsCompIdDashboardsRouteRouteWithChildren
@@ -468,6 +478,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/articles/'
     | '/competitions/'
+    | '/engagements/'
     | '/tickets/'
     | '/wallet/'
     | '/competitions/$compId/stats'
@@ -510,6 +521,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/articles'
     | '/competitions'
+    | '/engagements'
     | '/tickets'
     | '/wallet'
     | '/articles/$articleId/edit'
@@ -552,6 +564,7 @@ export interface FileRouteTypes {
     | '/_dashboard/_content/admin/'
     | '/_dashboard/_content/articles/'
     | '/_dashboard/_content/competitions/'
+    | '/_dashboard/_content/engagements/'
     | '/_dashboard/_content/tickets/'
     | '/_dashboard/_content/wallet/'
     | '/_dashboard/_content/competitions/$compId/_dashboards'
@@ -683,6 +696,13 @@ declare module '@tanstack/react-router' {
       path: '/tickets'
       fullPath: '/tickets/'
       preLoaderRoute: typeof DashboardContentTicketsIndexRouteImport
+      parentRoute: typeof DashboardContentRouteRoute
+    }
+    '/_dashboard/_content/engagements/': {
+      id: '/_dashboard/_content/engagements/'
+      path: '/engagements'
+      fullPath: '/engagements/'
+      preLoaderRoute: typeof DashboardContentEngagementsIndexRouteImport
       parentRoute: typeof DashboardContentRouteRoute
     }
     '/_dashboard/_content/competitions/': {
@@ -1075,6 +1095,7 @@ interface DashboardContentRouteRouteChildren {
   DashboardContentAdminIndexRoute: typeof DashboardContentAdminIndexRoute
   DashboardContentArticlesIndexRoute: typeof DashboardContentArticlesIndexRoute
   DashboardContentCompetitionsIndexRoute: typeof DashboardContentCompetitionsIndexRoute
+  DashboardContentEngagementsIndexRoute: typeof DashboardContentEngagementsIndexRoute
   DashboardContentTicketsIndexRoute: typeof DashboardContentTicketsIndexRoute
   DashboardContentWalletIndexRoute: typeof DashboardContentWalletIndexRoute
   DashboardContentArticlesArticleIdEditRoute: typeof DashboardContentArticlesArticleIdEditRoute
@@ -1088,6 +1109,7 @@ const DashboardContentRouteRouteChildren: DashboardContentRouteRouteChildren = {
   DashboardContentArticlesIndexRoute: DashboardContentArticlesIndexRoute,
   DashboardContentCompetitionsIndexRoute:
     DashboardContentCompetitionsIndexRoute,
+  DashboardContentEngagementsIndexRoute: DashboardContentEngagementsIndexRoute,
   DashboardContentTicketsIndexRoute: DashboardContentTicketsIndexRoute,
   DashboardContentWalletIndexRoute: DashboardContentWalletIndexRoute,
   DashboardContentArticlesArticleIdEditRoute:

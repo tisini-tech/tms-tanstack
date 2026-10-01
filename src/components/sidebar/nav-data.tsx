@@ -7,6 +7,7 @@ import {
   HomeIcon,
   LayoutDashboardIcon,
   ListOrderedIcon,
+  SparklesIcon,
   Table2Icon,
   TrophyIcon,
   UserIcon,
@@ -19,7 +20,10 @@ import type { Module, NavItem, SiteModule } from '#/lib/types'
 
 const moduleMeta: Record<
   string,
-  { logo: React.ReactNode; nav: 'administration' | 'competition' | 'content' }
+  {
+    logo: React.ReactNode
+    nav: 'administration' | 'competition' | 'content' | 'engagement'
+  }
 > = {
   Competition: {
     logo: <TrophyIcon />,
@@ -32,6 +36,10 @@ const moduleMeta: Record<
   Administration: {
     logo: <GalleryVerticalEndIcon />,
     nav: 'administration',
+  },
+  Engagement: {
+    logo: <SparklesIcon />,
+    nav: 'engagement',
   },
 }
 

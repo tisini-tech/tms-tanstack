@@ -70,6 +70,7 @@ function Login() {
             turnstileToken,
           },
         })
+        console.log('modules', modules)
         await navigate({
           href: resolvePostLoginPath(redirect, modules, getLastModulePath()),
           replace: true,

@@ -764,3 +764,59 @@ export interface CompetitionStandings {
   division_standings: DivisionStanding[] | null
   overall_standings: OverallStanding[] | null
 }
+
+export interface EngagementAnswer {
+  id: number
+  question_id: number
+  choice_id: number | null
+  selected_choice_ids: number[]
+  text_answer: string | null
+  marker: string | null
+  points_awarded: number
+  response_ms: number
+  local_id: string
+  sync_status: number
+  created_at: string
+  updated_at: string
+}
+
+/** Body for PATCH /engagements/{id}/answers/{answer_id} */
+export interface UpdateEngagementAnswerPayload {
+  id: number
+  question_id: number
+  choice_id: number | null
+  selected_choice_ids: number[]
+  text_answer: string | null
+  response_ms: number
+  surveyer: string | null
+  local_id: string
+  sync_status: number
+}
+
+export interface EngagementChoice {
+  id: number
+  text: string
+}
+
+export interface EngagementQuestion {
+  id: number
+  text: string
+  answer_type: string
+  order: number
+  choices: EngagementChoice[]
+}
+
+export interface EngagementDetail {
+  id: number
+  title: string
+  questions: EngagementQuestion[]
+}
+
+export interface Engagement {
+  participation_id: number
+  surveyer: string | null
+  auth_source?: string | null
+  created_at: string
+  completed_at: string
+  answers: EngagementAnswer[]
+}
