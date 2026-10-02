@@ -1,5 +1,9 @@
 import { z } from 'zod'
-import { createFileRoute, useRouterState } from '@tanstack/react-router'
+import {
+  createFileRoute,
+  redirect,
+  useRouterState,
+} from '@tanstack/react-router'
 
 import type { Team } from '#/lib/types'
 import { getTeamsFn, resolveTeamFn } from '#/data/teams'
@@ -67,11 +71,29 @@ export const Route = createFileRoute(
     deps: { teamId, teamName, seasonId },
   }) => {
     const teams = await getTeamsFn({
-      data: { competitionId: compId },
+      data: { competitionId: compId, seasonId: seasonId?.toString() },
     })
 
-    const selectedTeamId = teamId ?? teams[0]?.id
-    const urlName = teamName?.trim()
+    // Ignore teamId from another competition (left in the URL after a switch).
+    const teamInCompetition =
+      teamId != null && teams.some((team) => team.id === teamId)
+    const selectedTeamId = teamInCompetition ? teamId : teams[0]?.id
+
+    if (selectedTeamId != null && selectedTeamId !== teamId) {
+      const fallback = teams.find((team) => team.id === selectedTeamId)
+      throw redirect({
+        to: '/competitions/$compId/players',
+        params: { compId },
+        search: (prev) => ({
+          ...prev,
+          teamId: selectedTeamId,
+          teamName: fallback?.name,
+        }),
+        replace: true,
+      })
+    }
+
+    const urlName = teamInCompetition ? teamName?.trim() : undefined
     const resolvedName =
       (urlName && !isUnresolvedTeamName(urlName, selectedTeamId)
         ? urlName
@@ -109,18 +131,21 @@ export const Route = createFileRoute(
     }
 
     const teamIdStr = String(selectedTeamId)
-    const roster = await getPlayersFn({
-      data: { teamId: teamIdStr, seasonId },
-    })
+
+    // Club roster (all TeamPlayer links) + optional season registrations in parallel.
+    // Season-only endpoint returns [] when nobody is registered — that must not hide the roster.
+    const [roster, seasonPlayers] = await Promise.all([
+      getPlayersFn({ data: { teamId: teamIdStr } }),
+      seasonId != null
+        ? getPlayersFn({
+            data: { teamId: teamIdStr, seasonId },
+          }).catch(() => [] as Awaited<ReturnType<typeof getPlayersFn>>)
+        : Promise.resolve([] as Awaited<ReturnType<typeof getPlayersFn>>),
+    ])
 
     const players =
       seasonId != null
-        ? mergeSeasonPlayers(
-            roster,
-            await getPlayersFn({
-              data: { teamId: teamIdStr, seasonId },
-            }).catch(() => []),
-          )
+        ? mergeSeasonPlayers(roster, seasonPlayers)
         : roster.map((entry) => ({
             ...entry,
             season_player_id: entry.season_player_id ?? null,

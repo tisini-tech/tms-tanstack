@@ -126,6 +126,9 @@ export function CompetitionContextSwitcher() {
       search: (prev) => ({
         ...prev,
         ...searchPatch,
+        // Team belongs to the previous competition — drop it.
+        teamId: undefined,
+        teamName: undefined,
       }),
       replace: true,
     })
