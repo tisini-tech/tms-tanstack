@@ -303,10 +303,15 @@ function computeRugbyValues(player: FixturePlayerStats) {
       0,
     )
 
-  // Tries — legacy 7s (33) / 15s (49) + unified Score (253)
-  const tries =
-    sumSubs(['33', '51'], ['33', '142'], ['49', '66'], ['49', '200']) +
-    sumEvents('253')
+  // Tries — legacy 7s (33) / 15s (49) + unified Score → Try (253/638)
+  // Do not use Score event total (253) — that includes conversions / penalties too.
+  const tries = sumSubs(
+    ['33', '51'],
+    ['33', '142'],
+    ['49', '66'],
+    ['49', '200'],
+    ['253', '638'],
+  )
 
   const conversion = sumSubs(['33', '52'], ['49', '60'])
   const missConversion = sumSubs(['33', '69'], ['49', '42'])
