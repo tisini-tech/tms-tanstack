@@ -287,6 +287,164 @@ function computeFootballValues(player: FixturePlayerStats) {
   } satisfies Record<string, string | number>
 }
 
+/**
+ * Unified rugby metrics by event / sub-event id.
+ * Sums legacy 7s + 15s ids and the newer unified pack (241+) so both
+ * collection formats resolve instead of showing zeros.
+ */
+function computeRugbyValues(player: FixturePlayerStats) {
+  const stats = playerStatsToResult(player.stats)
+
+  const sumEvents = (...eventIds: string[]) =>
+    eventIds.reduce((sum, id) => sum + getDashTotal(id, stats), 0)
+  const sumSubs = (...pairs: Array<[string, string]>) =>
+    pairs.reduce(
+      (sum, [eventId, subId]) => sum + getDashSubEvent(eventId, subId, stats),
+      0,
+    )
+
+  // Tries — legacy 7s (33) / 15s (49) + unified Score (253)
+  const tries =
+    sumSubs(['33', '51'], ['33', '142'], ['49', '66'], ['49', '200']) +
+    sumEvents('253')
+
+  const conversion = sumSubs(['33', '52'], ['49', '60'])
+  const missConversion = sumSubs(['33', '69'], ['49', '42'])
+  const penalty = sumSubs(['33', '53'], ['49', '44'])
+  const missedPenalty = sumSubs(['33', '70'], ['49', '61'])
+  const goalKicksMade = penalty + conversion
+  const goalKicksTotal =
+    penalty + conversion + missedPenalty + missConversion
+  const goalKicksPct = getPercent(goalKicksTotal, goalKicksMade)
+
+  // Assists still legacy-only (no unified assist event yet)
+  const assists = sumEvents('180', '179')
+  // Carries 58/44 + unified 250; Linebreak 37/47 + 243; Offload 83/92 + 244; Pass 82/91 + 241
+  const carries = sumEvents('58', '44', '250')
+  const linebreaks = sumEvents('37', '47', '243')
+  const offloads = sumEvents('83', '92', '244')
+  const passes = sumEvents('82', '91', '241')
+
+  const incomPass = sumEvents('86', '87')
+  const forwardPass = sumEvents('36', '40')
+  const knockOn = sumEvents('35', '41')
+  const lostInCarry = sumEvents('149', '103')
+  // Unified Handling Errors (255) is a single rolled-up event
+  const handlingErrors =
+    incomPass + forwardPass + knockOn + lostInCarry + sumEvents('255')
+  const ballHandling = passes + offloads + carries
+  const handling = handlingErrors + ballHandling
+  const handlingPct = getPercent(handling, ballHandling)
+
+  // Tackle 56/42 + 251; Missed Tackle 57/43 + 242
+  const missedTackle = sumEvents('57', '43', '242')
+  const tackles = sumEvents('56', '42', '251')
+  const allTackles = tackles + missedTackle
+  const posTackle = sumSubs(['56', '63'], ['42', '56'])
+  const tackleSucc = getPercent(allTackles, tackles)
+  const tackleDom = getPercent(tackles, posTackle)
+
+  // Turnover 59/45 + 258; Penalties Conceded 60/46 + 257; Card 66/55 + 260
+  const turnoverWon = sumEvents('59', '45', '258')
+  const penalties = sumEvents('60', '46', '257')
+  const yellow = sumSubs(['66', '54'], ['55', '46'])
+  const red = sumSubs(['66', '55'], ['55', '45'])
+  // Unified Card (260) has no yellow/red split in the pack yet — fall back to total
+  const cardTotal = sumEvents('260')
+  const yellowDisplay = yellow + (yellow === 0 && red === 0 ? cardTotal : 0)
+  const redDisplay = red
+
+  // Lineout Throw / Scrum — unified parents are totals; won/steal still legacy subs
+  const lineoutThrow = sumEvents('150', '151', '263')
+  const lineoutWon = sumSubs(
+    ['150', '371'],
+    ['150', '372'],
+    ['150', '373'],
+    ['150', '389'],
+    ['151', '377'],
+    ['151', '378'],
+    ['151', '379'],
+    ['151', '391'],
+  )
+  const lineoutSucc = getPercent(lineoutThrow, lineoutWon)
+  const lineoutSteals = sumSubs(['62', '68'], ['50', '65'])
+
+  const scrums = sumEvents('63', '51', '262')
+  const scrumWon = sumSubs(['63', '47'], ['51', '38'])
+  const scrumSucc = getPercent(scrums, scrumWon)
+  const scrumSteals = sumSubs(['63', '67'], ['51', '58'])
+
+  const retainedKicks =
+    sumSubs(
+      ['106', '167'],
+      ['106', '168'],
+      ['106', '188'],
+      ['105', '164'],
+      ['105', '165'],
+      ['105', '186'],
+    ) + sumEvents('268')
+  const kickForTerritory = sumSubs(
+    ['106', '161'],
+    ['106', '203'],
+    ['106', '187'],
+    ['105', '159'],
+    ['105', '202'],
+    ['105', '185'],
+  )
+  const kickingErrors =
+    kickForTerritory +
+    sumSubs(['134', '266'], ['133', '251']) +
+    sumEvents('267')
+
+  const restartReception =
+    sumSubs(
+      ['134', '262'],
+      ['134', '267'],
+      ['134', '272'],
+      ['133', '247'],
+      ['133', '252'],
+      ['133', '257'],
+    ) + sumEvents('270')
+  const restartRetrievals =
+    sumSubs(
+      ['134', '264'],
+      ['134', '269'],
+      ['134', '274'],
+      ['133', '249'],
+      ['133', '254'],
+      ['133', '259'],
+    ) + sumEvents('271')
+
+  const rucks = sumEvents('207', '206')
+  const ruckWon = sumSubs(['207', '526'], ['206', '524'])
+  const ruckSucc = getPercent(rucks, ruckWon)
+
+  return {
+    tries,
+    assists,
+    goalKicks: `${goalKicksTotal} / ${goalKicksMade}  ${goalKicksPct}%`,
+    linebreaks,
+    carries,
+    offloads,
+    passes,
+    handlingEfficiency: `${handling} / ${handlingErrors}  ${handlingPct}%`,
+    tackleSuccess: `${tackles} / ${allTackles}  ${tackleSucc}%`,
+    tackleDominance: `${posTackle} / ${tackles}  ${tackleDom}%`,
+    turnoverWon,
+    lineoutThrows: `${lineoutThrow} / ${lineoutWon}  ${lineoutSucc}%`,
+    lineoutSteals,
+    scrumsWon: `${scrums} / ${scrumWon}  ${scrumSucc}%`,
+    scrumSteals,
+    ruckContest: `${ruckWon} / ${rucks}  ${ruckSucc}%`,
+    restartRetrievals,
+    restartReception,
+    retainedKicks,
+    kickingErrors,
+    penalties,
+    cards: `${yellowDisplay} / ${redDisplay}`,
+  } satisfies Record<string, string | number>
+}
+
 function computeNamedValues(
   player: FixturePlayerStats,
   mapping: Record<string, string[]>,
@@ -296,31 +454,6 @@ function computeNamedValues(
     values[key] = eventTotalByName(player, names)
   }
   return values
-}
-
-const RUGBY_EVENT_MAP: Record<string, string[]> = {
-  tries: ['try', 'tries'],
-  assists: ['assist'],
-  goalKicks: ['goal kick', 'conversion', 'penalty kick'],
-  linebreaks: ['linebreak', 'line break'],
-  carries: ['carry', 'carries'],
-  offloads: ['offload'],
-  passes: ['pass'],
-  handlingEfficiency: ['handling'],
-  tackleSuccess: ['tackle'],
-  tackleDominance: ['dominance'],
-  turnoverWon: ['turnover'],
-  lineoutThrows: ['lineout throw'],
-  lineoutSteals: ['lineout steal'],
-  scrumsWon: ['scrum'],
-  scrumSteals: ['scrum steal'],
-  ruckContest: ['ruck'],
-  restartRetrievals: ['restart retrieval'],
-  restartReception: ['restart reception'],
-  retainedKicks: ['retained kick'],
-  kickingErrors: ['kicking error'],
-  penalties: ['penalty'],
-  cards: ['card', 'yellow', 'red'],
 }
 
 const BASKETBALL_EVENT_MAP: Record<string, string[]> = {
@@ -356,7 +489,7 @@ export function toPlayerStatRows(
         sport === 'football'
           ? computeFootballValues(player)
           : sport === 'rugby'
-            ? computeNamedValues(player, RUGBY_EVENT_MAP)
+            ? computeRugbyValues(player)
             : computeNamedValues(player, BASKETBALL_EVENT_MAP)
 
       return {

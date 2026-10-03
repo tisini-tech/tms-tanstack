@@ -123,13 +123,15 @@ export function CompetitionContextSwitcher() {
     void navigate({
       to: '.',
       params: { compId: String(next.id) },
-      search: (prev) => ({
-        ...prev,
+      search: {
         ...searchPatch,
-        // Team belongs to the previous competition — drop it.
+        // Drop previous competition filters / team selection explicitly.
+        seasonId: searchPatch.seasonId,
+        divisionId: searchPatch.divisionId,
+        categoryId: searchPatch.categoryId,
         teamId: undefined,
         teamName: undefined,
-      }),
+      },
       replace: true,
     })
   }

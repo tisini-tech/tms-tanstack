@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/sidebar'
 
 import type { Module, User } from '#/lib/types'
-import { rememberLastModulePath } from '#/lib/last-module'
+import { rememberLastModulePath } from '#/lib/modules'
 import {
   resolveCompetition,
   resolveCompetitionFilters,

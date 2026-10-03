@@ -4,12 +4,10 @@ import { useSuspenseQuery } from '@tanstack/react-query'
 
 import { columns } from '#/components/fixtures/raw-events/columns'
 import { ReviewTable } from '#/components/fixtures/raw-events/review-table'
-import {
-  metricsQuery,
-  rawEventsQuery,
-  teamPlayersQuery,
-  toFixtureType,
-} from '#/lib/raw-events-queries'
+import { toFixtureType } from '#/lib/utils'
+import { metricsQuery } from '#/data/metrics'
+import { rawEventsQuery } from '#/data/fixtures'
+import { teamPlayersQuery } from '#/data/players'
 import type { ReviewStats } from '#/lib/types'
 
 export const Route = createFileRoute(

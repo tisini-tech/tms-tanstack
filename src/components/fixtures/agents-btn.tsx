@@ -2,8 +2,8 @@ import { Download } from 'lucide-react'
 import { useEffect, useState, type ReactElement } from 'react'
 
 import { Button } from '#/components/ui/button'
-import { ensurePdfPolyfills } from '#/lib/pdf-polyfills'
 import { type ReviewTableData } from '#/components/fixtures/review/transform-review-stats'
+import { ensurePdfPolyfills } from '#/lib/utils'
 
 interface AgentsReviewButtonProps {
   tableData: ReviewTableData | null

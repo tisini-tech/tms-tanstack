@@ -11,6 +11,7 @@ import type {
   ReviewComment,
   RawFixtureEvent,
 } from '#/lib/types'
+import { queryOptions } from '@tanstack/react-query'
 
 export const getFixturesFn = createServerFn({ method: 'GET' })
   .middleware([authFnMiddleware])
@@ -138,6 +139,12 @@ export const getFixtureRawEventsFn = createServerFn({ method: 'GET' })
     )
 
     return rawEvents
+  })
+
+export const rawEventsQuery = (id: string) =>
+  queryOptions({
+    queryKey: ['fixture-raw-events', id],
+    queryFn: () => getFixtureRawEventsFn({ data: { id } }),
   })
 
 export type UpdateFixtureEventPayload = {

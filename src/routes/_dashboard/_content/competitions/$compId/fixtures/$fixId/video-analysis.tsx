@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useSuspenseQuery } from '@tanstack/react-query'
 
 import { VideoAnalysis } from '#/components/fixtures/video-analysis/video-analysis'
-import { rawEventsQuery } from '#/lib/raw-events-queries'
+import { rawEventsQuery } from '#/data/fixtures'
 import type { ReviewStats } from '#/lib/types'
 
 export const Route = createFileRoute(

@@ -5,7 +5,6 @@ import {
   createFileRoute,
   notFound,
   redirect,
-  useNavigate,
 } from '@tanstack/react-router'
 
 import { Loading } from '#/components/general/errors/loading'
@@ -42,15 +41,23 @@ export const Route = createFileRoute(
       resolved.categoryId !== search.categoryId
     if (!changed) return
 
+    // Set valid defaults and delete stale IDs from the previous competition.
+    // Leaving invalid params in the query caused an infinite redirect loop.
     const next = new URLSearchParams(location.searchStr)
     if (resolved.seasonId != null) {
       next.set('seasonId', String(resolved.seasonId))
+    } else {
+      next.delete('seasonId')
     }
     if (resolved.divisionId != null) {
       next.set('divisionId', String(resolved.divisionId))
+    } else {
+      next.delete('divisionId')
     }
     if (resolved.categoryId != null) {
       next.set('categoryId', String(resolved.categoryId))
+    } else {
+      next.delete('categoryId')
     }
     const query = next.toString()
 
@@ -80,38 +87,20 @@ function CompetitionWorkspaceLayout() {
   const { competition } = Route.useLoaderData()
   const { compId } = Route.useParams()
   const search = Route.useSearch()
-  // Unbound navigate + `to: '.'` keeps the current full path
-  // (Route.useNavigate would remount `$compId` and drop child routes).
-  const navigate = useNavigate()
 
   useEffect(() => {
     rememberCompetitionId(compId)
   }, [compId])
 
-  // Keep season / division / category in the URL (defaults + last used)
+  // URL sync is handled in beforeLoad; only persist the resolved filters here.
   useEffect(() => {
-    const resolved = resolveCompetitionFilters(competition, search)
-    const changed =
-      resolved.seasonId !== search.seasonId ||
-      resolved.divisionId !== search.divisionId ||
-      resolved.categoryId !== search.categoryId
-
-    if (changed) {
-      void navigate({
-        to: '.',
-        search: (prev) => ({
-          ...prev,
-          ...resolved,
-        }),
-        replace: true,
-      })
-    }
-
-    rememberCompetitionFilters(compId, resolved)
+    rememberCompetitionFilters(
+      compId,
+      resolveCompetitionFilters(competition, search),
+    )
   }, [
     competition,
     compId,
-    navigate,
     search.seasonId,
     search.divisionId,
     search.categoryId,

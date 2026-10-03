@@ -13,7 +13,7 @@ import {
 import { loginFn } from '#/data/auth'
 import { Button } from '#/components/ui/button'
 import { cn, resolvePostLoginPath } from '@/lib/utils'
-import { getLastModulePath } from '#/lib/last-module'
+import { getLastModulePath } from '#/lib/modules'
 import { InputField } from '#/components/general/forms/input-field'
 import { TurnstileField } from '#/components/general/forms/turnstile-field'
 import { createLoginSchema, type LoginMethod } from '#/lib/schemas'

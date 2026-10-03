@@ -9,6 +9,7 @@ import type {
   PlayerMeasurement,
   TeamPlayer,
 } from '#/lib/types'
+import { queryOptions } from '@tanstack/react-query'
 
 export const getPlayersFn = createServerFn({ method: 'GET' })
   .validator((data: { teamId: string; seasonId?: number }) => data)
@@ -24,6 +25,12 @@ export const getPlayersFn = createServerFn({ method: 'GET' })
     )
 
     return players
+  })
+
+export const teamPlayersQuery = (teamId: number) =>
+  queryOptions({
+    queryKey: ['team-players', teamId],
+    queryFn: () => getPlayersFn({ data: { teamId: String(teamId) } }),
   })
 
 /** Merge club roster with season registrations (by team_player id). */

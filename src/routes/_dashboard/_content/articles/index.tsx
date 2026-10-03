@@ -3,7 +3,7 @@ import { createFileRoute } from '@tanstack/react-router'
 
 import { getArticlesFn } from '#/data/articles'
 import { ArticlesList } from '#/components/articles/articles-list'
-import { rememberLastModulePath } from '#/lib/last-module'
+import { rememberLastModulePath } from '#/lib/modules'
 
 export const Route = createFileRoute('/_dashboard/_content/articles/')({
   loader: async () => {

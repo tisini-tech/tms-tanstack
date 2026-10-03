@@ -24,7 +24,7 @@ import {
 import { useNavigate } from '@tanstack/react-router'
 import type { User } from '@/lib/types'
 import { logoutFn } from '#/data/auth'
-import { rememberLastModulePath } from '#/lib/last-module'
+import { rememberLastModulePath } from '#/lib/modules'
 
 export function NavUser({ user }: { user: User }) {
   const { isMobile } = useSidebar()

@@ -15,7 +15,7 @@ import {
 } from 'lucide-react'
 import { linkOptions } from '@tanstack/react-router'
 
-import { MODULE_ROUTES } from '#/lib/module-routes'
+import { MODULE_ROUTES } from '#/lib/modules'
 import type { Module, NavItem, SiteModule } from '#/lib/types'
 
 const moduleMeta: Record<

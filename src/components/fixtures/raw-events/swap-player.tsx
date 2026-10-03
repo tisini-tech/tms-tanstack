@@ -18,7 +18,8 @@ import {
 import { FieldGroup } from '#/components/ui/field'
 import { toast } from '#/components/ui/toast'
 import { swapPlayerEventsFn } from '#/data/fixtures'
-import { rawEventsQuery, teamPlayersQuery } from '#/lib/raw-events-queries'
+import { rawEventsQuery } from '#/data/fixtures'
+import { teamPlayersQuery } from '#/data/players'
 import {
   swapFixturePlayersSchema,
   type SwapFixturePlayersSchema,
@@ -28,7 +29,9 @@ import type { RawFixtureEvent, TeamPlayer } from '#/lib/types'
 const rawEventsRoute = getRouteApi(
   '/_dashboard/_content/competitions/$compId/fixtures/$fixId/raw-events',
 )
-const fixtureRoute = getRouteApi('/_dashboard/_content/competitions/$compId/fixtures/$fixId')
+const fixtureRoute = getRouteApi(
+  '/_dashboard/_content/competitions/$compId/fixtures/$fixId',
+)
 
 function playerOptions(players: TeamPlayer[]) {
   return players.map((entry) => ({

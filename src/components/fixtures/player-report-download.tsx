@@ -16,7 +16,7 @@ import { DownloadIcon } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { getSportReportModule } from '../pdf-reports/sports'
 import { transformSinglePlayerReportStats } from '../pdf-reports/transform-report-data'
-import { ensurePdfPolyfills } from '#/lib/pdf-polyfills'
+import { ensurePdfPolyfills } from '#/lib/utils'
 import {
   calculateYAxisMax,
   generatePlayerPerformanceChart,

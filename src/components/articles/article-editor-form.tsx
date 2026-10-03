@@ -8,7 +8,7 @@ import {
   ArticleEditorSidebar,
   ArticleTitleFields,
 } from '#/components/articles/editor-shell'
-import { SimpleEditor } from '#/components/tiptap-templates/simple/simple-editor'
+import { SimpleEditor } from '#/components/tiptap/simple/simple-editor'
 import { Button } from '#/components/ui/button'
 import {
   Dialog,

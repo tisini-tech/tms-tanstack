@@ -1,11 +1,20 @@
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
-import { getLastModulePath } from './last-module'
-import { MODULE_ROUTES } from './module-routes'
-import type { EventSequence, Module, TeamStats } from './types'
+import { getLastModulePath } from './modules'
+import { MODULE_ROUTES } from './modules'
+import type { EventSequence, Module, Player, TeamStats } from './types'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
+}
+
+export function toFixtureType(matchType: string) {
+  const normalized = matchType.trim().toLowerCase()
+  if (!normalized) return 'football'
+  if (normalized.includes('football') || normalized.includes('soccer')) {
+    return 'football'
+  }
+  return normalized.replace(/\s+/g, '_')
 }
 
 export function normalizePath(pathname: string) {
@@ -20,14 +29,17 @@ export function safeInternalPath(path: string | undefined, fallback = '/home') {
   return path
 }
 
+/** Player has passport photo and ID document on file (roster registration). */
+export function isPlayerFullyRegistered(player: Player) {
+  return Boolean(player.passportphoto?.trim() && player.id_document?.trim())
+}
+
 export function resolvePostLoginPath(
   redirect: string | undefined,
   modules: Module[],
   lastPath?: string,
 ) {
-  const homes = modules
-    .map((m) => MODULE_ROUTES[m.name])
-    .filter(Boolean)
+  const homes = modules.map((m) => MODULE_ROUTES[m.name]).filter(Boolean)
   const defaultHome = homes[0] ?? '/home'
 
   const pickAllowed = (path: string | undefined) => {
@@ -187,4 +199,25 @@ export const getPassSeqs = (sequences: EventSequence[]) => {
     over10: sequencesOver10,
     total: sequences.length,
   }
+}
+
+/**
+ * @react-pdf/renderer expects Node's Buffer in the browser.
+ * Only run in the client — the `buffer` package is CJS and breaks SSR.
+ */
+export async function ensurePdfPolyfills() {
+  if (typeof window === 'undefined') {
+    return
+  }
+
+  const globalScope = globalThis as typeof globalThis & {
+    Buffer?: unknown
+  }
+
+  if (typeof globalScope.Buffer !== 'undefined') {
+    return
+  }
+
+  const { Buffer } = await import('buffer')
+  globalScope.Buffer = Buffer
 }

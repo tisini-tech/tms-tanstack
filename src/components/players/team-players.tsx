@@ -43,7 +43,7 @@ import {
   recallTeam,
   rememberTeam,
 } from '#/lib/recent-teams'
-import { isPlayerFullyRegistered } from '#/lib/player-registration'
+import { isPlayerFullyRegistered } from '#/lib/utils'
 
 type SeasonFilter = 'all' | 'inSeason' | 'notRegistered'
 
@@ -232,7 +232,8 @@ export function TeamPlayers({
   )
   const notRegisteredCount = players.length - inSeasonCount
   const fullyRegisteredCount = useMemo(
-    () => players.filter((entry) => isPlayerFullyRegistered(entry.player)).length,
+    () =>
+      players.filter((entry) => isPlayerFullyRegistered(entry.player)).length,
     [players],
   )
 

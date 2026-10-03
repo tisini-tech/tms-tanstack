@@ -2,6 +2,7 @@ import { authFnMiddleware } from '#/middlewares/auth'
 import { createServerFn } from '@tanstack/react-start'
 import { apiService } from '#/lib/api'
 import type { Metrics } from '#/lib/types'
+import { queryOptions } from '@tanstack/react-query'
 
 export const getMetricsFn = createServerFn({ method: 'GET' })
   .middleware([authFnMiddleware])
@@ -12,4 +13,10 @@ export const getMetricsFn = createServerFn({ method: 'GET' })
     )
 
     return response
+  })
+
+export const metricsQuery = (fixType: string) =>
+  queryOptions({
+    queryKey: ['fixture-metrics', fixType],
+    queryFn: () => getMetricsFn({ data: { fixType } }),
   })
