@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { PDFDownloadLink } from '@react-pdf/renderer'
 
 import { Button } from '#/components/ui/button'
-import { ensurePdfPolyfills } from '#/lib/pdf-polyfills'
+import { ensurePdfPolyfills } from '#/lib/utils'
 import {
   GenSimpleLeaguePDF,
   type SimpleLeagueSeasonKpis,
@@ -53,12 +53,7 @@ export function SimpleLeagueReportDownload({
     }
   }, [])
 
-  const headerTitle = [
-    competitionName,
-    seasonName,
-    divisionName,
-    categoryName,
-  ]
+  const headerTitle = [competitionName, seasonName, divisionName, categoryName]
     .filter(Boolean)
     .join(' | ')
 

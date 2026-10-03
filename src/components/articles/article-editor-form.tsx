@@ -33,7 +33,7 @@ import {
   type ArticleFormValues,
 } from '#/lib/schemas'
 import type { ArticleCategory, Author } from '#/lib/types'
-import { rememberLastModulePath } from '#/lib/last-module'
+import { rememberLastModulePath } from '#/lib/modules'
 
 export type ArticleEditorMode = 'create' | 'edit'
 type SubmitIntent = 'draft' | 'update' | 'publish' | 'reject'

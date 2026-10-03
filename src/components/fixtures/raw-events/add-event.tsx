@@ -20,22 +20,22 @@ import {
 } from '#/components/ui/dialog'
 import { FieldGroup } from '#/components/ui/field'
 import { toast } from '#/components/ui/toast'
-import { createFixtureEventFn } from '#/data/fixtures'
-import {
-  metricsQuery,
-  rawEventsQuery,
-  teamPlayersQuery,
-} from '#/lib/raw-events-queries'
+import { createFixtureEventFn, rawEventsQuery } from '#/data/fixtures'
+
 import {
   createFixtureEventSchema,
   type CreateFixtureEventSchema,
 } from '#/lib/schemas'
 import type { Metrics, TeamPlayer } from '#/lib/types'
+import { metricsQuery } from '#/data/metrics'
+import { teamPlayersQuery } from '#/data/players'
 
 const rawEventsRoute = getRouteApi(
   '/_dashboard/_content/competitions/$compId/fixtures/$fixId/raw-events',
 )
-const fixtureRoute = getRouteApi('/_dashboard/_content/competitions/$compId/fixtures/$fixId')
+const fixtureRoute = getRouteApi(
+  '/_dashboard/_content/competitions/$compId/fixtures/$fixId',
+)
 
 function toIdNumber(value: string) {
   const n = Number(value)
@@ -325,9 +325,7 @@ export function AddEventDialog() {
 
                   if (substitution) {
                     return (
-                      <form.Subscribe
-                        selector={(state) => state.values.teamId}
-                      >
+                      <form.Subscribe selector={(state) => state.values.teamId}>
                         {(teamId) => {
                           const players =
                             teamId === String(homeTeamId)

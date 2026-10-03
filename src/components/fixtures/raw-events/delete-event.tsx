@@ -15,8 +15,7 @@ import {
 } from '#/components/ui/alert-dialog'
 import { Button } from '#/components/ui/button'
 import { toast } from '#/components/ui/toast'
-import { deleteFixtureEventFn } from '#/data/fixtures'
-import { rawEventsQuery } from '#/lib/raw-events-queries'
+import { deleteFixtureEventFn, rawEventsQuery } from '#/data/fixtures'
 import type { RawFixtureEvent } from '#/lib/types'
 
 const rawEventsRoute = getRouteApi(

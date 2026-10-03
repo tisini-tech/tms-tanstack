@@ -13,8 +13,8 @@ import { CheckIcon } from '#/components/tiptap/tiptap-icons/check-icon'
 // --- Lib ---
 import { cn, parseShortcutKeys } from '#/lib/tiptap-utils'
 
-import '#/components/tiptap-ui-primitive/button/button-colors.scss'
-import '#/components/tiptap-ui-primitive/button/button.scss'
+import '#/components/tiptap/tiptap-ui-primitive/button/button-colors.scss'
+import '#/components/tiptap/tiptap-ui-primitive/button/button.scss'
 
 export type ButtonStyle = 'ghost' | 'primary'
 export type ButtonVariant = ButtonStyle | 'check'

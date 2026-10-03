@@ -47,7 +47,7 @@ import { Separator } from '#/components/tiptap/tiptap-ui-primitive/separator'
 import { Switch } from '#/components/tiptap/tiptap-ui-primitive/switch'
 
 // --- Styles ---
-import '#/components/tiptap-ui/search-and-replace/search-and-replace.scss'
+import '#/components/tiptap/tiptap-ui/search-and-replace/search-and-replace.scss'
 
 export interface SearchAndReplaceProps
   extends
