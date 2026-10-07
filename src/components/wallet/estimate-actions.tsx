@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useForm } from '@tanstack/react-form'
-import { useRouter } from '@tanstack/react-router'
+import { getRouteApi, useRouter } from '@tanstack/react-router'
 import { CheckIcon, Loader2Icon, PencilIcon, XIcon } from 'lucide-react'
 import { z } from 'zod'
 
@@ -393,7 +393,12 @@ export function DeclineEstimateDialog({ estimate }: { estimate: Estimate }) {
   )
 }
 
+const APPROVE_ESTIMATE_ROLE_IDS = new Set(['1', '4'])
+
 export function EstimateActions({ estimate }: { estimate: Estimate }) {
+  const { role } = getRouteApi('/_dashboard').useRouteContext()
+  const canApprove = APPROVE_ESTIMATE_ROLE_IDS.has(String(role ?? ''))
+
   if (!canActOnEstimate(estimate)) {
     return <span className="text-xs text-muted-foreground">—</span>
   }
@@ -401,7 +406,7 @@ export function EstimateActions({ estimate }: { estimate: Estimate }) {
   return (
     <div className="flex items-center gap-1">
       <EditEstimateDialog estimate={estimate} />
-      <ApproveEstimateDialog estimate={estimate} />
+      {canApprove ? <ApproveEstimateDialog estimate={estimate} /> : null}
       <DeclineEstimateDialog estimate={estimate} />
     </div>
   )
