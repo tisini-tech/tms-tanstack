@@ -83,7 +83,7 @@ export const walletNavItems: NavItem[] = [
     to: '/wallet/estimates',
     label: 'Estimates',
     icon: CalculatorIcon,
-    roles: ['1', '4', '7'],
+    roles: ['1', '4'],
     activeOptions: { exact: true },
   },
   {
