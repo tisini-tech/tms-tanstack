@@ -143,7 +143,6 @@ function RouteComponent() {
               <WithdrawModal
                 charges={loaderData?.withdrawCharges ?? []}
                 walletAccount={account}
-                defaultPhone={user.phone}
               />
             </div>
           </div>

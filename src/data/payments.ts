@@ -34,7 +34,7 @@ export const getWithdrawChargesFn = createServerFn({ method: 'GET' })
 
 const withdrawInputSchema = z.object({
   account: z.string().trim().min(1),
-  amount: z.number().positive(),
+  wamount: z.number().positive(),
 })
 
 export const withdrawFn = createServerFn({ method: 'POST' })
@@ -47,7 +47,7 @@ export const withdrawFn = createServerFn({ method: 'POST' })
       `/payments/withdraw`,
       {
         account: data.account,
-        wamount: data.amount,
+        wamount: data.wamount,
       },
     )
 

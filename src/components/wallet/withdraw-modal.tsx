@@ -45,13 +45,11 @@ function findCharge(amount: number, charges: WithdrawCharges[]) {
 type WithdrawModalProps = {
   charges: WithdrawCharges[]
   walletAccount?: ClientAccount
-  defaultPhone?: string
 }
 
 export default function WithdrawModal({
   charges,
   walletAccount,
-  defaultPhone = '',
 }: WithdrawModalProps) {
   const router = useRouter()
   const [open, setOpen] = useState(false)
@@ -59,11 +57,11 @@ export default function WithdrawModal({
 
   const balance = walletAccount?.balance_cents ?? 0
   const currency = walletAccount?.currency || 'KES'
+  const accountNumber = walletAccount?.account_number?.trim() || ''
   const schema = useMemo(() => createWithdrawSchema(balance), [balance])
 
   const form = useForm({
     defaultValues: {
-      account: defaultPhone,
       amount: '',
     } satisfies WithdrawSchema,
     validators: {
@@ -71,11 +69,19 @@ export default function WithdrawModal({
     },
     onSubmit: async ({ value }) => {
       setSubmitError(null)
+
+      if (!accountNumber) {
+        const message = 'No wallet account found for this withdrawal'
+        setSubmitError(message)
+        toast.add({ title: 'Withdrawal failed', description: message })
+        return
+      }
+
       try {
         const response = await withdrawFn({
           data: {
-            account: value.account.trim(),
-            amount: Number(value.amount),
+            account: accountNumber,
+            wamount: Number(value.amount),
           },
         })
 
@@ -83,7 +89,7 @@ export default function WithdrawModal({
           title: 'Withdrawal initiated',
           description: response.message || 'Your withdrawal request was sent.',
         })
-        form.reset({ account: defaultPhone, amount: '' })
+        form.reset({ amount: '' })
         setOpen(false)
         await router.invalidate()
       } catch (error) {
@@ -104,7 +110,7 @@ export default function WithdrawModal({
       onOpenChange={(next) => {
         setOpen(next)
         if (!next) {
-          form.reset({ account: defaultPhone, amount: '' })
+          form.reset({ amount: '' })
           setSubmitError(null)
         }
       }}
@@ -120,7 +126,11 @@ export default function WithdrawModal({
         <DialogHeader>
           <DialogTitle>Withdraw</DialogTitle>
           <DialogDescription>
-            Send funds to your M-Pesa number. Available balance{' '}
+            Withdraw from account{' '}
+            <span className="font-medium text-foreground">
+              {accountNumber || '—'}
+            </span>
+            . Available balance{' '}
             <span className="font-medium text-foreground tabular-nums">
               {formatMoney(balance, currency)}
             </span>
@@ -138,21 +148,6 @@ export default function WithdrawModal({
           }}
         >
           <FieldGroup className="gap-4">
-            <form.Field name="account">
-              {(field) => (
-                <InputField
-                  field={field}
-                  id="withdraw-account"
-                  label="Phone number"
-                  type="tel"
-                  placeholder="07XXXXXXXX"
-                  autoComplete="tel"
-                  className="gap-2"
-                  inputClassName="h-10 rounded-xl px-3"
-                />
-              )}
-            </form.Field>
-
             <form.Field name="amount">
               {(field) => (
                 <InputField
@@ -208,7 +203,10 @@ export default function WithdrawModal({
             </Button>
             <form.Subscribe selector={(state) => state.isSubmitting}>
               {(isSubmitting) => (
-                <Button type="submit" disabled={isSubmitting || balance <= 0}>
+                <Button
+                  type="submit"
+                  disabled={isSubmitting || balance <= 0 || !accountNumber}
+                >
                   {isSubmitting ? (
                     <>
                       <Loader2Icon

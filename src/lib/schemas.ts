@@ -259,7 +259,6 @@ export const createCategorySchema = z.object({
 export type CreateCategorySchema = z.infer<typeof createCategorySchema>
 
 export const withdrawSchema = z.object({
-  account: z.string().trim().min(1, 'Phone number is required'),
   amount: z
     .string()
     .trim()
