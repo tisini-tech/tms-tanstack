@@ -24,7 +24,7 @@ import {
   contentNavItems,
   getModuleNavKey,
   getSiteModules,
-  navItems,
+  walletNavItems,
 } from './nav-data'
 import { NavPrimary } from './nav-primary'
 
@@ -34,6 +34,19 @@ function itemVisibleToRole(
 ) {
   if (!item.roles?.length) return true
   return item.roles.includes(String(role ?? ''))
+}
+
+function navItemsForModule(navKey: string | undefined): NavItem[] {
+  switch (navKey) {
+    case 'competition':
+      return competitionNavItems
+    case 'content':
+      return contentNavItems
+    case 'wallet':
+      return walletNavItems
+    default:
+      return []
+  }
 }
 
 export function AppSidebar({
@@ -85,20 +98,12 @@ export function AppSidebar({
     initialModule
 
   const activeItems = useMemo(() => {
-    const filterByRole = (items: NavItem[]) =>
-      items.filter((item) => itemVisibleToRole(item, role))
-
-    if (!resolvedActive) return filterByRole(navItems)
-
-    const navKey = getModuleNavKey(resolvedActive.name)
-
-    if (navKey === 'competition') {
-      return filterByRole([...competitionNavItems, ...navItems])
-    }
-    if (navKey === 'content') {
-      return filterByRole([...contentNavItems, ...navItems])
-    }
-    return filterByRole(navItems)
+    const navKey = resolvedActive
+      ? getModuleNavKey(resolvedActive.name)
+      : undefined
+    return navItemsForModule(navKey).filter((item) =>
+      itemVisibleToRole(item, role),
+    )
   }, [resolvedActive, role])
 
   return (

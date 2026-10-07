@@ -72,7 +72,7 @@ export function getModuleNavKey(name: string) {
   return moduleMeta[name]?.nav
 }
 
-export const navItems: NavItem[] = [
+export const walletNavItems: NavItem[] = [
   {
     to: '/wallet',
     label: 'Accounts',
