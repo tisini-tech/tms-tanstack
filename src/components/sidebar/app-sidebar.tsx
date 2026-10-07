@@ -12,7 +12,7 @@ import {
   SidebarRail,
 } from '@/components/ui/sidebar'
 
-import type { Module, User } from '#/lib/types'
+import type { Module, NavItem, User } from '#/lib/types'
 import { rememberLastModulePath } from '#/lib/modules'
 import {
   resolveCompetition,
@@ -28,12 +28,22 @@ import {
 } from './nav-data'
 import { NavPrimary } from './nav-primary'
 
+function itemVisibleToRole(
+  item: NavItem,
+  role: string | number | null | undefined,
+) {
+  if (!item.roles?.length) return true
+  return item.roles.includes(String(role ?? ''))
+}
+
 export function AppSidebar({
   user,
   modules: allowedModules,
+  role,
 }: {
   user: User
   modules: Module[]
+  role: string | number | null | undefined
 }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname })
   const search = useRouterState({
@@ -75,18 +85,21 @@ export function AppSidebar({
     initialModule
 
   const activeItems = useMemo(() => {
-    if (!resolvedActive) return navItems
+    const filterByRole = (items: NavItem[]) =>
+      items.filter((item) => itemVisibleToRole(item, role))
+
+    if (!resolvedActive) return filterByRole(navItems)
 
     const navKey = getModuleNavKey(resolvedActive.name)
 
     if (navKey === 'competition') {
-      return [...competitionNavItems, ...navItems]
+      return filterByRole([...competitionNavItems, ...navItems])
     }
     if (navKey === 'content') {
-      return [...contentNavItems, ...navItems]
+      return filterByRole([...contentNavItems, ...navItems])
     }
-    return [...navItems]
-  }, [resolvedActive])
+    return filterByRole(navItems)
+  }, [resolvedActive, role])
 
   return (
     <Sidebar collapsible="icon">

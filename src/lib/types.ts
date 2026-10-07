@@ -8,6 +8,7 @@ export interface NavItem {
   activeOptions: ActiveOptions
   /** When true, sidebar injects current competition `$compId` params. */
   needsCompId?: boolean
+  roles?: string[]
 }
 
 /** Module as returned by the auth API / stored in session */
@@ -819,4 +820,64 @@ export interface Engagement {
   created_at: string
   completed_at: string
   answers: EngagementAnswer[]
+}
+
+export interface ClientAccount {
+  system_user_id: number
+  id: number
+  account_number: string
+  account_name: string
+  is_active: boolean
+  is_business: boolean
+  is_approved: boolean
+  email: string
+  currency: string
+  balance_cents: number
+}
+
+export interface WithdrawCharges {
+  id: number
+  min_amount: string
+  max_amount: string
+  cost: string
+}
+
+export interface WithdrawResponse {
+  code: string
+  message: string
+  balance: number
+}
+
+export interface DepositResponse {
+  code: string
+  message: string
+}
+
+export interface Estimate {
+  id: number
+  description: string
+  debit_amount: string
+  credit_amount: string
+  created_by: string
+  product_id: string
+  entity: string
+  date_created: string
+  fixture: number | null
+  void_status: boolean
+  is_withdraw: boolean
+  invoiced: number
+}
+
+export interface Payment {
+  id: number
+  description: string
+  debit_amount: string
+  credit_amount: string
+  created_by: string
+  product_id: string
+  entity: string
+  date_created: string
+  fixture: number | null
+  void_status: boolean
+  is_withdraw: boolean
 }

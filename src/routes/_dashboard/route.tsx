@@ -44,7 +44,7 @@ function FocusLayoutSidebarSync({ active }: { active: boolean }) {
 }
 
 function RouteComponent() {
-  const { user, modules } = Route.useRouteContext()
+  const { user, modules, role } = Route.useRouteContext()
   const pathname = useRouterState({ select: (s) => s.location.pathname })
   const focusLayout = isFocusLayoutPath(pathname)
   const showCompetitionContext = isCompetitionModulePath(pathname)
@@ -52,7 +52,7 @@ function RouteComponent() {
   return (
     <SidebarProvider defaultOpen={!focusLayout}>
       <FocusLayoutSidebarSync active={focusLayout} />
-      <AppSidebar user={user} modules={modules} />
+      <AppSidebar user={user} modules={modules} role={role} />
 
       <SidebarInset
         className={cn(focusLayout && 'min-h-svh lg:h-svh lg:overflow-hidden')}

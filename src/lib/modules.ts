@@ -5,6 +5,7 @@ export const MODULE_ROUTES: Record<string, string> = {
   Administration: '/super-agent',
   Engagement: '/engagements',
   Voting: '/voting',
+  Payment: '/wallet',
 }
 
 const LAST_MODULE_PATH_KEY = 'tisini:last-module-path'

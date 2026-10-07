@@ -1,6 +1,9 @@
+import { linkOptions } from '@tanstack/react-router'
 import {
   BarChartIcon,
+  CalculatorIcon,
   CalendarIcon,
+  CreditCardIcon,
   FileTextIcon,
   GalleryVerticalEndIcon,
   GroupIcon,
@@ -13,7 +16,6 @@ import {
   UserIcon,
   WalletIcon,
 } from 'lucide-react'
-import { linkOptions } from '@tanstack/react-router'
 
 import { MODULE_ROUTES } from '#/lib/modules'
 import type { Module, NavItem, SiteModule } from '#/lib/types'
@@ -22,7 +24,7 @@ const moduleMeta: Record<
   string,
   {
     logo: React.ReactNode
-    nav: 'administration' | 'competition' | 'content' | 'engagement'
+    nav: 'administration' | 'competition' | 'content' | 'engagement' | 'wallet'
   }
 > = {
   Competition: {
@@ -40,6 +42,10 @@ const moduleMeta: Record<
   Engagement: {
     logo: <SparklesIcon />,
     nav: 'engagement',
+  },
+  Payment: {
+    logo: <WalletIcon />,
+    nav: 'wallet',
   },
 }
 
@@ -69,8 +75,22 @@ export function getModuleNavKey(name: string) {
 export const navItems: NavItem[] = [
   {
     to: '/wallet',
-    label: 'Wallet',
+    label: 'Accounts',
     icon: WalletIcon,
+    activeOptions: { exact: true },
+  },
+  {
+    to: '/wallet/estimates',
+    label: 'Estimates',
+    icon: CalculatorIcon,
+    roles: ['1', '4', '7'],
+    activeOptions: { exact: true },
+  },
+  {
+    to: '/wallet/payments',
+    label: 'Payments',
+    icon: CreditCardIcon,
+    roles: ['1', '4'],
     activeOptions: { exact: true },
   },
 ]

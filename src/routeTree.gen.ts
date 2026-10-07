@@ -27,6 +27,8 @@ import { Route as DashboardContentCompetitionsCompIdRouteRouteImport } from './r
 import { Route as DashboardContentEngagementsIndexRouteImport } from './routes/_dashboard/_content/engagements/index'
 import { Route as DashboardContentTicketsIndexRouteImport } from './routes/_dashboard/_content/tickets/index'
 import { Route as DashboardContentWalletIndexRouteImport } from './routes/_dashboard/_content/wallet/index'
+import { Route as DashboardContentWalletEstimatesRouteImport } from './routes/_dashboard/_content/wallet/estimates'
+import { Route as DashboardContentWalletPaymentsRouteImport } from './routes/_dashboard/_content/wallet/payments'
 import { Route as DashboardContentArticlesArticleIdEditRouteImport } from './routes/_dashboard/_content/articles/$articleId/edit'
 import { Route as DashboardContentArticlesCreateIndexRouteImport } from './routes/_dashboard/_content/articles/create/index'
 import { Route as DashboardContentCompetitionsCompIdDashboardsRouteRouteImport } from './routes/_dashboard/_content/competitions/$compId/_dashboards/route'
@@ -148,6 +150,18 @@ const DashboardContentWalletIndexRoute =
   DashboardContentWalletIndexRouteImport.update({
     id: '/wallet/',
     path: '/wallet/',
+    getParentRoute: () => DashboardContentRouteRoute,
+  } as any)
+const DashboardContentWalletEstimatesRoute =
+  DashboardContentWalletEstimatesRouteImport.update({
+    id: '/wallet/estimates',
+    path: '/wallet/estimates',
+    getParentRoute: () => DashboardContentRouteRoute,
+  } as any)
+const DashboardContentWalletPaymentsRoute =
+  DashboardContentWalletPaymentsRouteImport.update({
+    id: '/wallet/payments',
+    path: '/wallet/payments',
     getParentRoute: () => DashboardContentRouteRoute,
   } as any)
 const DashboardContentArticlesArticleIdEditRoute =
@@ -341,6 +355,8 @@ export interface FileRoutesByFullPath {
   '/api/uploadthing': typeof ApiUploadthingRoute
   '/home/': typeof HomeIndexRoute
   '/competitions/$compId': typeof DashboardContentCompetitionsCompIdRouteRouteWithChildren
+  '/wallet/estimates': typeof DashboardContentWalletEstimatesRoute
+  '/wallet/payments': typeof DashboardContentWalletPaymentsRoute
   '/admin/': typeof DashboardContentAdminIndexRoute
   '/articles/': typeof DashboardContentArticlesIndexRoute
   '/competitions/': typeof DashboardContentCompetitionsIndexRoute
@@ -384,6 +400,8 @@ export interface FileRoutesByTo {
   '/api/uploadthing': typeof ApiUploadthingRoute
   '/home': typeof HomeIndexRoute
   '/competitions/$compId': typeof DashboardContentCompetitionsCompIdSettingsIndexRoute
+  '/wallet/estimates': typeof DashboardContentWalletEstimatesRoute
+  '/wallet/payments': typeof DashboardContentWalletPaymentsRoute
   '/admin': typeof DashboardContentAdminIndexRoute
   '/articles': typeof DashboardContentArticlesIndexRoute
   '/competitions': typeof DashboardContentCompetitionsIndexRoute
@@ -428,6 +446,8 @@ export interface FileRoutesById {
   '/api/uploadthing': typeof ApiUploadthingRoute
   '/home/': typeof HomeIndexRoute
   '/_dashboard/_content/competitions/$compId': typeof DashboardContentCompetitionsCompIdRouteRouteWithChildren
+  '/_dashboard/_content/wallet/estimates': typeof DashboardContentWalletEstimatesRoute
+  '/_dashboard/_content/wallet/payments': typeof DashboardContentWalletPaymentsRoute
   '/_dashboard/_content/admin/': typeof DashboardContentAdminIndexRoute
   '/_dashboard/_content/articles/': typeof DashboardContentArticlesIndexRoute
   '/_dashboard/_content/competitions/': typeof DashboardContentCompetitionsIndexRoute
@@ -475,6 +495,8 @@ export interface FileRouteTypes {
     | '/api/uploadthing'
     | '/home/'
     | '/competitions/$compId'
+    | '/wallet/estimates'
+    | '/wallet/payments'
     | '/admin/'
     | '/articles/'
     | '/competitions/'
@@ -518,6 +540,8 @@ export interface FileRouteTypes {
     | '/api/uploadthing'
     | '/home'
     | '/competitions/$compId'
+    | '/wallet/estimates'
+    | '/wallet/payments'
     | '/admin'
     | '/articles'
     | '/competitions'
@@ -561,6 +585,8 @@ export interface FileRouteTypes {
     | '/api/uploadthing'
     | '/home/'
     | '/_dashboard/_content/competitions/$compId'
+    | '/_dashboard/_content/wallet/estimates'
+    | '/_dashboard/_content/wallet/payments'
     | '/_dashboard/_content/admin/'
     | '/_dashboard/_content/articles/'
     | '/_dashboard/_content/competitions/'
@@ -731,6 +757,20 @@ declare module '@tanstack/react-router' {
       path: '/wallet'
       fullPath: '/wallet/'
       preLoaderRoute: typeof DashboardContentWalletIndexRouteImport
+      parentRoute: typeof DashboardContentRouteRoute
+    }
+    '/_dashboard/_content/wallet/estimates': {
+      id: '/_dashboard/_content/wallet/estimates'
+      path: '/wallet/estimates'
+      fullPath: '/wallet/estimates'
+      preLoaderRoute: typeof DashboardContentWalletEstimatesRouteImport
+      parentRoute: typeof DashboardContentRouteRoute
+    }
+    '/_dashboard/_content/wallet/payments': {
+      id: '/_dashboard/_content/wallet/payments'
+      path: '/wallet/payments'
+      fullPath: '/wallet/payments'
+      preLoaderRoute: typeof DashboardContentWalletPaymentsRouteImport
       parentRoute: typeof DashboardContentRouteRoute
     }
     '/_dashboard/_content/articles/$articleId/edit': {
@@ -1092,6 +1132,8 @@ const DashboardContentCompetitionsCompIdRouteRouteWithChildren =
 
 interface DashboardContentRouteRouteChildren {
   DashboardContentCompetitionsCompIdRouteRoute: typeof DashboardContentCompetitionsCompIdRouteRouteWithChildren
+  DashboardContentWalletEstimatesRoute: typeof DashboardContentWalletEstimatesRoute
+  DashboardContentWalletPaymentsRoute: typeof DashboardContentWalletPaymentsRoute
   DashboardContentAdminIndexRoute: typeof DashboardContentAdminIndexRoute
   DashboardContentArticlesIndexRoute: typeof DashboardContentArticlesIndexRoute
   DashboardContentCompetitionsIndexRoute: typeof DashboardContentCompetitionsIndexRoute
@@ -1105,6 +1147,8 @@ interface DashboardContentRouteRouteChildren {
 const DashboardContentRouteRouteChildren: DashboardContentRouteRouteChildren = {
   DashboardContentCompetitionsCompIdRouteRoute:
     DashboardContentCompetitionsCompIdRouteRouteWithChildren,
+  DashboardContentWalletEstimatesRoute: DashboardContentWalletEstimatesRoute,
+  DashboardContentWalletPaymentsRoute: DashboardContentWalletPaymentsRoute,
   DashboardContentAdminIndexRoute: DashboardContentAdminIndexRoute,
   DashboardContentArticlesIndexRoute: DashboardContentArticlesIndexRoute,
   DashboardContentCompetitionsIndexRoute:

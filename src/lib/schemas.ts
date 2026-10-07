@@ -258,6 +258,62 @@ export const createCategorySchema = z.object({
 
 export type CreateCategorySchema = z.infer<typeof createCategorySchema>
 
+export const withdrawSchema = z.object({
+  account: z.string().trim().min(1, 'Phone number is required'),
+  amount: z
+    .string()
+    .trim()
+    .min(1, 'Amount is required')
+    .refine((v) => Number.isFinite(Number(v)) && Number(v) > 0, {
+      message: 'Enter a valid amount greater than 0',
+    }),
+})
+
+export type WithdrawSchema = z.infer<typeof withdrawSchema>
+
+export function createWithdrawSchema(maxBalance: number) {
+  return withdrawSchema.superRefine((data, ctx) => {
+    const amount = Number(data.amount)
+    if (!Number.isFinite(amount) || amount <= 0) return
+    if (amount > maxBalance) {
+      ctx.addIssue({
+        code: 'custom',
+        message: 'Amount exceeds available balance',
+        path: ['amount'],
+      })
+    }
+  })
+}
+
+export const depositSchema = z.object({
+  phoneNo: z.string().trim().min(1, 'Phone number is required'),
+  amount: z
+    .string()
+    .trim()
+    .min(1, 'Amount is required')
+    .refine((v) => Number.isFinite(Number(v)) && Number(v) > 0, {
+      message: 'Enter a valid amount greater than 0',
+    }),
+})
+
+export type DepositSchema = z.infer<typeof depositSchema>
+
+export const createEstimateSchema = z.object({
+  productid: z.string().trim().min(1, 'Product is required'),
+  accountno: z.string().trim().min(1, 'Account number is required'),
+  addAmount: z
+    .string()
+    .trim()
+    .min(1, 'Amount is required')
+    .refine((v) => Number.isFinite(Number(v)) && Number(v) > 0, {
+      message: 'Enter a valid amount greater than 0',
+    }),
+  description: z.string().trim().min(1, 'Description is required'),
+  fixtureid: z.string().trim(),
+})
+
+export type CreateEstimateSchema = z.infer<typeof createEstimateSchema>
+
 export const editFixtureEventSchema = z.object({
   teamId: z.string().trim().min(1, 'Team is required'),
   metricId: z.string().trim().min(1, 'Event is required'),
