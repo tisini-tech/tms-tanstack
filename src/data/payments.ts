@@ -213,7 +213,7 @@ export const approvePaymentFn = createServerFn({ method: 'POST' })
     return apiService.post<{ code?: string; message?: string }>(
       `/payments/approve-agent-payout`,
       {
-        transaction_id: data.transaction_id,
+        transid: data.transaction_id,
       },
     )
   })
