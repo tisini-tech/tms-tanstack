@@ -262,9 +262,9 @@ export const withdrawSchema = z.object({
   amount: z
     .string()
     .trim()
-    .min(1, 'Amount is required')
-    .refine((v) => Number.isFinite(Number(v)) && Number(v) > 0, {
-      message: 'Enter a valid amount greater than 0',
+    .min(50, 'Amount is required')
+    .refine((v) => Number.isFinite(Number(v)) && Number(v) > 50, {
+      message: 'Enter a valid amount greater than 50',
     }),
 })
 

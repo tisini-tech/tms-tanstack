@@ -201,9 +201,7 @@ export const creditPaymentFn = createServerFn({ method: 'POST' })
   })
 
 const approvePaymentSchema = z.object({
-  transid: z.number().int().positive(),
-  addAmount: z.number().positive(),
-  phoneno: z.string().trim().min(1),
+  transaction_id: z.number().int().positive(),
 })
 
 export const approvePaymentFn = createServerFn({ method: 'POST' })
@@ -215,9 +213,7 @@ export const approvePaymentFn = createServerFn({ method: 'POST' })
     return apiService.post<{ code?: string; message?: string }>(
       `/payments/approve-agent-payout`,
       {
-        transid: data.transid,
-        addAmount: data.addAmount,
-        phoneno: data.phoneno,
+        transaction_id: data.transaction_id,
       },
     )
   })
