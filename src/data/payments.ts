@@ -47,7 +47,7 @@ export const withdrawFn = createServerFn({ method: 'POST' })
       `/payments/withdraw`,
       {
         account: data.account,
-        amount: data.amount,
+        wamount: data.amount,
       },
     )
 
