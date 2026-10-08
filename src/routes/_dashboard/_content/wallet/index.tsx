@@ -21,7 +21,7 @@ export const Route = createFileRoute('/_dashboard/_content/wallet/')({
     const [accounts, withdrawCharges, payments] = await Promise.all([
       context.queryClient.ensureQueryData(walletAccountsQueryOptions),
       getWithdrawChargesFn(),
-      getPaymentsFn({ data: { productIds: ['1', '6', '7'] } }),
+      getPaymentsFn(),
     ])
     return { accounts, withdrawCharges, payments }
   },

@@ -192,7 +192,7 @@ export const getPaymentsFn = createServerFn({ method: 'GET' })
   )
   .handler(async ({ data }) => {
     const params = new URLSearchParams()
-    const productIds = data?.productIds?.length ? data.productIds : ['7']
+    const productIds = data?.productIds ?? []
     for (const productId of productIds) {
       params.append('product_id', productId)
     }
