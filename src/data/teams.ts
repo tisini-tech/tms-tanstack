@@ -136,7 +136,6 @@ export const getTeamDashboardFn = createServerFn({ method: 'GET' })
       params.append('event_ids', String(eventId))
     }
     const query = params.toString()
-
     return apiService.get<TeamDashboard>(
       `/competitions/${data.competitionId}/seasons/${data.seasonId}/teams/${data.teamId}/dashboard${query ? `?${query}` : ''}`,
     )
