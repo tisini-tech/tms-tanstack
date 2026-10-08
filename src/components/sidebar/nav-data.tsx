@@ -93,6 +93,13 @@ export const walletNavItems: NavItem[] = [
     roles: ['1', '4'],
     activeOptions: { exact: true },
   },
+  {
+    to: '/wallet/statements',
+    label: 'Statements',
+    icon: FileTextIcon,
+    roles: ['1', '4'],
+    activeOptions: { exact: true },
+  },
 ]
 
 export const competitionNavItems: NavItem[] = [

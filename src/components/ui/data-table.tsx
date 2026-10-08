@@ -3,15 +3,18 @@ import {
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
+  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
   type ColumnDef,
   type ColumnFiltersState,
   type FilterFn,
+  type PaginationState,
   type SortingState,
 } from '@tanstack/react-table'
 
 import { cn } from '#/lib/utils'
+import { Button } from '#/components/ui/button'
 import { Input } from '#/components/ui/input'
 import {
   Table,
@@ -30,6 +33,7 @@ interface DataTableProps<TData, TValue> {
   toolbar?: ReactNode
   globalFilterFn?: FilterFn<TData>
   className?: string
+  pageSize?: number
 }
 
 export function DataTable<TData, TValue>({
@@ -40,10 +44,15 @@ export function DataTable<TData, TValue>({
   toolbar,
   globalFilterFn,
   className,
+  pageSize,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [globalFilter, setGlobalFilter] = useState('')
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: pageSize ?? 20,
+  })
 
   const table = useReactTable({
     data,
@@ -51,6 +60,12 @@ export function DataTable<TData, TValue>({
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    ...(pageSize
+      ? {
+          getPaginationRowModel: getPaginationRowModel(),
+          onPaginationChange: setPagination,
+        }
+      : {}),
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onGlobalFilterChange: setGlobalFilter,
@@ -59,8 +74,17 @@ export function DataTable<TData, TValue>({
       sorting,
       columnFilters,
       globalFilter,
+      ...(pageSize ? { pagination } : {}),
     },
   })
+
+  const filteredCount = table.getFilteredRowModel().rows.length
+  const pageStart =
+    filteredCount === 0 ? 0 : pagination.pageIndex * pagination.pageSize + 1
+  const pageEnd = Math.min(
+    filteredCount,
+    pageStart + table.getRowModel().rows.length - 1,
+  )
 
   return (
     <div className={cn('w-full min-w-0 space-y-3', className)}>
@@ -145,6 +169,36 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
+
+      {pageSize ? (
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <p className="text-sm text-muted-foreground">
+            {filteredCount === 0
+              ? '0 results'
+              : `${pageStart}–${pageEnd} of ${filteredCount}`}
+          </p>
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              Previous
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              Next
+            </Button>
+          </div>
+        </div>
+      ) : null}
     </div>
   )
 }

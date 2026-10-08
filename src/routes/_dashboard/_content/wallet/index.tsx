@@ -12,6 +12,7 @@ import {
   walletAccountsQueryOptions,
 } from '#/data/payments'
 import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar'
+import { AccountPayments } from '#/components/wallet/account-payments'
 import DepositModal from '#/components/wallet/deposit-modal'
 import WithdrawModal from '#/components/wallet/withdraw-modal'
 
@@ -20,7 +21,7 @@ export const Route = createFileRoute('/_dashboard/_content/wallet/')({
     const [accounts, withdrawCharges, payments] = await Promise.all([
       context.queryClient.ensureQueryData(walletAccountsQueryOptions),
       getWithdrawChargesFn(),
-      getPaymentsFn(),
+      getPaymentsFn({ data: { productIds: ['1', '6', '7'] } }),
     ])
     return { accounts, withdrawCharges, payments }
   },
@@ -78,8 +79,7 @@ function RouteComponent() {
     refreshUntilRef.current != null &&
     accountsQuery.dataUpdatedAt >= refreshUntilRef.current
   const balanceUpdated =
-    watchingBalance &&
-    account?.balance_cents !== balanceBaselineRef.current
+    watchingBalance && account?.balance_cents !== balanceBaselineRef.current
 
   if (pollExpired || balanceUpdated) {
     setWatchingBalance(false)
@@ -194,6 +194,8 @@ function RouteComponent() {
           </div>
         </div>
       </section>
+
+      <AccountPayments payments={loaderData?.payments ?? []} />
     </div>
   )
 }

@@ -11,7 +11,7 @@ import { getAccountsFn, getPaymentsFn, getProductsFn } from '#/data/payments'
 export const Route = createFileRoute('/_dashboard/_content/wallet/payments')({
   loader: async () => {
     const [payments, products, accounts] = await Promise.all([
-      getPaymentsFn(),
+      getPaymentsFn({ data: { isAdmin: true, productIds: ['7'] } }),
       getProductsFn(),
       getAccountsFn({ data: { searchTerm: '', isAdmin: true } }),
     ])

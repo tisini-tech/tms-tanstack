@@ -186,8 +186,24 @@ export const updateEstimateFn = createServerFn({ method: 'POST' })
 
 export const getPaymentsFn = createServerFn({ method: 'GET' })
   .middleware([authFnMiddleware])
-  .handler(async () => {
-    const response = await apiService.get<Payment[]>(`/payments?product_id=7`)
+  .validator(
+    (data?: { isAdmin?: boolean; productIds?: string[]; entityId?: string }) =>
+      data,
+  )
+  .handler(async ({ data }) => {
+    const params = new URLSearchParams()
+    const productIds = data?.productIds?.length ? data.productIds : ['7']
+    for (const productId of productIds) {
+      params.append('product_id', productId)
+    }
+    params.set('is_admin', String(data?.isAdmin ?? false))
+    if (data?.entityId) {
+      params.set('entity_id', data.entityId)
+    }
+
+    const response = await apiService.get<Payment[]>(
+      `/payments?${params.toString()}`,
+    )
 
     return response
   })

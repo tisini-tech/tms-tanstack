@@ -29,6 +29,7 @@ import { Route as DashboardContentTicketsIndexRouteImport } from './routes/_dash
 import { Route as DashboardContentWalletIndexRouteImport } from './routes/_dashboard/_content/wallet/index'
 import { Route as DashboardContentWalletEstimatesRouteImport } from './routes/_dashboard/_content/wallet/estimates'
 import { Route as DashboardContentWalletPaymentsRouteImport } from './routes/_dashboard/_content/wallet/payments'
+import { Route as DashboardContentWalletStatementsRouteImport } from './routes/_dashboard/_content/wallet/statements'
 import { Route as DashboardContentArticlesArticleIdEditRouteImport } from './routes/_dashboard/_content/articles/$articleId/edit'
 import { Route as DashboardContentArticlesCreateIndexRouteImport } from './routes/_dashboard/_content/articles/create/index'
 import { Route as DashboardContentCompetitionsCompIdDashboardsRouteRouteImport } from './routes/_dashboard/_content/competitions/$compId/_dashboards/route'
@@ -162,6 +163,12 @@ const DashboardContentWalletPaymentsRoute =
   DashboardContentWalletPaymentsRouteImport.update({
     id: '/wallet/payments',
     path: '/wallet/payments',
+    getParentRoute: () => DashboardContentRouteRoute,
+  } as any)
+const DashboardContentWalletStatementsRoute =
+  DashboardContentWalletStatementsRouteImport.update({
+    id: '/wallet/statements',
+    path: '/wallet/statements',
     getParentRoute: () => DashboardContentRouteRoute,
   } as any)
 const DashboardContentArticlesArticleIdEditRoute =
@@ -357,6 +364,7 @@ export interface FileRoutesByFullPath {
   '/competitions/$compId': typeof DashboardContentCompetitionsCompIdRouteRouteWithChildren
   '/wallet/estimates': typeof DashboardContentWalletEstimatesRoute
   '/wallet/payments': typeof DashboardContentWalletPaymentsRoute
+  '/wallet/statements': typeof DashboardContentWalletStatementsRoute
   '/admin/': typeof DashboardContentAdminIndexRoute
   '/articles/': typeof DashboardContentArticlesIndexRoute
   '/competitions/': typeof DashboardContentCompetitionsIndexRoute
@@ -402,6 +410,7 @@ export interface FileRoutesByTo {
   '/competitions/$compId': typeof DashboardContentCompetitionsCompIdSettingsIndexRoute
   '/wallet/estimates': typeof DashboardContentWalletEstimatesRoute
   '/wallet/payments': typeof DashboardContentWalletPaymentsRoute
+  '/wallet/statements': typeof DashboardContentWalletStatementsRoute
   '/admin': typeof DashboardContentAdminIndexRoute
   '/articles': typeof DashboardContentArticlesIndexRoute
   '/competitions': typeof DashboardContentCompetitionsIndexRoute
@@ -448,6 +457,7 @@ export interface FileRoutesById {
   '/_dashboard/_content/competitions/$compId': typeof DashboardContentCompetitionsCompIdRouteRouteWithChildren
   '/_dashboard/_content/wallet/estimates': typeof DashboardContentWalletEstimatesRoute
   '/_dashboard/_content/wallet/payments': typeof DashboardContentWalletPaymentsRoute
+  '/_dashboard/_content/wallet/statements': typeof DashboardContentWalletStatementsRoute
   '/_dashboard/_content/admin/': typeof DashboardContentAdminIndexRoute
   '/_dashboard/_content/articles/': typeof DashboardContentArticlesIndexRoute
   '/_dashboard/_content/competitions/': typeof DashboardContentCompetitionsIndexRoute
@@ -497,6 +507,7 @@ export interface FileRouteTypes {
     | '/competitions/$compId'
     | '/wallet/estimates'
     | '/wallet/payments'
+    | '/wallet/statements'
     | '/admin/'
     | '/articles/'
     | '/competitions/'
@@ -542,6 +553,7 @@ export interface FileRouteTypes {
     | '/competitions/$compId'
     | '/wallet/estimates'
     | '/wallet/payments'
+    | '/wallet/statements'
     | '/admin'
     | '/articles'
     | '/competitions'
@@ -587,6 +599,7 @@ export interface FileRouteTypes {
     | '/_dashboard/_content/competitions/$compId'
     | '/_dashboard/_content/wallet/estimates'
     | '/_dashboard/_content/wallet/payments'
+    | '/_dashboard/_content/wallet/statements'
     | '/_dashboard/_content/admin/'
     | '/_dashboard/_content/articles/'
     | '/_dashboard/_content/competitions/'
@@ -771,6 +784,13 @@ declare module '@tanstack/react-router' {
       path: '/wallet/payments'
       fullPath: '/wallet/payments'
       preLoaderRoute: typeof DashboardContentWalletPaymentsRouteImport
+      parentRoute: typeof DashboardContentRouteRoute
+    }
+    '/_dashboard/_content/wallet/statements': {
+      id: '/_dashboard/_content/wallet/statements'
+      path: '/wallet/statements'
+      fullPath: '/wallet/statements'
+      preLoaderRoute: typeof DashboardContentWalletStatementsRouteImport
       parentRoute: typeof DashboardContentRouteRoute
     }
     '/_dashboard/_content/articles/$articleId/edit': {
@@ -1134,6 +1154,7 @@ interface DashboardContentRouteRouteChildren {
   DashboardContentCompetitionsCompIdRouteRoute: typeof DashboardContentCompetitionsCompIdRouteRouteWithChildren
   DashboardContentWalletEstimatesRoute: typeof DashboardContentWalletEstimatesRoute
   DashboardContentWalletPaymentsRoute: typeof DashboardContentWalletPaymentsRoute
+  DashboardContentWalletStatementsRoute: typeof DashboardContentWalletStatementsRoute
   DashboardContentAdminIndexRoute: typeof DashboardContentAdminIndexRoute
   DashboardContentArticlesIndexRoute: typeof DashboardContentArticlesIndexRoute
   DashboardContentCompetitionsIndexRoute: typeof DashboardContentCompetitionsIndexRoute
@@ -1149,6 +1170,7 @@ const DashboardContentRouteRouteChildren: DashboardContentRouteRouteChildren = {
     DashboardContentCompetitionsCompIdRouteRouteWithChildren,
   DashboardContentWalletEstimatesRoute: DashboardContentWalletEstimatesRoute,
   DashboardContentWalletPaymentsRoute: DashboardContentWalletPaymentsRoute,
+  DashboardContentWalletStatementsRoute: DashboardContentWalletStatementsRoute,
   DashboardContentAdminIndexRoute: DashboardContentAdminIndexRoute,
   DashboardContentArticlesIndexRoute: DashboardContentArticlesIndexRoute,
   DashboardContentCompetitionsIndexRoute:

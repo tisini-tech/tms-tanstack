@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Combobox } from '@base-ui/react/combobox'
 import { CheckIcon, ChevronDownIcon, Loader2Icon, SearchIcon } from 'lucide-react'
 
@@ -52,12 +52,23 @@ function accountSearchLabel(account: ClientAccount) {
     .join(' ')
 }
 
+type AccountValueKey = 'accountNumber' | 'systemUserId'
+
+function accountValue(account: ClientAccount, valueKey: AccountValueKey) {
+  if (valueKey === 'systemUserId') return String(account.system_user_id)
+  return accountNumber(account)
+}
+
 type AccountComboboxFieldProps = {
-  field: TanStackInputFieldApi<string>
+  field?: TanStackInputFieldApi<string>
   accounts: ClientAccount[]
   id: string
   label?: string
   className?: string
+  value?: string
+  onValueChange?: (value: string) => void
+  /** Stored value. Forms use the account number. Statements use the user id. */
+  valueKey?: AccountValueKey
 }
 
 export function AccountComboboxField({
@@ -66,22 +77,44 @@ export function AccountComboboxField({
   id,
   label = 'Account',
   className,
+  value,
+  onValueChange,
+  valueKey = 'accountNumber',
 }: AccountComboboxFieldProps) {
+  const inputRef = useRef<HTMLInputElement>(null)
   const [items, setItems] = useState(accounts)
   const [query, setQuery] = useState('')
   const [searching, setSearching] = useState(false)
-  const isInvalid = field.state.meta.errors.length > 0
+  const currentValue = field?.state.value ?? value ?? ''
+  const isInvalid = (field?.state.meta.errors.length ?? 0) > 0
   const selected =
-    items.find((account) => accountNumber(account) === field.state.value) ??
-    accounts.find((account) => accountNumber(account) === field.state.value) ??
+    items.find((account) => accountValue(account, valueKey) === currentValue) ??
+    accounts.find(
+      (account) => accountValue(account, valueKey) === currentValue,
+    ) ??
     null
 
   useEffect(() => {
-    setItems(accounts)
-  }, [accounts])
+    setItems((current) => {
+      const selectedAccount = current.find(
+        (account) => accountValue(account, valueKey) === currentValue,
+      )
+      if (
+        !selectedAccount ||
+        accounts.some(
+          (account) =>
+            accountValue(account, valueKey) ===
+            accountValue(selectedAccount, valueKey),
+        )
+      ) {
+        return accounts
+      }
+      return [selectedAccount, ...accounts]
+    })
+  }, [accounts, currentValue, valueKey])
 
-  async function searchAccounts(term = query) {
-    const searchTerm = term.trim()
+  async function searchAccounts(term?: string) {
+    const searchTerm = (term ?? inputRef.current?.value ?? query).trim()
     setSearching(true)
     try {
       const next = await getAccountsFn({
@@ -102,7 +135,7 @@ export function AccountComboboxField({
     >
       <FieldContent>
         <FieldLabel htmlFor={id}>{label}</FieldLabel>
-        {isInvalid ? (
+        {field && isInvalid ? (
           <FieldError
             errors={
               field.state.meta.errors as Array<{ message?: string } | undefined>
@@ -113,25 +146,30 @@ export function AccountComboboxField({
 
       <Combobox.Root
         items={items}
+        filteredItems={items}
         value={selected}
         filter={null}
         onInputValueChange={(inputValue) => {
           setQuery(inputValue)
         }}
         onValueChange={(account) => {
-          field.handleChange(account ? accountNumber(account) : '')
-          field.handleBlur()
+          const next = account ? accountValue(account, valueKey) : ''
+          field?.handleChange(next)
+          field?.handleBlur()
+          onValueChange?.(next)
         }}
         itemToStringLabel={(account) =>
           account ? accountSearchLabel(account) : ''
         }
-        isItemEqualToValue={(a, b) => accountNumber(a) === accountNumber(b)}
+        isItemEqualToValue={(a, b) =>
+          accountValue(a, valueKey) === accountValue(b, valueKey)
+        }
       >
         <Combobox.Trigger
           id={id}
           aria-invalid={isInvalid || undefined}
           className={triggerClassName}
-          onBlur={field.handleBlur}
+          onBlur={() => field?.handleBlur()}
         >
           <Combobox.Value placeholder="Select an account">
             {(account: ClientAccount | null) =>
@@ -159,6 +197,7 @@ export function AccountComboboxField({
             <Combobox.Popup className={popupClassName}>
               <div className="flex items-center gap-2 border-b border-border/60 p-2">
                 <Combobox.Input
+                  ref={inputRef}
                   placeholder="Search number, name, or account no…"
                   className={cn(
                     'h-8 min-w-0 flex-1 rounded-xl border border-transparent bg-input/50 px-2.5 text-sm outline-none',
