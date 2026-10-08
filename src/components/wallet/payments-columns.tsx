@@ -53,7 +53,9 @@ export const paymentsGlobalFilter: FilterFn<Payment> = (
     payment.debit_amount,
     payment.credit_amount,
     payment.created_by,
-    payment.entity,
+    payment.account_name,
+    payment.account_number,
+    payment.phone_number,
     statusLabel(payment),
   ]
     .join(' ')
@@ -80,12 +82,29 @@ export const paymentColumns: ColumnDef<Payment>[] = [
         <p className="truncate font-medium text-heading">
           {row.original.description || '—'}
         </p>
-        <p className="truncate text-xs text-muted-foreground">
-          Entity {row.original.entity}
-          {row.original.is_withdraw ? ' · Withdraw' : ''}
-        </p>
+        {row.original.is_withdraw ? (
+          <p className="truncate text-xs text-muted-foreground">Withdraw</p>
+        ) : null}
       </div>
     ),
+  },
+  {
+    id: 'account',
+    header: 'Account',
+    cell: ({ row }) => {
+      const name = row.original.account_name?.trim()
+      const number = row.original.account_number?.trim()
+      const phone = row.original.phone_number?.trim()
+
+      return (
+        <div className="min-w-0">
+          <p className="truncate font-medium text-heading">{name || '—'}</p>
+          <p className="truncate text-xs text-muted-foreground">
+            {[number, phone].filter(Boolean).join(' · ') || '—'}
+          </p>
+        </div>
+      )
+    },
   },
   {
     accessorKey: 'debit_amount',

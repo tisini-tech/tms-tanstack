@@ -6,18 +6,22 @@ import {
   paymentsGlobalFilter,
 } from '#/components/wallet/payments-columns'
 import { DataTable } from '#/components/ui/data-table'
-import { getPaymentsFn } from '#/data/payments'
+import { getAccountsFn, getPaymentsFn, getProductsFn } from '#/data/payments'
 
 export const Route = createFileRoute('/_dashboard/_content/wallet/payments')({
   loader: async () => {
-    const payments = await getPaymentsFn()
-    return { payments }
+    const [payments, products, accounts] = await Promise.all([
+      getPaymentsFn(),
+      getProductsFn(),
+      getAccountsFn({ data: { searchTerm: '', isAdmin: true } }),
+    ])
+    return { payments, products, accounts }
   },
   component: PaymentsPage,
 })
 
 function PaymentsPage() {
-  const { payments } = Route.useLoaderData()
+  const { payments, products, accounts } = Route.useLoaderData()
 
   const rows = payments ?? []
 
@@ -33,7 +37,10 @@ function PaymentsPage() {
           </p>
         </div>
 
-        <CreditPaymentModal />
+        <CreditPaymentModal
+          products={products ?? []}
+          accounts={accounts ?? []}
+        />
       </div>
 
       <DataTable

@@ -833,6 +833,11 @@ export interface ClientAccount {
   email: string
   currency: string
   balance_cents: number
+  phone_number?: string
+  /** Present on admin account search results. */
+  accountNo?: string
+  accountName?: string
+  phoneNo?: string
 }
 
 export interface WithdrawCharges {
@@ -875,9 +880,21 @@ export interface Payment {
   credit_amount: string
   created_by: string
   product_id: string
-  entity: string
+  account_name: string
+  account_number: string
+  phone_number: string
   date_created: string
   fixture: number | null
   void_status: boolean
   is_withdraw: boolean
+}
+
+export interface Product {
+  id: number
+  name: string
+  category: string
+  vat_class: number
+  debit: number
+  credit: number
+  status: boolean
 }

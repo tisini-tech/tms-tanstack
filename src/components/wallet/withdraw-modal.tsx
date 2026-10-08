@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react'
 import { useForm } from '@tanstack/react-form'
-import { useRouter } from '@tanstack/react-router'
 import { ArrowUpRightIcon, Loader2Icon } from 'lucide-react'
 
 import { withdrawFn } from '#/data/payments'
@@ -45,13 +44,14 @@ function findCharge(amount: number, charges: WithdrawCharges[]) {
 type WithdrawModalProps = {
   charges: WithdrawCharges[]
   walletAccount?: ClientAccount
+  onSuccess?: () => void
 }
 
 export default function WithdrawModal({
   charges,
   walletAccount,
+  onSuccess,
 }: WithdrawModalProps) {
-  const router = useRouter()
   const [open, setOpen] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
 
@@ -91,7 +91,7 @@ export default function WithdrawModal({
         })
         form.reset({ amount: '' })
         setOpen(false)
-        await router.invalidate()
+        onSuccess?.()
       } catch (error) {
         const message =
           error instanceof Error ? error.message : 'Failed to withdraw'

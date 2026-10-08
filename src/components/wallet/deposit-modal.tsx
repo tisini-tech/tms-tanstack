@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useForm } from '@tanstack/react-form'
-import { useRouter } from '@tanstack/react-router'
 import { ArrowDownLeftIcon, Loader2Icon } from 'lucide-react'
 
 import { depositFn } from '#/data/payments'
@@ -36,13 +35,14 @@ function formatMoney(amount: number, currency: string) {
 type DepositModalProps = {
   walletAccount?: ClientAccount
   defaultPhone?: string
+  onSuccess?: () => void
 }
 
 export default function DepositModal({
   walletAccount,
   defaultPhone = '',
+  onSuccess,
 }: DepositModalProps) {
-  const router = useRouter()
   const [open, setOpen] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
 
@@ -85,7 +85,7 @@ export default function DepositModal({
         })
         form.reset({ phoneNo: defaultPhone, amount: '' })
         setOpen(false)
-        await router.invalidate()
+        onSuccess?.()
       } catch (error) {
         const message =
           error instanceof Error ? error.message : 'Failed to initiate deposit'

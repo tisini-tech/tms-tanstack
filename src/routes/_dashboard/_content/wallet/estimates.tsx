@@ -6,18 +6,22 @@ import {
 } from '#/components/wallet/estimates-columns'
 import { CreateEstimateModal } from '#/components/wallet/create-estimate-modal'
 import { DataTable } from '#/components/ui/data-table'
-import { getEstimatesFn } from '#/data/payments'
+import { getAccountsFn, getEstimatesFn, getProductsFn } from '#/data/payments'
 
 export const Route = createFileRoute('/_dashboard/_content/wallet/estimates')({
   loader: async () => {
-    const estimates = await getEstimatesFn()
-    return { estimates }
+    const [estimates, products, accounts] = await Promise.all([
+      getEstimatesFn(),
+      getProductsFn(),
+      getAccountsFn({ data: { searchTerm: '', isAdmin: true } }),
+    ])
+    return { estimates, products, accounts }
   },
   component: EstimatesPage,
 })
 
 function EstimatesPage() {
-  const { estimates } = Route.useLoaderData()
+  const { estimates, products, accounts } = Route.useLoaderData()
   const rows = estimates || []
 
   return (
@@ -33,8 +37,16 @@ function EstimatesPage() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <CreateEstimateModal kind="revenue" />
-          <CreateEstimateModal kind="deduction" />
+          <CreateEstimateModal
+            kind="revenue"
+            products={products ?? []}
+            accounts={accounts ?? []}
+          />
+          <CreateEstimateModal
+            kind="deduction"
+            products={products ?? []}
+            accounts={accounts ?? []}
+          />
         </div>
       </div>
 

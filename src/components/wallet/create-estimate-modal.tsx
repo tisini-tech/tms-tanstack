@@ -3,7 +3,9 @@ import { useForm } from '@tanstack/react-form'
 import { useRouter } from '@tanstack/react-router'
 import { ArrowDownLeftIcon, ArrowUpRightIcon, Loader2Icon } from 'lucide-react'
 
+import { AccountComboboxField } from '#/components/wallet/account-combobox-field'
 import { InputField } from '#/components/general/forms/input-field'
+import { ComboboxField } from '#/components/general/forms/combobox-field'
 import { Button } from '#/components/ui/button'
 import {
   Dialog,
@@ -21,6 +23,7 @@ import {
   createEstimateRevenueFn,
 } from '#/data/payments'
 import { createEstimateSchema, type CreateEstimateSchema } from '#/lib/schemas'
+import type { ClientAccount, Product } from '#/lib/types'
 
 type EstimateKind = 'revenue' | 'deduction'
 
@@ -52,13 +55,16 @@ const copy: Record<
 
 type CreateEstimateModalProps = {
   kind: EstimateKind
-  /** Prefill when you fetch products / accounts. */
+  products: Product[]
+  accounts: ClientAccount[]
   defaultProductId?: string
   defaultAccountNo?: string
 }
 
 export function CreateEstimateModal({
   kind,
+  products,
+  accounts,
   defaultProductId = '',
   defaultAccountNo = '',
 }: CreateEstimateModalProps) {
@@ -66,6 +72,13 @@ export function CreateEstimateModal({
   const [open, setOpen] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const labels = copy[kind]
+  const productOptions = (products.some((product) => product.status)
+    ? products.filter((product) => product.status)
+    : products
+  ).map((product) => ({
+    value: String(product.id),
+    label: product.name,
+  }))
 
   const emptyValues: CreateEstimateSchema = {
     productid: defaultProductId,
@@ -167,30 +180,26 @@ export function CreateEstimateModal({
           <FieldGroup className="gap-4">
             <form.Field name="productid">
               {(field) => (
-                <InputField
+                <ComboboxField
                   field={field}
                   id={`estimate-${kind}-productid`}
                   label="Product"
-                  type="text"
-                  placeholder="Product id"
-                  autoComplete="off"
+                  options={productOptions}
+                  placeholder="Select a product"
+                  searchPlaceholder="Search products…"
+                  emptyMessage="No products found"
                   className="gap-2"
-                  inputClassName="h-10 rounded-xl px-3"
                 />
               )}
             </form.Field>
 
             <form.Field name="accountno">
               {(field) => (
-                <InputField
+                <AccountComboboxField
                   field={field}
                   id={`estimate-${kind}-accountno`}
-                  label="Account number"
-                  type="text"
-                  placeholder="Account number"
-                  autoComplete="off"
+                  accounts={accounts}
                   className="gap-2"
-                  inputClassName="h-10 rounded-xl px-3"
                 />
               )}
             </form.Field>

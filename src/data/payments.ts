@@ -1,10 +1,12 @@
+import { queryOptions } from '@tanstack/react-query'
+
 import { apiService } from '#/lib/api'
 import type {
   ClientAccount,
   DepositResponse,
   Estimate,
-  PaginatedResponse,
   Payment,
+  Product,
   WithdrawCharges,
   WithdrawResponse,
 } from '#/lib/types'
@@ -14,13 +16,26 @@ import { z } from 'zod'
 
 export const getAccountsFn = createServerFn({ method: 'GET' })
   .middleware([authFnMiddleware])
-  .handler(async () => {
+  .validator((data?: { searchTerm?: string; isAdmin?: boolean }) => ({
+    searchTerm: data?.searchTerm ?? '',
+    isAdmin: data?.isAdmin ?? false,
+  }))
+  .handler(async ({ data }) => {
+    const params = new URLSearchParams({
+      search: data.searchTerm,
+      isadminoraccountant: String(data.isAdmin),
+    })
     const response = await apiService.get<ClientAccount[]>(
-      `/payments/user-accounts`,
+      `/payments/user-accounts?${params.toString()}`,
     )
 
     return response
   })
+
+export const walletAccountsQueryOptions = queryOptions({
+  queryKey: ['wallet', 'accounts'],
+  queryFn: () => getAccountsFn(),
+})
 
 export const getWithdrawChargesFn = createServerFn({ method: 'GET' })
   .middleware([authFnMiddleware])
@@ -231,4 +246,12 @@ export const declinePaymentFn = createServerFn({ method: 'POST' })
     return apiService.delete<{ code?: string; message?: string }>(
       `/payments/decline/${data.paymentId}`,
     )
+  })
+
+export const getProductsFn = createServerFn({ method: 'GET' })
+  .middleware([authFnMiddleware])
+  .handler(async () => {
+    const response = await apiService.get<Product[]>(`/payments/products`)
+
+    return response
   })

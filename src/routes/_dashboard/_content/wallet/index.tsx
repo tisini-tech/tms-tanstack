@@ -1,23 +1,28 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { EyeIcon, EyeOffIcon } from 'lucide-react'
 
 import { getInitials } from '#/lib/utils'
 import { Button } from '#/components/ui/button'
 import type { ClientAccount } from '#/lib/types'
-import { getAccountsFn, getWithdrawChargesFn } from '#/data/payments'
+import {
+  getPaymentsFn,
+  getWithdrawChargesFn,
+  walletAccountsQueryOptions,
+} from '#/data/payments'
 import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar'
 import DepositModal from '#/components/wallet/deposit-modal'
 import WithdrawModal from '#/components/wallet/withdraw-modal'
 
 export const Route = createFileRoute('/_dashboard/_content/wallet/')({
-  loader: async () => {
-    const [accounts, withdrawCharges] = await Promise.all([
-      getAccountsFn(),
+  loader: async ({ context }) => {
+    const [accounts, withdrawCharges, payments] = await Promise.all([
+      context.queryClient.ensureQueryData(walletAccountsQueryOptions),
       getWithdrawChargesFn(),
+      getPaymentsFn(),
     ])
-
-    return { accounts, withdrawCharges }
+    return { accounts, withdrawCharges, payments }
   },
   component: RouteComponent,
 })
@@ -49,12 +54,43 @@ function pickPrimaryAccount(accounts: ClientAccount[]) {
   )
 }
 
+const BALANCE_POLL_INTERVAL_MS = 5_000
+const BALANCE_POLL_WINDOW_MS = 5 * 60 * 1000
+
 function RouteComponent() {
   const { user } = Route.useRouteContext()
   const loaderData = Route.useLoaderData()
-  const accounts = loaderData?.accounts ?? []
-  const account = pickPrimaryAccount(accounts)
   const [balanceVisible, setBalanceVisible] = useState(true)
+  const [watchingBalance, setWatchingBalance] = useState(false)
+  const balanceBaselineRef = useRef<number | null | undefined>(undefined)
+  const refreshUntilRef = useRef<number | null>(null)
+
+  const accountsQuery = useQuery({
+    ...walletAccountsQueryOptions,
+    refetchInterval: watchingBalance ? BALANCE_POLL_INTERVAL_MS : false,
+  })
+
+  const accounts = accountsQuery.data ?? loaderData?.accounts ?? []
+  const account = pickPrimaryAccount(accounts)
+
+  const pollExpired =
+    watchingBalance &&
+    refreshUntilRef.current != null &&
+    accountsQuery.dataUpdatedAt >= refreshUntilRef.current
+  const balanceUpdated =
+    watchingBalance &&
+    account?.balance_cents !== balanceBaselineRef.current
+
+  if (pollExpired || balanceUpdated) {
+    setWatchingBalance(false)
+  }
+
+  function beginBalancePolling() {
+    balanceBaselineRef.current = account?.balance_cents
+    refreshUntilRef.current = Date.now() + BALANCE_POLL_WINDOW_MS
+    setWatchingBalance(true)
+    void accountsQuery.refetch()
+  }
 
   const balance = account
     ? formatMoney(account.balance_cents, account.currency)
@@ -135,14 +171,24 @@ function RouteComponent() {
               >
                 {balance}
               </p>
+              {watchingBalance ? (
+                <p className="text-xs text-muted-foreground">
+                  Updating balance…
+                </p>
+              ) : null}
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
-              <DepositModal walletAccount={account} defaultPhone={user.phone} />
+              <DepositModal
+                walletAccount={account}
+                defaultPhone={user.phone}
+                onSuccess={beginBalancePolling}
+              />
 
               <WithdrawModal
                 charges={loaderData?.withdrawCharges ?? []}
                 walletAccount={account}
+                onSuccess={beginBalancePolling}
               />
             </div>
           </div>
