@@ -28,20 +28,21 @@ function formatMoney(amount: number, currency: string) {
 export const Route = createFileRoute('/_dashboard/_content/wallet/statements')({
   validateSearch: statementSearchSchema,
   loaderDeps: ({ search }) => ({ entityId: search.entityId }),
-  loader: async ({ deps }) => {
+  loader: async ({ deps, context }) => {
+    const isAdmin = ['1', '4'].includes(String(context.role))
     const [accounts, payments, matchedAccounts] = await Promise.all([
-      getAccountsFn({ data: { searchTerm: '', isAdmin: true } }),
+      getAccountsFn({ data: { searchTerm: '', isAdmin } }),
       deps.entityId
         ? getPaymentsFn({
             data: {
-              isAdmin: true,
+              isAdmin,
               entityId: deps.entityId,
             },
           })
         : Promise.resolve([]),
       deps.entityId
         ? getAccountsFn({
-            data: { searchTerm: deps.entityId, isAdmin: true },
+            data: { searchTerm: deps.entityId, isAdmin },
           })
         : Promise.resolve([]),
     ])
@@ -51,14 +52,14 @@ export const Route = createFileRoute('/_dashboard/_content/wallet/statements')({
         (account) => accountNumber(account) === deps.entityId,
       ) ?? null
 
-    return { accounts, payments, selectedAccount }
+    return { accounts, payments, selectedAccount, isAdmin }
   },
   component: RouteComponent,
 })
 
 function RouteComponent() {
   const { entityId } = Route.useSearch()
-  const { accounts, payments, selectedAccount } = Route.useLoaderData()
+  const { accounts, payments, selectedAccount, isAdmin } = Route.useLoaderData()
   const navigate = Route.useNavigate()
   const paymentCount = payments?.length ?? 0
   const accountOptions =
@@ -97,6 +98,7 @@ function RouteComponent() {
           id="statement-user"
           label="User"
           accounts={accountOptions}
+          isAdmin={isAdmin}
           value={entityId ?? ''}
           onValueChange={(next) => {
             void navigate({

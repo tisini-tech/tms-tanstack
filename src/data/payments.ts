@@ -34,7 +34,7 @@ export const getAccountsFn = createServerFn({ method: 'GET' })
 
 export const walletAccountsQueryOptions = queryOptions({
   queryKey: ['wallet', 'accounts'],
-  queryFn: () => getAccountsFn(),
+  queryFn: () => getAccountsFn({ data: { isAdmin: false } }),
 })
 
 export const getWithdrawChargesFn = createServerFn({ method: 'GET' })

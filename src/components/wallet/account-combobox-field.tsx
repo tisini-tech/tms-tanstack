@@ -69,6 +69,8 @@ type AccountComboboxFieldProps = {
   onValueChange?: (value: string) => void
   /** Stored value. Forms use the account number. Statements use the user id. */
   valueKey?: AccountValueKey
+  /** Admin and accountant searches can list other users. */
+  isAdmin?: boolean
 }
 
 export function AccountComboboxField({
@@ -80,6 +82,7 @@ export function AccountComboboxField({
   value,
   onValueChange,
   valueKey = 'accountNumber',
+  isAdmin = true,
 }: AccountComboboxFieldProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [items, setItems] = useState(accounts)
@@ -118,7 +121,7 @@ export function AccountComboboxField({
     setSearching(true)
     try {
       const next = await getAccountsFn({
-        data: { searchTerm, isAdmin: true },
+        data: { searchTerm, isAdmin },
       })
       setItems(next ?? [])
     } catch {
