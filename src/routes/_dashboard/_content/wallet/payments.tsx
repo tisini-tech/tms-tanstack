@@ -25,6 +25,8 @@ function PaymentsPage() {
 
   const rows = payments ?? []
 
+  const paymentProducts = products?.filter((product) => product.debit !== null)
+
   return (
     <div className="w-full min-w-0 max-w-full space-y-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -38,7 +40,7 @@ function PaymentsPage() {
         </div>
 
         <CreditPaymentModal
-          products={products ?? []}
+          products={paymentProducts ?? []}
           accounts={accounts ?? []}
         />
       </div>

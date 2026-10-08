@@ -24,6 +24,12 @@ function EstimatesPage() {
   const { estimates, products, accounts } = Route.useLoaderData()
   const rows = estimates || []
 
+  const estimateProducts = products?.filter((product) => product.debit !== null)
+
+  const estimateDeduction = products?.filter(
+    (product) => product.credit !== null,
+  )
+
   return (
     <div className="w-full min-w-0 max-w-full space-y-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -39,12 +45,12 @@ function EstimatesPage() {
         <div className="flex flex-wrap items-center gap-2">
           <CreateEstimateModal
             kind="revenue"
-            products={products ?? []}
+            products={estimateProducts ?? []}
             accounts={accounts ?? []}
           />
           <CreateEstimateModal
             kind="deduction"
-            products={products ?? []}
+            products={estimateDeduction ?? []}
             accounts={accounts ?? []}
           />
         </div>
