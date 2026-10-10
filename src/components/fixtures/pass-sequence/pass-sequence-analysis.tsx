@@ -36,6 +36,7 @@ const EVENT_KEYWORDS = [
 
 type PassSequenceAnalysisProps = {
   teamStats: FixtureTeamStats
+  allowedSides: Array<'home' | 'away'>
 }
 
 function MetricCard({
@@ -92,15 +93,23 @@ function formatClock(minute: number, second: number) {
   return `${minute}'${String(second).padStart(2, '0')}`
 }
 
-export function PassSequenceAnalysis({ teamStats }: PassSequenceAnalysisProps) {
+export function PassSequenceAnalysis({
+  teamStats,
+  allowedSides,
+}: PassSequenceAnalysisProps) {
   const { fixture, sequences } = teamStats
-  const [side, setSide] = useState<'home' | 'away'>('home')
+  const [side, setSide] = useState<'home' | 'away'>(
+    allowedSides[0] ?? 'home',
+  )
   const [selectedKeyword, setSelectedKeyword] = useState(ALL)
   const [selectedPlayer, setSelectedPlayer] = useState(ALL)
 
-  const teamId = side === 'home' ? fixture.home_team_id : fixture.away_team_id
+  const activeSide = allowedSides.includes(side) ? side : allowedSides[0]
+  const teamId =
+    activeSide === 'away' ? fixture.away_team_id : fixture.home_team_id
   const teamSequences = getSequencesForTeam(sequences, teamId)
-  const teamName = side === 'home' ? fixture.home_team : fixture.away_team
+  const teamName =
+    activeSide === 'away' ? fixture.away_team : fixture.home_team
 
   const lengthBuckets = getPassSeqs(teamSequences)
   const totalPassCount = teamSequences.reduce(
@@ -169,9 +178,15 @@ export function PassSequenceAnalysis({ teamStats }: PassSequenceAnalysisProps) {
   }, [filteredSequences])
 
   const sideItems = [
-    { value: 'home', label: fixture.home_team },
-    { value: 'away', label: fixture.away_team },
-  ]
+    allowedSides.includes('home')
+      ? { value: 'home', label: fixture.home_team }
+      : null,
+    allowedSides.includes('away')
+      ? { value: 'away', label: fixture.away_team }
+      : null,
+  ].filter((item): item is { value: 'home' | 'away'; label: string } =>
+    item != null,
+  )
   const keywordItems = [
     { value: ALL, label: 'All events' },
     ...EVENT_KEYWORDS.map((keyword) => ({
@@ -197,14 +212,24 @@ export function PassSequenceAnalysis({ teamStats }: PassSequenceAnalysisProps) {
     setSelectedPlayer(ALL)
   }
 
+  if (!activeSide) {
+    return (
+      <div className="flex min-h-48 items-center justify-center rounded-xl border border-dashed border-border bg-muted/20 px-4 text-sm text-muted-foreground">
+        No pass sequences for this fixture.
+      </div>
+    )
+  }
+
   if (!teamSequences.length) {
     return (
       <div className="space-y-4">
-        <TeamSideSelect
-          value={side}
-          items={sideItems}
-          onValueChange={handleSideChange}
-        />
+        {sideItems.length > 1 ? (
+          <TeamSideSelect
+            value={activeSide}
+            items={sideItems}
+            onValueChange={handleSideChange}
+          />
+        ) : null}
         <div className="flex min-h-48 items-center justify-center rounded-xl border border-dashed border-border bg-muted/20 px-4 text-sm text-muted-foreground">
           No pass sequences for {teamName}.
         </div>
@@ -223,11 +248,13 @@ export function PassSequenceAnalysis({ teamStats }: PassSequenceAnalysisProps) {
             Pre-processed sequences for {teamName}.
           </p>
         </div>
-        <TeamSideSelect
-          value={side}
-          items={sideItems}
-          onValueChange={handleSideChange}
-        />
+        {sideItems.length > 1 ? (
+          <TeamSideSelect
+            value={activeSide}
+            items={sideItems}
+            onValueChange={handleSideChange}
+          />
+        ) : null}
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">

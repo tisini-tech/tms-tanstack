@@ -20,7 +20,9 @@ import {
   getPlayerQuarterCharts,
   getTeamName,
 } from '#/components/pdf-reports/transform-report-data'
+import { reportSidesForRole } from '#/lib/roles'
 import type {
+  AgentCounts,
   FixturePassMatrix,
   FixturePlayerStats,
   FixtureQuarterStats,
@@ -28,10 +30,15 @@ import type {
 } from '#/lib/types'
 
 interface MatchReportDownloadProps {
+  role: string
+  userId?: number
+  teamIds: number[]
   teamStats: FixtureTeamStats
   playerStats: FixturePlayerStats[]
   quarterStats: FixtureQuarterStats
   passMatrix: FixturePassMatrix
+  homeAgent?: AgentCounts
+  awayAgent?: AgentCounts
 }
 
 function ReportDownloadButton({
@@ -158,10 +165,24 @@ function ReportDownloadButton({
 }
 
 export function MatchReportDownload(props: MatchReportDownloadProps) {
+  const { role, userId, teamIds, teamStats, homeAgent, awayAgent } = props
+  const sides = reportSidesForRole({
+    role,
+    userId,
+    teamIds,
+    homeTeamId: teamStats.fixture.home_team_id,
+    awayTeamId: teamStats.fixture.away_team_id,
+    homeAgentId: homeAgent?.agent_id,
+    awayAgentId: awayAgent?.agent_id,
+  })
+
+  if (sides.length === 0) return null
+
   return (
-    <div className="flex flex-wrap gap-3">
-      <ReportDownloadButton {...props} team="home" />
-      <ReportDownloadButton {...props} team="away" />
+    <div className="flex flex-wrap items-center justify-end gap-3">
+      {sides.map((team) => (
+        <ReportDownloadButton key={team} {...props} team={team} />
+      ))}
     </div>
   )
 }

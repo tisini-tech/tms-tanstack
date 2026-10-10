@@ -1,8 +1,39 @@
 import type { Fixture } from '#/lib/types'
 import type { ColumnDef } from '@tanstack/react-table'
 import { Button } from '../ui/button'
-import { Link } from '@tanstack/react-router'
+import { Link, useSearch } from '@tanstack/react-router'
 import { Checkbox } from '../ui/checkbox'
+
+function FixtureMoreLink({ fixture }: { fixture: Fixture }) {
+  const { teamId, teamName, seasonId, divisionId, categoryId } = useSearch({
+    from: '/_dashboard/_content/competitions/$compId/fixtures/',
+  })
+
+  return (
+    <Button
+      variant="outline"
+      render={
+        <Link
+          to="/competitions/$compId/fixtures/$fixId"
+          params={{
+            compId: String(fixture.competition.id),
+            fixId: fixture.id.toString(),
+          }}
+          search={{
+            seasonId,
+            divisionId,
+            categoryId,
+            teamId,
+            teamName,
+          }}
+        />
+      }
+      nativeButton={false}
+    >
+      More
+    </Button>
+  )
+}
 
 export const columns: ColumnDef<Fixture>[] = [
   {
@@ -60,23 +91,7 @@ export const columns: ColumnDef<Fixture>[] = [
     cell: ({ row }) => {
       const fixture = row.original
 
-      return (
-        <Button
-          variant="outline"
-          render={
-            <Link
-              to={`/competitions/$compId/fixtures/$fixId`}
-              params={{
-                compId: String(fixture.competition.id),
-                fixId: fixture.id.toString(),
-              }}
-            />
-          }
-          nativeButton={false}
-        >
-          More
-        </Button>
-      )
+      return <FixtureMoreLink fixture={fixture} />
     },
   },
 ]

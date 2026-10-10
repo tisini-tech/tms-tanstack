@@ -31,12 +31,14 @@ interface PlayerReportDownloadProps {
   fixture: SimpleFixture
   playerStats: FixturePlayerStats[]
   quarterStats: FixtureQuarterStats
+  teamIds: number[]
 }
 
 export const PlayerReportDownload = ({
   fixture,
   playerStats,
   quarterStats,
+  teamIds,
 }: PlayerReportDownloadProps) => {
   const [isClient, setIsClient] = useState(false)
   const [polyfillsReady, setPolyfillsReady] = useState(false)
@@ -174,17 +176,19 @@ export const PlayerReportDownload = ({
     (!needsCharts || (Boolean(playerChart) && !isGeneratingChart))
 
   return (
-    <div className="flex flex-wrap gap-4">
+    <div className="flex flex-wrap items-center justify-end gap-3">
       <div>
         <Select
           value={playerId}
           onValueChange={(value) => setPlayerId(value ?? '')}
         >
-          <SelectTrigger className="w-full max-w-48">
+          <SelectTrigger className="w-48">
             <SelectValue placeholder="Select a player" />
           </SelectTrigger>
           <SelectContent>
-            {playerStats.map((entry) => (
+            {playerStats
+              .filter((entry) => teamIds.includes(entry.team.team_id))
+              .map((entry) => (
               <SelectItem key={entry.id} value={entry.id.toString()}>
                 {entry.first_name} {entry.sir_name}
               </SelectItem>

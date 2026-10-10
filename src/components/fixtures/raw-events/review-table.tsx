@@ -18,15 +18,18 @@ import { useState } from 'react'
 import { Input } from '@/components/ui/input'
 import { AddEventDialog } from './add-event'
 import { SwapPlayerDialog } from './swap-player'
+import type { ReactNode } from 'react'
 
 interface ReviewTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
+  download?: ReactNode
 }
 
 export function ReviewTable<TData, TValue>({
   columns,
   data,
+  download,
 }: ReviewTableProps<TData, TValue>) {
   const [globalFilter, setGlobalFilter] = useState<string>('')
 
@@ -53,6 +56,7 @@ export function ReviewTable<TData, TValue>({
         />
 
         <div className="flex gap-2">
+          {download}
           <SwapPlayerDialog />
           <AddEventDialog />
         </div>

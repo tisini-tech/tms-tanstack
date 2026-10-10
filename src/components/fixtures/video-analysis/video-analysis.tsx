@@ -40,6 +40,7 @@ const CLIP_AFTER_SECONDS = 10
 type VideoAnalysisProps = {
   fixture: SimpleFixture
   events: RawFixtureEvent[]
+  allowedTeamIds: number[]
 }
 
 type UniquePlayer = {
@@ -91,8 +92,14 @@ function resolveEventVideoUrl(
   return primary || secondary
 }
 
-export function VideoAnalysis({ fixture, events }: VideoAnalysisProps) {
-  const [selectedTeam, setSelectedTeam] = useState(ALL_TEAMS)
+export function VideoAnalysis({
+  fixture,
+  events,
+  allowedTeamIds,
+}: VideoAnalysisProps) {
+  const defaultTeam =
+    allowedTeamIds.length === 1 ? String(allowedTeamIds[0]) : ALL_TEAMS
+  const [selectedTeam, setSelectedTeam] = useState(defaultTeam)
   const [selectedEvent, setSelectedEvent] = useState(ALL_EVENTS)
   const [selectedPlayer, setSelectedPlayer] = useState(ALL_PLAYERS)
   const [activeEventId, setActiveEventId] = useState<number | null>(null)
@@ -117,27 +124,37 @@ export function VideoAnalysis({ fixture, events }: VideoAnalysisProps) {
     annotateCanvasRef.current?.eraseMode(erasing)
   }, [erasing])
 
-  const teamItems = useMemo(
-    () => [
-      { value: ALL_TEAMS, label: 'All teams' },
-      {
+  const visibleEvents = useMemo(
+    () => events.filter((event) => allowedTeamIds.includes(event.team)),
+    [allowedTeamIds, events],
+  )
+
+  const teamItems = useMemo(() => {
+    const items = []
+    if (allowedTeamIds.length > 1) {
+      items.push({ value: ALL_TEAMS, label: 'All teams' })
+    }
+    if (allowedTeamIds.includes(fixture.home_team_id)) {
+      items.push({
         value: String(fixture.home_team_id),
         label: fixture.home_team,
-      },
-      {
+      })
+    }
+    if (allowedTeamIds.includes(fixture.away_team_id)) {
+      items.push({
         value: String(fixture.away_team_id),
         label: fixture.away_team,
-      },
-    ],
-    [fixture],
-  )
+      })
+    }
+    return items
+  }, [allowedTeamIds, fixture])
 
   const { filteredEvents, uniquePlayers, eventItems, playerItems } =
     useMemo(() => {
       const eventsMap = new Map<string, UniqueEvent>()
       const playersMap = new Map<string, UniquePlayer>()
 
-      const teamScoped = events.filter((event) => {
+      const teamScoped = visibleEvents.filter((event) => {
         if (selectedTeam === ALL_TEAMS) return true
         return String(event.team) === selectedTeam
       })
@@ -204,7 +221,7 @@ export function VideoAnalysis({ fixture, events }: VideoAnalysisProps) {
           })),
         ],
       }
-    }, [events, selectedTeam, selectedEvent, selectedPlayer])
+    }, [visibleEvents, selectedTeam, selectedEvent, selectedPlayer])
 
   useEffect(() => {
     if (selectedPlayer === ALL_PLAYERS) return
@@ -217,7 +234,7 @@ export function VideoAnalysis({ fixture, events }: VideoAnalysisProps) {
   }, [uniquePlayers, selectedPlayer])
 
   function resetFilters() {
-    setSelectedTeam(ALL_TEAMS)
+    setSelectedTeam(defaultTeam)
     setSelectedEvent(ALL_EVENTS)
     setSelectedPlayer(ALL_PLAYERS)
     setActiveEventId(null)
@@ -243,7 +260,7 @@ export function VideoAnalysis({ fixture, events }: VideoAnalysisProps) {
     setPlaybackKey((key) => key + 1)
   }
 
-  if (!events.length) {
+  if (!visibleEvents.length) {
     return (
       <div className="flex min-h-80 items-center justify-center rounded-xl border border-dashed border-border bg-muted/20 px-4 text-sm text-muted-foreground">
         No match events available for video analysis.

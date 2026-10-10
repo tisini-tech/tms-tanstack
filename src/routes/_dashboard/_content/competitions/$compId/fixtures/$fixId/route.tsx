@@ -1,3 +1,4 @@
+import { z } from 'zod'
 import {
   Link,
   Outlet,
@@ -14,11 +15,17 @@ import {
   getFixtureTeamStatsFn,
 } from '#/data/fixtures'
 import { cn } from '#/lib/utils'
+import { getTeamsFn } from '#/data/teams'
 
 const navItems = [
   {
     label: 'Overview',
     to: '/competitions/$compId/fixtures/$fixId',
+    exact: true,
+  },
+  {
+    label: 'Team Stats',
+    to: '/competitions/$compId/fixtures/$fixId/team-stats',
     exact: true,
   },
   {
@@ -29,11 +36,13 @@ const navItems = [
   {
     label: 'Event Review',
     to: '/competitions/$compId/fixtures/$fixId/review',
+    roles: ['1', '7'],
     exact: true,
   },
   {
     label: 'Raw Events',
     to: '/competitions/$compId/fixtures/$fixId/raw-events',
+    roles: ['1', '7'],
     exact: true,
   },
   {
@@ -48,18 +57,39 @@ const navItems = [
   },
 ] as const
 
+function navItemVisible(
+  roles: readonly string[] | undefined,
+  userRole: string | number | null | undefined,
+) {
+  if (!roles?.length) return true
+  return roles.includes(String(userRole ?? ''))
+}
+
 export const Route = createFileRoute(
   '/_dashboard/_content/competitions/$compId/fixtures/$fixId',
 )({
+  validateSearch: z.object({
+    teamId: z.coerce.number().optional(),
+    teamName: z.string().optional(),
+  }),
   loader: async ({ params: { fixId } }) => {
-    const [teamStats, playerStats, quarterStats, passMatrix, reviewStats] =
-      await Promise.all([
-        getFixtureTeamStatsFn({ data: { id: fixId } }),
-        getFixturePlayerStatsFn({ data: { id: fixId } }),
-        getFixtureQuarterStatsFn({ data: { id: fixId } }),
-        getFixturePassMatrixFn({ data: { id: fixId } }),
-        getFixtureReviewStatsFn({ data: { id: fixId } }),
-      ])
+    const [
+      teamStats,
+      playerStats,
+      quarterStats,
+      passMatrix,
+      reviewStats,
+      userTeams,
+    ] = await Promise.all([
+      getFixtureTeamStatsFn({ data: { id: fixId } }),
+      getFixturePlayerStatsFn({ data: { id: fixId } }),
+      getFixtureQuarterStatsFn({ data: { id: fixId } }),
+      getFixturePassMatrixFn({ data: { id: fixId } }),
+      getFixtureReviewStatsFn({ data: { id: fixId } }),
+      getTeamsFn(),
+    ])
+
+    const teamIds = userTeams.map((team) => team.id)
 
     return {
       teamStats,
@@ -68,6 +98,7 @@ export const Route = createFileRoute(
       passMatrix,
       reviewStats,
       fixId,
+      teamIds,
     }
   },
   component: RouteComponent,
@@ -75,8 +106,10 @@ export const Route = createFileRoute(
 })
 
 function RouteComponent() {
-  const { reviewStats, fixId } = Route.useLoaderData()
   const { compId } = Route.useParams()
+  const { role } = Route.useRouteContext()
+  const { reviewStats, fixId } = Route.useLoaderData()
+
   const { fixture } = reviewStats
   const pathname = useRouterState({ select: (s) => s.location.pathname })
   const compactHeader = pathname.includes('/video-analysis')
@@ -177,28 +210,33 @@ function RouteComponent() {
 
         <div
           className={cn(
-            'grid grid-cols-2 border-t border-border sm:grid-cols-3 lg:grid-cols-6',
+            'flex flex-wrap border-t border-border',
             compactHeader && '[&_a]:px-2 [&_a]:py-2 [&_a]:text-xs',
           )}
         >
-          {navItems.map((item) => (
-            <Link
-              key={item.to}
-              to={item.to}
-              params={{ compId, fixId }}
-              activeOptions={{ exact: item.exact }}
-              className="border-l border-border px-4 py-3 text-center text-sm font-medium transition-colors first:border-l-0"
-              activeProps={{
-                className: 'bg-muted/50 text-foreground',
-              }}
-              inactiveProps={{
-                className:
-                  'text-muted-foreground hover:bg-muted/30 hover:text-foreground',
-              }}
-            >
-              {item.label}
-            </Link>
-          ))}
+          {navItems.flatMap((item) => {
+            const roles = 'roles' in item ? item.roles : undefined
+            if (!navItemVisible(roles, role)) return []
+
+            return (
+              <Link
+                key={item.to}
+                to={item.to}
+                params={{ compId, fixId }}
+                activeOptions={{ exact: item.exact }}
+                className="min-w-36 flex-1 border-l border-border px-4 py-3 text-center text-sm font-medium transition-colors first:border-l-0"
+                activeProps={{
+                  className: 'bg-muted/50 text-foreground',
+                }}
+                inactiveProps={{
+                  className:
+                    'text-muted-foreground hover:bg-muted/30 hover:text-foreground',
+                }}
+              >
+                {item.label}
+              </Link>
+            )
+          })}
         </div>
       </section>
 

@@ -1,4 +1,5 @@
 import type { ReactElement } from 'react'
+import type { DocumentProps } from '@react-pdf/renderer'
 
 import type { TeamChartImages } from '#/lib/charts/team-quarter-types'
 import type { SportKind } from '#/lib/sports/detect-sport'
@@ -43,6 +44,6 @@ export type SportReportModule = {
   label: string
   /** When false, match download skips chart generation. */
   needsMatchCharts: boolean
-  renderMatchReport: (input: MatchReportModuleInput) => ReactElement
-  renderPlayerReport: (input: PlayerReportModuleInput) => ReactElement
+  renderMatchReport: (input: MatchReportModuleInput) => ReactElement<DocumentProps>
+  renderPlayerReport: (input: PlayerReportModuleInput) => ReactElement<DocumentProps>
 }

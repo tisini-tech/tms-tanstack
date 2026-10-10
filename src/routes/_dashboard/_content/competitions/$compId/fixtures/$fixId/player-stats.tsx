@@ -1,6 +1,7 @@
 import { createFileRoute, getRouteApi } from '@tanstack/react-router'
 
 import { PlayerStatsTable } from '#/components/stats/player-stats-table'
+import { reportSidesForRole } from '#/lib/roles'
 import type { FixturePlayerStats } from '#/lib/types'
 
 const fixIdRoute = getRouteApi(
@@ -14,16 +15,41 @@ export const Route = createFileRoute(
 })
 
 function RouteComponent() {
-  const { playerStats, reviewStats } = fixIdRoute.useLoaderData()
+  const { playerStats, reviewStats, teamIds } = fixIdRoute.useLoaderData()
+  const { role, user } = Route.useRouteContext()
+
+  const { fixture } = reviewStats
+  const homeAgent = reviewStats.agents.find(
+    (agent) => agent.team_id === fixture.home_team_id,
+  )
+  const awayAgent = reviewStats.agents.find(
+    (agent) => agent.team_id === fixture.away_team_id,
+  )
+  const sides = reportSidesForRole({
+    role,
+    userId: user?.id,
+    teamIds,
+    homeTeamId: fixture.home_team_id,
+    awayTeamId: fixture.away_team_id,
+    homeAgentId: homeAgent?.agent_id,
+    awayAgentId: awayAgent?.agent_id,
+  })
+  const allowedTeamIds = new Set(
+    sides.map((side) =>
+      side === 'home' ? fixture.home_team_id : fixture.away_team_id,
+    ),
+  )
 
   const players = (
     Array.isArray(playerStats) ? playerStats : playerStats ? [playerStats] : []
+  ).filter((player) =>
+    allowedTeamIds.has(player.team.team_id),
   ) as FixturePlayerStats[]
 
   return (
     <PlayerStatsTable
       players={players}
-      matchType={reviewStats.fixture.match_type}
+      matchType={fixture.match_type}
     />
   )
 }

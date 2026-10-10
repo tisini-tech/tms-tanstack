@@ -172,6 +172,8 @@ export interface TimelineEvent {
   team: number
   game_minute: number
   player_name: string
+  /** Player coming on, when the timeline payload includes it. */
+  subplayer_name?: string
 }
 
 export interface TeamStats {
@@ -358,7 +360,7 @@ export interface RawFixtureEvent {
   metric: TypeObject
   metric_detail: TypeObject | null
   metric_sub_detail: TypeObject | null
-  player: TypeObject | null
+  player: (TypeObject & { current_position?: string }) | null
   subplayer: TypeObject | null
   agent: TypeObject | null
   id: number
@@ -383,6 +385,7 @@ export interface RawFixtureEvent {
   localid: string
   app_timelog: string
   sync_status: number
+  created_at?: string
 }
 
 export interface ArticleCategory {

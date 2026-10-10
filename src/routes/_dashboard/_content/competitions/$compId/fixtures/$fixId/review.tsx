@@ -1,6 +1,6 @@
 import EventCardReview from '#/components/fixtures/review/review-event'
 import { ReviewCommentsList } from '#/components/fixtures/review/review-comments-list'
-import { createFileRoute, getRouteApi } from '@tanstack/react-router'
+import { createFileRoute, getRouteApi, redirect } from '@tanstack/react-router'
 import { getReviewCommentsFn } from '#/data/fixtures'
 
 const fixIdRoute = getRouteApi('/_dashboard/_content/competitions/$compId/fixtures/$fixId')
@@ -8,6 +8,14 @@ const fixIdRoute = getRouteApi('/_dashboard/_content/competitions/$compId/fixtur
 export const Route = createFileRoute(
   '/_dashboard/_content/competitions/$compId/fixtures/$fixId/review',
 )({
+  beforeLoad: ({ context, params }) => {
+    if (!['1', '7'].includes(String(context.role ?? ''))) {
+      throw redirect({
+        to: '/competitions/$compId/fixtures/$fixId',
+        params,
+      })
+    }
+  },
   loader: async ({ params }) => {
     const reviewComments = await getReviewCommentsFn({
       data: { id: params.fixId },
