@@ -3,26 +3,48 @@ import { createServerFn } from '@tanstack/react-start'
 import { apiService } from '#/lib/api'
 import type {
   Engagement,
-  EngagementAnswer,
-  EngagementDetail,
+  EngAnswer,
+  EngLeaderboard,
+  EngResponse,
   UpdateEngagementAnswerPayload,
 } from '#/lib/types'
 import { authFnMiddleware } from '#/middlewares/auth'
 
-export const getEngAnswersFn = createServerFn({ method: 'GET' })
+export const getEngagementsFn = createServerFn({ method: 'GET' })
   .middleware([authFnMiddleware])
-  .validator((data: { engId: string }) => data)
-  .handler(async ({ data }) => {
-    return apiService.get<Engagement[]>(`/engagements/${data.engId}/answers`)
+  .handler(async () => {
+    return apiService.get<Engagement[]>(`/engagements`)
   })
 
 export const getEngQuestionsFn = createServerFn({ method: 'GET' })
   .middleware([authFnMiddleware])
   .validator((data: { engId: string }) => data)
   .handler(async ({ data }) => {
-    return apiService.get<EngagementDetail>(
-      `/engagements/${data.engId}/questions`,
+    return apiService.get<Engagement>(`/engagements/${data.engId}/questions`)
+  })
+
+export const getEngResponsesFn = createServerFn({ method: 'GET' })
+  .middleware([authFnMiddleware])
+  .validator((data: { engId: string }) => data)
+  .handler(async ({ data }) => {
+    return apiService.get<EngResponse[]>(`/engagements/${data.engId}/answers`)
+  })
+
+export const getEngLeaderboardFn = createServerFn({ method: 'GET' })
+  .middleware([authFnMiddleware])
+  .validator((data: { engId: string }) => data)
+  .handler(async ({ data }) => {
+    return apiService.get<EngLeaderboard[]>(
+      `/engagements/${data.engId}/leaderboard`,
+      { withApiKey: true },
     )
+  })
+
+export const getEngAnswersFn = createServerFn({ method: 'GET' })
+  .middleware([authFnMiddleware])
+  .validator((data: { engId: string }) => data)
+  .handler(async ({ data }) => {
+    return apiService.get<Engagement[]>(`/engagements/${data.engId}/answers`)
   })
 
 export const updateAnswerFn = createServerFn({ method: 'POST' })
@@ -35,7 +57,7 @@ export const updateAnswerFn = createServerFn({ method: 'POST' })
     }) => data,
   )
   .handler(async ({ data }) => {
-    return apiService.patch<EngagementAnswer>(
+    return apiService.patch<EngAnswer>(
       `/engagements/${data.engId}/answers/${data.answerId}`,
       data.answer,
     )

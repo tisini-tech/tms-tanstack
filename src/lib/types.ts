@@ -769,7 +769,51 @@ export interface CompetitionStandings {
   overall_standings: OverallStanding[] | null
 }
 
-export interface EngagementAnswer {
+export interface Engagement {
+  id: number
+  title: string
+  description: string
+  image_url: string
+  type: string
+  play_mode: string
+  status: string
+  starts_at: string
+  ends_at: string
+  is_public: boolean
+  is_payable: boolean
+  is_responses_editable: boolean
+  amount_payable: string
+  prize_description: string
+  company: number
+  competition: number
+  match: number
+  questions?: EngagementQuestion[]
+}
+
+export interface EngagementChoice {
+  id: number
+  text: string
+  team: number | null
+}
+
+export interface EngagementQuestion {
+  choices: EngagementChoice[]
+  parent_question_id: number | null
+  show_when_choice_ids: number[]
+  id: number
+  answer_type: string
+  text: string
+  order: number
+  image_url: string | null
+  points: number
+  timer_seconds: number
+  is_required: boolean
+  team: number | null
+  metric: number | null
+  metric_detail: number | null
+}
+
+export interface EngAnswer {
   id: number
   question_id: number
   choice_id: number | null
@@ -784,7 +828,35 @@ export interface EngagementAnswer {
   updated_at: string
 }
 
+export interface EngResponse {
+  participation_id: number
+  surveyer: string
+  auth_source: string
+  created_at: string
+  completed_at: string
+  answers: EngAnswer[]
+}
+
+export interface EngUser {
+  id: number
+  username: string
+}
+
+export interface EngLeaderboard {
+  user: EngUser
+  id: number
+  question_set: number
+  score: number
+  time_used: number
+  has_paid: boolean
+  auth_source: string
+  live_session: number
+  joined_at_question: number
+  completed_at: string
+}
+
 /** Body for PATCH /engagements/{id}/answers/{answer_id} */
+
 export interface UpdateEngagementAnswerPayload {
   id: number
   question_id: number
@@ -797,32 +869,10 @@ export interface UpdateEngagementAnswerPayload {
   sync_status: number
 }
 
-export interface EngagementChoice {
-  id: number
-  text: string
-}
-
-export interface EngagementQuestion {
-  id: number
-  text: string
-  answer_type: string
-  order: number
-  choices: EngagementChoice[]
-}
-
 export interface EngagementDetail {
   id: number
   title: string
   questions: EngagementQuestion[]
-}
-
-export interface Engagement {
-  participation_id: number
-  surveyer: string | null
-  auth_source?: string | null
-  created_at: string
-  completed_at: string
-  answers: EngagementAnswer[]
 }
 
 export interface ClientAccount {

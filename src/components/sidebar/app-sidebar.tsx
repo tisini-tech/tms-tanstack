@@ -1,9 +1,13 @@
-import { useEffect, useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { useEffect, useMemo, useState } from 'react'
 import { useRouterState } from '@tanstack/react-router'
 
-import { NavUser } from '@/components/sidebar/nav-user'
+import { NavPrimary } from './nav-primary'
 import { ModuleSwitcher } from './module-switcher'
+import { NavUser } from '@/components/sidebar/nav-user'
+import { rememberLastModulePath } from '#/lib/modules'
+import type { Module, NavItem, User } from '#/lib/types'
+import { competitionQueryOptions } from '#/data/competitions'
 import {
   Sidebar,
   SidebarContent,
@@ -11,22 +15,18 @@ import {
   SidebarHeader,
   SidebarRail,
 } from '@/components/ui/sidebar'
-
-import type { Module, NavItem, User } from '#/lib/types'
-import { rememberLastModulePath } from '#/lib/modules'
 import {
   resolveCompetition,
   resolveCompetitionFilters,
 } from '#/lib/competition-context'
-import { competitionQueryOptions } from '#/data/competitions'
 import {
   competitionNavItems,
   contentNavItems,
+  engagementNavItems,
   getModuleNavKey,
   getSiteModules,
   walletNavItems,
 } from './nav-data'
-import { NavPrimary } from './nav-primary'
 
 function itemVisibleToRole(
   item: NavItem,
@@ -44,6 +44,8 @@ function navItemsForModule(navKey: string | undefined): NavItem[] {
       return contentNavItems
     case 'wallet':
       return walletNavItems
+    case 'engagement':
+      return engagementNavItems
     default:
       return []
   }

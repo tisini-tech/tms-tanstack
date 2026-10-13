@@ -26,10 +26,6 @@ function RouteComponent() {
   } = fixIdRoute.useLoaderData()
   const { role, user } = Route.useRouteContext()
 
-  const highlights = teamStats.timeline
-
-  console.log(highlights)
-
   const { fixture } = reviewStats
   const homeAgent = reviewStats.agents.find(
     (agent) => agent.team_id === fixture.home_team_id,

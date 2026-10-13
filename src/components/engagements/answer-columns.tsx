@@ -4,8 +4,8 @@ import { useRouter } from '@tanstack/react-router'
 import { ArrowUpDownIcon, Loader2Icon } from 'lucide-react'
 
 import type {
-  Engagement,
-  EngagementAnswer,
+  EngAnswer,
+  EngResponse,
   EngagementQuestion,
   UpdateEngagementAnswerPayload,
 } from '#/lib/types'
@@ -21,7 +21,7 @@ export const AGE_QUESTION_ID = 206
 export type ParticipationRow = {
   participation_id: number
   values: Record<number, string>
-  answersByQuestion: Record<number, EngagementAnswer>
+  answersByQuestion: Record<number, EngAnswer>
 }
 
 function ageFromDate(raw: string) {
@@ -47,7 +47,7 @@ function ageFromDate(raw: string) {
 }
 
 function answerValue(
-  answer: EngagementAnswer | undefined,
+  answer: EngAnswer | undefined,
   choiceLabels: Map<number, string>,
   questionId?: number,
 ) {
@@ -79,24 +79,24 @@ export function buildChoiceLabels(questions: EngagementQuestion[]) {
 }
 
 export function toParticipationRows(
-  engagements: Engagement[],
+  responses: EngResponse[],
   questions: EngagementQuestion[],
 ): ParticipationRow[] {
   const choiceLabels = buildChoiceLabels(questions)
 
-  return engagements.map((engagement) => {
+  return responses.map((response) => {
     const byQuestion = new Map(
-      (engagement.answers ?? []).map((answer) => [answer.question_id, answer]),
+      (response.answers ?? []).map((answer) => [answer.question_id, answer]),
     )
     const values: Record<number, string> = {}
-    const answersByQuestion: Record<number, EngagementAnswer> = {}
+    const answersByQuestion: Record<number, EngAnswer> = {}
     for (const question of questions) {
       const answer = byQuestion.get(question.id)
       if (answer) answersByQuestion[question.id] = answer
       values[question.id] = answerValue(answer, choiceLabels, question.id)
     }
     return {
-      participation_id: engagement.participation_id,
+      participation_id: response.participation_id,
       values,
       answersByQuestion,
     }
@@ -104,7 +104,7 @@ export function toParticipationRows(
 }
 
 function toUpdatePayload(
-  answer: EngagementAnswer,
+  answer: EngAnswer,
   choiceId: number,
 ): UpdateEngagementAnswerPayload {
   return {
@@ -125,7 +125,7 @@ function MarkUsedButton({
   answer,
 }: {
   engId: string
-  answer: EngagementAnswer
+  answer: EngAnswer
 }) {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)

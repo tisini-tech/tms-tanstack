@@ -168,3 +168,12 @@ export const contentNavItems: NavItem[] = linkOptions([
     activeOptions: { exact: false },
   },
 ])
+
+export const engagementNavItems: NavItem[] = linkOptions([
+  {
+    to: '/engagements',
+    label: 'Engagements',
+    icon: SparklesIcon,
+    activeOptions: { exact: false },
+  },
+])
