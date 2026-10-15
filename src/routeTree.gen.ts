@@ -30,6 +30,7 @@ import { Route as DashboardContentTicketsIndexRouteImport } from './routes/_dash
 import { Route as DashboardContentWalletIndexRouteImport } from './routes/_dashboard/_content/wallet/index'
 import { Route as DashboardContentWalletEstimatesRouteImport } from './routes/_dashboard/_content/wallet/estimates'
 import { Route as DashboardContentWalletPaymentsRouteImport } from './routes/_dashboard/_content/wallet/payments'
+import { Route as DashboardContentWalletPendingPaymentsRouteImport } from './routes/_dashboard/_content/wallet/pending-payments'
 import { Route as DashboardContentWalletStatementsRouteImport } from './routes/_dashboard/_content/wallet/statements'
 import { Route as DashboardContentArticlesArticleIdEditRouteImport } from './routes/_dashboard/_content/articles/$articleId/edit'
 import { Route as DashboardContentArticlesCreateIndexRouteImport } from './routes/_dashboard/_content/articles/create/index'
@@ -175,6 +176,12 @@ const DashboardContentWalletPaymentsRoute =
   DashboardContentWalletPaymentsRouteImport.update({
     id: '/wallet/payments',
     path: '/wallet/payments',
+    getParentRoute: () => DashboardContentRouteRoute,
+  } as any)
+const DashboardContentWalletPendingPaymentsRoute =
+  DashboardContentWalletPendingPaymentsRouteImport.update({
+    id: '/wallet/pending-payments',
+    path: '/wallet/pending-payments',
     getParentRoute: () => DashboardContentRouteRoute,
   } as any)
 const DashboardContentWalletStatementsRoute =
@@ -408,6 +415,7 @@ export interface FileRoutesByFullPath {
   '/engagements/$engId': typeof DashboardContentEngagementsEngIdRouteRouteWithChildren
   '/wallet/estimates': typeof DashboardContentWalletEstimatesRoute
   '/wallet/payments': typeof DashboardContentWalletPaymentsRoute
+  '/wallet/pending-payments': typeof DashboardContentWalletPendingPaymentsRoute
   '/wallet/statements': typeof DashboardContentWalletStatementsRoute
   '/admin/': typeof DashboardContentAdminIndexRoute
   '/articles/': typeof DashboardContentArticlesIndexRoute
@@ -459,6 +467,7 @@ export interface FileRoutesByTo {
   '/competitions/$compId': typeof DashboardContentCompetitionsCompIdSettingsIndexRoute
   '/wallet/estimates': typeof DashboardContentWalletEstimatesRoute
   '/wallet/payments': typeof DashboardContentWalletPaymentsRoute
+  '/wallet/pending-payments': typeof DashboardContentWalletPendingPaymentsRoute
   '/wallet/statements': typeof DashboardContentWalletStatementsRoute
   '/admin': typeof DashboardContentAdminIndexRoute
   '/articles': typeof DashboardContentArticlesIndexRoute
@@ -512,6 +521,7 @@ export interface FileRoutesById {
   '/_dashboard/_content/engagements/$engId': typeof DashboardContentEngagementsEngIdRouteRouteWithChildren
   '/_dashboard/_content/wallet/estimates': typeof DashboardContentWalletEstimatesRoute
   '/_dashboard/_content/wallet/payments': typeof DashboardContentWalletPaymentsRoute
+  '/_dashboard/_content/wallet/pending-payments': typeof DashboardContentWalletPendingPaymentsRoute
   '/_dashboard/_content/wallet/statements': typeof DashboardContentWalletStatementsRoute
   '/_dashboard/_content/admin/': typeof DashboardContentAdminIndexRoute
   '/_dashboard/_content/articles/': typeof DashboardContentArticlesIndexRoute
@@ -568,6 +578,7 @@ export interface FileRouteTypes {
     | '/engagements/$engId'
     | '/wallet/estimates'
     | '/wallet/payments'
+    | '/wallet/pending-payments'
     | '/wallet/statements'
     | '/admin/'
     | '/articles/'
@@ -619,6 +630,7 @@ export interface FileRouteTypes {
     | '/competitions/$compId'
     | '/wallet/estimates'
     | '/wallet/payments'
+    | '/wallet/pending-payments'
     | '/wallet/statements'
     | '/admin'
     | '/articles'
@@ -671,6 +683,7 @@ export interface FileRouteTypes {
     | '/_dashboard/_content/engagements/$engId'
     | '/_dashboard/_content/wallet/estimates'
     | '/_dashboard/_content/wallet/payments'
+    | '/_dashboard/_content/wallet/pending-payments'
     | '/_dashboard/_content/wallet/statements'
     | '/_dashboard/_content/admin/'
     | '/_dashboard/_content/articles/'
@@ -868,6 +881,13 @@ declare module '@tanstack/react-router' {
       path: '/wallet/payments'
       fullPath: '/wallet/payments'
       preLoaderRoute: typeof DashboardContentWalletPaymentsRouteImport
+      parentRoute: typeof DashboardContentRouteRoute
+    }
+    '/_dashboard/_content/wallet/pending-payments': {
+      id: '/_dashboard/_content/wallet/pending-payments'
+      path: '/wallet/pending-payments'
+      fullPath: '/wallet/pending-payments'
+      preLoaderRoute: typeof DashboardContentWalletPendingPaymentsRouteImport
       parentRoute: typeof DashboardContentRouteRoute
     }
     '/_dashboard/_content/wallet/statements': {
@@ -1301,6 +1321,7 @@ interface DashboardContentRouteRouteChildren {
   DashboardContentEngagementsEngIdRouteRoute: typeof DashboardContentEngagementsEngIdRouteRouteWithChildren
   DashboardContentWalletEstimatesRoute: typeof DashboardContentWalletEstimatesRoute
   DashboardContentWalletPaymentsRoute: typeof DashboardContentWalletPaymentsRoute
+  DashboardContentWalletPendingPaymentsRoute: typeof DashboardContentWalletPendingPaymentsRoute
   DashboardContentWalletStatementsRoute: typeof DashboardContentWalletStatementsRoute
   DashboardContentAdminIndexRoute: typeof DashboardContentAdminIndexRoute
   DashboardContentArticlesIndexRoute: typeof DashboardContentArticlesIndexRoute
@@ -1319,6 +1340,8 @@ const DashboardContentRouteRouteChildren: DashboardContentRouteRouteChildren = {
     DashboardContentEngagementsEngIdRouteRouteWithChildren,
   DashboardContentWalletEstimatesRoute: DashboardContentWalletEstimatesRoute,
   DashboardContentWalletPaymentsRoute: DashboardContentWalletPaymentsRoute,
+  DashboardContentWalletPendingPaymentsRoute:
+    DashboardContentWalletPendingPaymentsRoute,
   DashboardContentWalletStatementsRoute: DashboardContentWalletStatementsRoute,
   DashboardContentAdminIndexRoute: DashboardContentAdminIndexRoute,
   DashboardContentArticlesIndexRoute: DashboardContentArticlesIndexRoute,

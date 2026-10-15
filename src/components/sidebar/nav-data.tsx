@@ -94,6 +94,13 @@ export const walletNavItems: NavItem[] = [
     activeOptions: { exact: true },
   },
   {
+    to: '/wallet/pending-payments',
+    label: 'Pending Payments',
+    icon: CreditCardIcon,
+    roles: ['1', '4'],
+    activeOptions: { exact: true },
+  },
+  {
     to: '/wallet/statements',
     label: 'Statements',
     icon: FileTextIcon,

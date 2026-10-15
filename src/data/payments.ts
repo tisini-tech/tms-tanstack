@@ -95,9 +95,18 @@ export const depositFn = createServerFn({ method: 'POST' })
 
 export const getEstimatesFn = createServerFn({ method: 'GET' })
   .middleware([authFnMiddleware])
-  .handler(async () => {
+  .validator((data?: { isPending?: boolean; isAdmin?: boolean }) => data)
+  .handler(async ({ data }) => {
+    const params = new URLSearchParams()
+    if (data?.isPending) {
+      params.set('is_pending', 'true')
+    }
+    if (data?.isAdmin) {
+      params.set('is_admin', 'true')
+    }
+
     const response = await apiService.get<Estimate[]>(
-      `/payments/estimates?page_size=100`,
+      `/payments/estimates?page_size=100&${params.toString()}`,
     )
 
     return response
