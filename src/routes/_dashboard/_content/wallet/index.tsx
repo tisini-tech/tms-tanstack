@@ -1,29 +1,35 @@
-import { useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { EyeIcon, EyeOffIcon } from 'lucide-react'
 
-import { getInitials } from '#/lib/utils'
+import { cn, getInitials } from '#/lib/utils'
 import { Button } from '#/components/ui/button'
 import type { ClientAccount } from '#/lib/types'
 import {
   getPaymentsFn,
+  getProductsFn,
   getWithdrawChargesFn,
   walletAccountsQueryOptions,
 } from '#/data/payments'
 import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar'
 import { AccountPayments } from '#/components/wallet/account-payments'
+import {
+  EstimateSummary,
+  groupEstimatesByProduct,
+} from '#/components/wallet/estimate-summary'
 import DepositModal from '#/components/wallet/deposit-modal'
 import WithdrawModal from '#/components/wallet/withdraw-modal'
 
 export const Route = createFileRoute('/_dashboard/_content/wallet/')({
   loader: async ({ context }) => {
-    const [accounts, withdrawCharges, payments] = await Promise.all([
+    const [accounts, withdrawCharges, payments, products] = await Promise.all([
       context.queryClient.ensureQueryData(walletAccountsQueryOptions),
       getWithdrawChargesFn(),
       getPaymentsFn(),
+      getProductsFn(),
     ])
-    return { accounts, withdrawCharges, payments }
+    return { accounts, withdrawCharges, payments, products }
   },
   component: RouteComponent,
 })
@@ -62,6 +68,12 @@ function RouteComponent() {
   const { user } = Route.useRouteContext()
   const loaderData = Route.useLoaderData()
   const [balanceVisible, setBalanceVisible] = useState(true)
+  const [paymentsView, setPaymentsView] = useState<'summary' | 'breakdown'>(
+    'summary',
+  )
+  const [selectedProductId, setSelectedProductId] = useState<string | null>(
+    null,
+  )
   const [watchingBalance, setWatchingBalance] = useState(false)
   const balanceBaselineRef = useRef<number | null | undefined>(undefined)
   const refreshUntilRef = useRef<number | null>(null)
@@ -92,6 +104,17 @@ function RouteComponent() {
     void accountsQuery.refetch()
   }
 
+  const payments = loaderData?.payments ?? []
+  const groups = useMemo(
+    () => groupEstimatesByProduct(payments, loaderData?.products ?? []),
+    [payments, loaderData?.products],
+  )
+  const visiblePayments = selectedProductId
+    ? payments.filter(
+        (payment) => (payment.product_id || '') === selectedProductId,
+      )
+    : payments
+
   const balance = account
     ? formatMoney(account.balance_cents, account.currency)
     : formatMoney(0, 'KES')
@@ -100,7 +123,7 @@ function RouteComponent() {
     : 'No account'
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex min-h-0 flex-1 flex-col gap-6">
       <section className="relative overflow-hidden rounded-2xl border border-border bg-card">
         <div
           aria-hidden
@@ -195,7 +218,69 @@ function RouteComponent() {
         </div>
       </section>
 
-      <AccountPayments payments={loaderData?.payments ?? []} />
+      <section
+        className={cn(
+          'flex min-h-0 flex-col gap-3',
+          paymentsView === 'summary' && 'flex-1',
+        )}
+      >
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="space-y-1">
+            <h2 className="text-lg font-semibold tracking-tight text-heading">
+              Payments
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              {paymentsView === 'summary'
+                ? `${groups.length} product${groups.length === 1 ? '' : 's'}`
+                : `${visiblePayments.length} payment${visiblePayments.length === 1 ? '' : 's'}`}
+            </p>
+          </div>
+          <div className="inline-flex rounded-lg border border-border bg-muted/40 p-0.5">
+            <Button
+              type="button"
+              size="sm"
+              variant={paymentsView === 'summary' ? 'default' : 'ghost'}
+              className="h-8"
+              onClick={() => {
+                setPaymentsView('summary')
+                setSelectedProductId(null)
+              }}
+            >
+              Summary
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant={paymentsView === 'breakdown' ? 'default' : 'ghost'}
+              className="h-8"
+              onClick={() => setPaymentsView('breakdown')}
+            >
+              Breakdown
+            </Button>
+          </div>
+        </div>
+
+        {paymentsView === 'summary' ? (
+          groups.length === 0 ? (
+            <p className="rounded-lg border border-border px-3 py-8 text-center text-sm text-muted-foreground">
+              No payments yet.
+            </p>
+          ) : (
+            <EstimateSummary
+              groups={groups}
+              selectedProductId={selectedProductId}
+              countLabel="Payments"
+              fill
+              onSelect={(productId) => {
+                setSelectedProductId(productId)
+                if (productId) setPaymentsView('breakdown')
+              }}
+            />
+          )
+        ) : (
+          <AccountPayments payments={visiblePayments} showHeading={false} />
+        )}
+      </section>
     </div>
   )
 }

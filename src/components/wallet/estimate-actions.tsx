@@ -393,11 +393,13 @@ export function DeclineEstimateDialog({ estimate }: { estimate: Estimate }) {
   )
 }
 
-const APPROVE_ESTIMATE_ROLE_IDS = new Set(['1', '4'])
+const APPROVE_ESTIMATE_ROLE_IDS = new Set(['1'])
+const EDIT_ESTIMATE_ROLE_IDS = new Set(['1', '4'])
 
 export function EstimateActions({ estimate }: { estimate: Estimate }) {
   const { role } = getRouteApi('/_dashboard').useRouteContext()
   const canApprove = APPROVE_ESTIMATE_ROLE_IDS.has(String(role ?? ''))
+  const canEdit = EDIT_ESTIMATE_ROLE_IDS.has(String(role ?? ''))
 
   if (!canActOnEstimate(estimate)) {
     return <span className="text-xs text-muted-foreground">—</span>
@@ -405,9 +407,9 @@ export function EstimateActions({ estimate }: { estimate: Estimate }) {
 
   return (
     <div className="flex items-center gap-1">
-      <EditEstimateDialog estimate={estimate} />
+      {canEdit ? <EditEstimateDialog estimate={estimate} /> : null}
       {canApprove ? <ApproveEstimateDialog estimate={estimate} /> : null}
-      <DeclineEstimateDialog estimate={estimate} />
+      {canEdit ? <DeclineEstimateDialog estimate={estimate} /> : null}
     </div>
   )
 }

@@ -85,7 +85,7 @@ export const estimateColumns: ColumnDef<Estimate>[] = [
           {row.original.description || '—'}
         </p>
         <p className="truncate text-xs text-muted-foreground">
-          Entity {row.original.entity}
+          Entity {row.original.entity} - {row.original.entity_name}
           {row.original.is_withdraw ? ' · Withdraw' : ''}
         </p>
       </div>

@@ -919,6 +919,7 @@ export interface Estimate {
   created_by: string
   product_id: string
   entity: string
+  entity_name: string
   date_created: string
   fixture: number | null
   void_status: boolean

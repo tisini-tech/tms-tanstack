@@ -1,18 +1,19 @@
+import { z } from 'zod'
 import { queryOptions } from '@tanstack/react-query'
+import { createServerFn } from '@tanstack/react-start'
 
 import { apiService } from '#/lib/api'
-import type {
-  ClientAccount,
-  DepositResponse,
-  Estimate,
-  Payment,
-  Product,
-  WithdrawCharges,
-  WithdrawResponse,
-} from '#/lib/types'
 import { authFnMiddleware } from '#/middlewares/auth'
-import { createServerFn } from '@tanstack/react-start'
-import { z } from 'zod'
+import {
+  type PaginatedResponse,
+  type ClientAccount,
+  type DepositResponse,
+  type Estimate,
+  type Payment,
+  type Product,
+  type WithdrawCharges,
+  type WithdrawResponse,
+} from '#/lib/types'
 
 export const getAccountsFn = createServerFn({ method: 'GET' })
   .middleware([authFnMiddleware])
@@ -93,23 +94,53 @@ export const depositFn = createServerFn({ method: 'POST' })
     return response
   })
 
+const ESTIMATES_MAX_PAGES = 100
+
+function estimatesPath(isAdmin: boolean | undefined) {
+  const params = new URLSearchParams()
+  params.set('page_size', '500')
+  if (isAdmin) params.set('is_admin', 'true')
+  return `/payments/estimates?${params.toString()}`
+}
+
+/** Cursor pagination returns an absolute `next` URL. Keep its query string. */
+function pathFromCursorUrl(next: string) {
+  const base = (process.env.API_URL ?? '').replace(/\/$/, '')
+  if (base && next.startsWith(base)) {
+    const path = next.slice(base.length)
+    return path.startsWith('/') ? path : `/${path}`
+  }
+
+  const nextUrl = new URL(next)
+  return `${nextUrl.pathname}${nextUrl.search}`
+}
+
 export const getEstimatesFn = createServerFn({ method: 'GET' })
   .middleware([authFnMiddleware])
-  .validator((data?: { isPending?: boolean; isAdmin?: boolean }) => data)
+  .validator((data?: { isAdmin?: boolean }) => data)
   .handler(async ({ data }) => {
-    const params = new URLSearchParams()
-    if (data?.isPending) {
-      params.set('is_pending', 'true')
-    }
-    if (data?.isAdmin) {
-      params.set('is_admin', 'true')
+    const results: Estimate[] = []
+    const seen = new Set<number>()
+    let path: string | null = estimatesPath(data?.isAdmin)
+    let pages = 0
+
+    while (path && pages < ESTIMATES_MAX_PAGES) {
+      const page: PaginatedResponse<Estimate> =
+        await apiService.get<PaginatedResponse<Estimate>>(path)
+      pages += 1
+      const before = results.length
+
+      for (const estimate of page.results ?? []) {
+        if (seen.has(estimate.id)) continue
+        seen.add(estimate.id)
+        results.push(estimate)
+      }
+
+      if (results.length === before) break
+      path = page.next ? pathFromCursorUrl(page.next) : null
     }
 
-    const response = await apiService.get<Estimate[]>(
-      `/payments/estimates?page_size=100&${params.toString()}`,
-    )
-
-    return response
+    return { previous: '', next: '', results }
   })
 
 const estimateIdSchema = z.object({
