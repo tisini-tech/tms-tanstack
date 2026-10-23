@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react'
 
 import DownloadEngagements from '#/components/engagements/download-eng'
+import { ResponseDatePicker } from '#/components/engagements/response-date-picker'
 import { Button } from '#/components/ui/button'
 import {
   Select,
@@ -233,44 +234,52 @@ export function ResponseResults({
   title,
   questions,
   responses,
+  date,
+  onDateChange,
 }: {
   title: string
   questions: EngagementQuestion[]
   responses: EngResponse[]
+  date: string
+  onDateChange: (date: string) => void
 }) {
   const ordered = [...questions].sort(byOrder)
 
-  if (!responses.length) {
-    return (
-      <p className="flex h-40 items-center justify-center rounded-xl border border-dashed border-border text-sm text-muted-foreground">
-        No responses for this engagement.
-      </p>
-    )
-  }
-
-  if (!ordered.length) {
-    return (
-      <p className="flex h-40 items-center justify-center rounded-xl border border-dashed border-border text-sm text-muted-foreground">
-        No questions for this engagement.
-      </p>
-    )
-  }
-
   return (
-    <QuestionFocus
-      title={title}
-      questions={ordered}
-      responses={responses}
-    />
+    <div className="flex min-h-0 flex-1 flex-col gap-6">
+      <div className="flex shrink-0 flex-wrap items-center justify-between gap-3">
+        <p className="text-base font-medium tabular-nums text-foreground">
+          {responses.length} response{responses.length === 1 ? '' : 's'}
+        </p>
+        <div className="flex flex-wrap items-center gap-2">
+          <ResponseDatePicker value={date} onChange={onDateChange} />
+          <DownloadEngagements
+            title={title}
+            questions={ordered}
+            responses={responses}
+          />
+        </div>
+      </div>
+
+      {!responses.length ? (
+        <p className="flex h-40 items-center justify-center rounded-xl border border-dashed border-border text-sm text-muted-foreground">
+          No responses for this day.
+        </p>
+      ) : !ordered.length ? (
+        <p className="flex h-40 items-center justify-center rounded-xl border border-dashed border-border text-sm text-muted-foreground">
+          No questions for this engagement.
+        </p>
+      ) : (
+        <QuestionFocus questions={ordered} responses={responses} />
+      )}
+    </div>
   )
 }
 
 function QuestionFocus({
-  title,
   questions,
   responses,
 }: {
-  title: string
   questions: EngagementQuestion[]
   responses: EngResponse[]
 }) {
@@ -287,16 +296,6 @@ function QuestionFocus({
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-6">
       <div className="flex shrink-0 flex-col gap-6">
-        <div className="flex items-center justify-between gap-3">
-          <p className="text-base font-medium tabular-nums text-foreground">
-            {responses.length} response{responses.length === 1 ? '' : 's'}
-          </p>
-          <DownloadEngagements
-            title={title}
-            questions={questions}
-            responses={responses}
-          />
-        </div>
         <ResponseTiming responses={responses} />
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <Select

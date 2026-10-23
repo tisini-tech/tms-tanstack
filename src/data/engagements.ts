@@ -25,9 +25,17 @@ export const getEngQuestionsFn = createServerFn({ method: 'GET' })
 
 export const getEngResponsesFn = createServerFn({ method: 'GET' })
   .middleware([authFnMiddleware])
-  .validator((data: { engId: string }) => data)
+  .validator((data: { engId: string; date?: string }) => data)
   .handler(async ({ data }) => {
-    return apiService.get<EngResponse[]>(`/engagements/${data.engId}/answers`)
+    const query = new URLSearchParams()
+
+    if (data.date) {
+      query.set('date', data.date)
+    }
+
+    return apiService.get<EngResponse[]>(
+      `/engagements/${data.engId}/answers?${query.toString()}`,
+    )
   })
 
 export const getEngLeaderboardFn = createServerFn({ method: 'GET' })
