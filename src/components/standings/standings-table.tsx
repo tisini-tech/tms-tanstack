@@ -110,9 +110,7 @@ export default function StandingsTable({
         <div className="rounded-xl border border-border bg-muted/30 px-4 py-3 text-sm text-muted-foreground">
           <p className="font-medium text-foreground">Sequence points</p>
           <p className="mt-1">
-            4–6 passes +1, 7–9 passes +2, over 10 passes +1. Maximum{' '}
-            <span className="tabular-nums text-foreground">4</span> sequence
-            points per team.
+            Teams with the highest sequence average get an extra point.
           </p>
         </div>
       ) : null}
