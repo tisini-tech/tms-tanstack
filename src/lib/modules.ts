@@ -2,7 +2,7 @@
 export const MODULE_ROUTES: Record<string, string> = {
   Competition: '/competitions',
   Content: '/articles',
-  Administration: '/super-agent',
+  Administration: '/admin',
   Engagement: '/engagements',
   Voting: '/voting',
   Payment: '/wallet',

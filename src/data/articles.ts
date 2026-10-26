@@ -5,7 +5,7 @@ import type {
   PagePaginatedResponse,
   Author,
 } from '#/lib/types'
-import type { CreateArticlePayload } from '#/lib/schemas'
+import type { AuthorProfileSchema, CreateArticlePayload } from '#/lib/schemas'
 import { authFnMiddleware } from '#/middlewares/auth'
 import { createServerFn } from '@tanstack/react-start'
 
@@ -51,6 +51,52 @@ export const createCategoryFn = createServerFn({ method: 'POST' })
       name: data.name.trim(),
       description: data.description?.trim() || '',
     })
+  })
+
+export const createAuthorFn = createServerFn({ method: 'POST' })
+  .middleware([authFnMiddleware])
+  .validator((data: { userId: number; displayName: string }) => data)
+  .handler(async ({ data }) => {
+    return apiService.post<Author>('/manage/authors', {
+      user_id: data.userId,
+      display_name: data.displayName,
+      bio: '',
+      website: '',
+      twitter: '',
+      facebook: '',
+      instagram: '',
+      linkedin: '',
+      youtube: '',
+      is_active: true,
+    })
+  })
+
+export const updateAuthorFn = createServerFn({ method: 'POST' })
+  .middleware([authFnMiddleware])
+  .validator(
+    (data: { authorId: number } & AuthorProfileSchema) => data,
+  )
+  .handler(async ({ data }) => {
+    return apiService.patch<Author>(`/manage/authors/${data.authorId}`, {
+      display_name: data.displayName.trim(),
+      bio: data.bio.trim(),
+      website: data.website.trim(),
+      twitter: data.twitter.trim(),
+      facebook: data.facebook.trim(),
+      instagram: data.instagram.trim(),
+      linkedin: data.linkedin.trim(),
+      youtube: data.youtube.trim(),
+      is_active: data.isActive,
+    })
+  })
+
+export const deleteAuthorFn = createServerFn({ method: 'POST' })
+  .middleware([authFnMiddleware])
+  .validator((data: { authorId: number }) => data)
+  .handler(async ({ data }) => {
+    return apiService.delete<{ message: string }>(
+      `/manage/authors/${data.authorId}`,
+    )
   })
 
 export const getAuthorsFn = createServerFn({ method: 'GET' })

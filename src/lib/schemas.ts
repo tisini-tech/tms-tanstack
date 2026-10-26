@@ -258,6 +258,36 @@ export const createCategorySchema = z.object({
 
 export type CreateCategorySchema = z.infer<typeof createCategorySchema>
 
+export const authorProfileSchema = z.object({
+  displayName: z.string().trim().min(1, 'Name is required'),
+  bio: z.string(),
+  website: z.string(),
+  twitter: z.string(),
+  facebook: z.string(),
+  instagram: z.string(),
+  linkedin: z.string(),
+  youtube: z.string(),
+  isActive: z.boolean(),
+})
+
+export type AuthorProfileSchema = z.infer<typeof authorProfileSchema>
+
+export const userProfileSchema = z.object({
+  firstName: z.string().trim().min(1, 'First name is required'),
+  lastName: z.string().trim().min(1, 'Last name is required'),
+  sirName: z.string(),
+  username: z.string(),
+  email: z
+    .string()
+    .trim()
+    .min(1, 'Email is required')
+    .email('Enter a valid email'),
+  phoneNumber: z.string().trim().min(1, 'Phone number is required'),
+  roleId: z.string().trim().min(1, 'Role is required'),
+})
+
+export type UserProfileSchema = z.infer<typeof userProfileSchema>
+
 export const withdrawSchema = z.object({
   amount: z
     .string()

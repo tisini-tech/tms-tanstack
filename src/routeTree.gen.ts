@@ -21,6 +21,7 @@ import { Route as DashboardContentRouteRouteImport } from './routes/_dashboard/_
 import { Route as ApiUploadthingRouteImport } from './routes/api/uploadthing'
 import { Route as HomeIndexRouteImport } from './routes/home/index'
 import { Route as DashboardContentAdminIndexRouteImport } from './routes/_dashboard/_content/admin/index'
+import { Route as DashboardContentAdminUsersRouteImport } from './routes/_dashboard/_content/admin/users'
 import { Route as DashboardContentArticlesIndexRouteImport } from './routes/_dashboard/_content/articles/index'
 import { Route as DashboardContentCompetitionsIndexRouteImport } from './routes/_dashboard/_content/competitions/index'
 import { Route as DashboardContentCompetitionsCompIdRouteRouteImport } from './routes/_dashboard/_content/competitions/$compId/route'
@@ -33,6 +34,7 @@ import { Route as DashboardContentWalletPaymentsRouteImport } from './routes/_da
 import { Route as DashboardContentWalletPendingPaymentsRouteImport } from './routes/_dashboard/_content/wallet/pending-payments'
 import { Route as DashboardContentWalletStatementsRouteImport } from './routes/_dashboard/_content/wallet/statements'
 import { Route as DashboardContentArticlesArticleIdEditRouteImport } from './routes/_dashboard/_content/articles/$articleId/edit'
+import { Route as DashboardContentArticlesAuthorsIndexRouteImport } from './routes/_dashboard/_content/articles/authors/index'
 import { Route as DashboardContentArticlesCreateIndexRouteImport } from './routes/_dashboard/_content/articles/create/index'
 import { Route as DashboardContentCompetitionsCompIdDashboardsRouteRouteImport } from './routes/_dashboard/_content/competitions/$compId/_dashboards/route'
 import { Route as DashboardContentCompetitionsCompIdSettingsRouteRouteImport } from './routes/_dashboard/_content/competitions/$compId/_settings/route'
@@ -124,6 +126,12 @@ const DashboardContentAdminIndexRoute =
     path: '/admin/',
     getParentRoute: () => DashboardContentRouteRoute,
   } as any)
+const DashboardContentAdminUsersRoute =
+  DashboardContentAdminUsersRouteImport.update({
+    id: '/admin/users',
+    path: '/admin/users',
+    getParentRoute: () => DashboardContentRouteRoute,
+  } as any)
 const DashboardContentArticlesIndexRoute =
   DashboardContentArticlesIndexRouteImport.update({
     id: '/articles/',
@@ -194,6 +202,12 @@ const DashboardContentArticlesArticleIdEditRoute =
   DashboardContentArticlesArticleIdEditRouteImport.update({
     id: '/articles/$articleId/edit',
     path: '/articles/$articleId/edit',
+    getParentRoute: () => DashboardContentRouteRoute,
+  } as any)
+const DashboardContentArticlesAuthorsIndexRoute =
+  DashboardContentArticlesAuthorsIndexRouteImport.update({
+    id: '/articles/authors/',
+    path: '/articles/authors/',
     getParentRoute: () => DashboardContentRouteRoute,
   } as any)
 const DashboardContentArticlesCreateIndexRoute =
@@ -413,6 +427,7 @@ export interface FileRoutesByFullPath {
   '/home/': typeof HomeIndexRoute
   '/competitions/$compId': typeof DashboardContentCompetitionsCompIdRouteRouteWithChildren
   '/engagements/$engId': typeof DashboardContentEngagementsEngIdRouteRouteWithChildren
+  '/admin/users': typeof DashboardContentAdminUsersRoute
   '/wallet/estimates': typeof DashboardContentWalletEstimatesRoute
   '/wallet/payments': typeof DashboardContentWalletPaymentsRoute
   '/wallet/pending-payments': typeof DashboardContentWalletPendingPaymentsRoute
@@ -428,6 +443,7 @@ export interface FileRoutesByFullPath {
   '/engagements/$engId/actions': typeof DashboardContentEngagementsEngIdActionsRoute
   '/engagements/$engId/leaderboard': typeof DashboardContentEngagementsEngIdLeaderboardRoute
   '/engagements/$engId/responses': typeof DashboardContentEngagementsEngIdResponsesRoute
+  '/articles/authors/': typeof DashboardContentArticlesAuthorsIndexRoute
   '/articles/create/': typeof DashboardContentArticlesCreateIndexRoute
   '/engagements/$engId/': typeof DashboardContentEngagementsEngIdIndexRoute
   '/competitions/$compId/fixtures/$fixId': typeof DashboardContentCompetitionsCompIdFixturesFixIdRouteRouteWithChildren
@@ -465,6 +481,7 @@ export interface FileRoutesByTo {
   '/api/uploadthing': typeof ApiUploadthingRoute
   '/home': typeof HomeIndexRoute
   '/competitions/$compId': typeof DashboardContentCompetitionsCompIdSettingsIndexRoute
+  '/admin/users': typeof DashboardContentAdminUsersRoute
   '/wallet/estimates': typeof DashboardContentWalletEstimatesRoute
   '/wallet/payments': typeof DashboardContentWalletPaymentsRoute
   '/wallet/pending-payments': typeof DashboardContentWalletPendingPaymentsRoute
@@ -479,6 +496,7 @@ export interface FileRoutesByTo {
   '/engagements/$engId/actions': typeof DashboardContentEngagementsEngIdActionsRoute
   '/engagements/$engId/leaderboard': typeof DashboardContentEngagementsEngIdLeaderboardRoute
   '/engagements/$engId/responses': typeof DashboardContentEngagementsEngIdResponsesRoute
+  '/articles/authors': typeof DashboardContentArticlesAuthorsIndexRoute
   '/articles/create': typeof DashboardContentArticlesCreateIndexRoute
   '/engagements/$engId': typeof DashboardContentEngagementsEngIdIndexRoute
   '/competitions/$compId/league-dashboard': typeof DashboardContentCompetitionsCompIdDashboardsLeagueDashboardRoute
@@ -519,6 +537,7 @@ export interface FileRoutesById {
   '/home/': typeof HomeIndexRoute
   '/_dashboard/_content/competitions/$compId': typeof DashboardContentCompetitionsCompIdRouteRouteWithChildren
   '/_dashboard/_content/engagements/$engId': typeof DashboardContentEngagementsEngIdRouteRouteWithChildren
+  '/_dashboard/_content/admin/users': typeof DashboardContentAdminUsersRoute
   '/_dashboard/_content/wallet/estimates': typeof DashboardContentWalletEstimatesRoute
   '/_dashboard/_content/wallet/payments': typeof DashboardContentWalletPaymentsRoute
   '/_dashboard/_content/wallet/pending-payments': typeof DashboardContentWalletPendingPaymentsRoute
@@ -536,6 +555,7 @@ export interface FileRoutesById {
   '/_dashboard/_content/engagements/$engId/actions': typeof DashboardContentEngagementsEngIdActionsRoute
   '/_dashboard/_content/engagements/$engId/leaderboard': typeof DashboardContentEngagementsEngIdLeaderboardRoute
   '/_dashboard/_content/engagements/$engId/responses': typeof DashboardContentEngagementsEngIdResponsesRoute
+  '/_dashboard/_content/articles/authors/': typeof DashboardContentArticlesAuthorsIndexRoute
   '/_dashboard/_content/articles/create/': typeof DashboardContentArticlesCreateIndexRoute
   '/_dashboard/_content/engagements/$engId/': typeof DashboardContentEngagementsEngIdIndexRoute
   '/_dashboard/_content/competitions/$compId/fixtures/$fixId': typeof DashboardContentCompetitionsCompIdFixturesFixIdRouteRouteWithChildren
@@ -576,6 +596,7 @@ export interface FileRouteTypes {
     | '/home/'
     | '/competitions/$compId'
     | '/engagements/$engId'
+    | '/admin/users'
     | '/wallet/estimates'
     | '/wallet/payments'
     | '/wallet/pending-payments'
@@ -591,6 +612,7 @@ export interface FileRouteTypes {
     | '/engagements/$engId/actions'
     | '/engagements/$engId/leaderboard'
     | '/engagements/$engId/responses'
+    | '/articles/authors/'
     | '/articles/create/'
     | '/engagements/$engId/'
     | '/competitions/$compId/fixtures/$fixId'
@@ -628,6 +650,7 @@ export interface FileRouteTypes {
     | '/api/uploadthing'
     | '/home'
     | '/competitions/$compId'
+    | '/admin/users'
     | '/wallet/estimates'
     | '/wallet/payments'
     | '/wallet/pending-payments'
@@ -642,6 +665,7 @@ export interface FileRouteTypes {
     | '/engagements/$engId/actions'
     | '/engagements/$engId/leaderboard'
     | '/engagements/$engId/responses'
+    | '/articles/authors'
     | '/articles/create'
     | '/engagements/$engId'
     | '/competitions/$compId/league-dashboard'
@@ -681,6 +705,7 @@ export interface FileRouteTypes {
     | '/home/'
     | '/_dashboard/_content/competitions/$compId'
     | '/_dashboard/_content/engagements/$engId'
+    | '/_dashboard/_content/admin/users'
     | '/_dashboard/_content/wallet/estimates'
     | '/_dashboard/_content/wallet/payments'
     | '/_dashboard/_content/wallet/pending-payments'
@@ -698,6 +723,7 @@ export interface FileRouteTypes {
     | '/_dashboard/_content/engagements/$engId/actions'
     | '/_dashboard/_content/engagements/$engId/leaderboard'
     | '/_dashboard/_content/engagements/$engId/responses'
+    | '/_dashboard/_content/articles/authors/'
     | '/_dashboard/_content/articles/create/'
     | '/_dashboard/_content/engagements/$engId/'
     | '/_dashboard/_content/competitions/$compId/fixtures/$fixId'
@@ -820,6 +846,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardContentAdminIndexRouteImport
       parentRoute: typeof DashboardContentRouteRoute
     }
+    '/_dashboard/_content/admin/users': {
+      id: '/_dashboard/_content/admin/users'
+      path: '/admin/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof DashboardContentAdminUsersRouteImport
+      parentRoute: typeof DashboardContentRouteRoute
+    }
     '/_dashboard/_content/articles/': {
       id: '/_dashboard/_content/articles/'
       path: '/articles'
@@ -902,6 +935,13 @@ declare module '@tanstack/react-router' {
       path: '/articles/$articleId/edit'
       fullPath: '/articles/$articleId/edit'
       preLoaderRoute: typeof DashboardContentArticlesArticleIdEditRouteImport
+      parentRoute: typeof DashboardContentRouteRoute
+    }
+    '/_dashboard/_content/articles/authors/': {
+      id: '/_dashboard/_content/articles/authors/'
+      path: '/articles/authors'
+      fullPath: '/articles/authors/'
+      preLoaderRoute: typeof DashboardContentArticlesAuthorsIndexRouteImport
       parentRoute: typeof DashboardContentRouteRoute
     }
     '/_dashboard/_content/articles/create/': {
@@ -1319,6 +1359,7 @@ const DashboardContentEngagementsEngIdRouteRouteWithChildren =
 interface DashboardContentRouteRouteChildren {
   DashboardContentCompetitionsCompIdRouteRoute: typeof DashboardContentCompetitionsCompIdRouteRouteWithChildren
   DashboardContentEngagementsEngIdRouteRoute: typeof DashboardContentEngagementsEngIdRouteRouteWithChildren
+  DashboardContentAdminUsersRoute: typeof DashboardContentAdminUsersRoute
   DashboardContentWalletEstimatesRoute: typeof DashboardContentWalletEstimatesRoute
   DashboardContentWalletPaymentsRoute: typeof DashboardContentWalletPaymentsRoute
   DashboardContentWalletPendingPaymentsRoute: typeof DashboardContentWalletPendingPaymentsRoute
@@ -1330,6 +1371,7 @@ interface DashboardContentRouteRouteChildren {
   DashboardContentTicketsIndexRoute: typeof DashboardContentTicketsIndexRoute
   DashboardContentWalletIndexRoute: typeof DashboardContentWalletIndexRoute
   DashboardContentArticlesArticleIdEditRoute: typeof DashboardContentArticlesArticleIdEditRoute
+  DashboardContentArticlesAuthorsIndexRoute: typeof DashboardContentArticlesAuthorsIndexRoute
   DashboardContentArticlesCreateIndexRoute: typeof DashboardContentArticlesCreateIndexRoute
 }
 
@@ -1338,6 +1380,7 @@ const DashboardContentRouteRouteChildren: DashboardContentRouteRouteChildren = {
     DashboardContentCompetitionsCompIdRouteRouteWithChildren,
   DashboardContentEngagementsEngIdRouteRoute:
     DashboardContentEngagementsEngIdRouteRouteWithChildren,
+  DashboardContentAdminUsersRoute: DashboardContentAdminUsersRoute,
   DashboardContentWalletEstimatesRoute: DashboardContentWalletEstimatesRoute,
   DashboardContentWalletPaymentsRoute: DashboardContentWalletPaymentsRoute,
   DashboardContentWalletPendingPaymentsRoute:
@@ -1352,6 +1395,8 @@ const DashboardContentRouteRouteChildren: DashboardContentRouteRouteChildren = {
   DashboardContentWalletIndexRoute: DashboardContentWalletIndexRoute,
   DashboardContentArticlesArticleIdEditRoute:
     DashboardContentArticlesArticleIdEditRoute,
+  DashboardContentArticlesAuthorsIndexRoute:
+    DashboardContentArticlesAuthorsIndexRoute,
   DashboardContentArticlesCreateIndexRoute:
     DashboardContentArticlesCreateIndexRoute,
 }

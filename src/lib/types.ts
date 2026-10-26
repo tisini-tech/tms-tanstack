@@ -49,6 +49,19 @@ export interface PagePaginatedResponse<T> {
   results: T[]
 }
 
+export interface User {
+  id: number
+  email: string
+  first_name: string
+  last_name: string
+  sir_name: string
+  phone_number: string
+  is_verified: boolean
+  is_active: boolean
+  role: number
+  username?: string | null
+}
+
 export interface Country {
   id: number
   name: string
@@ -432,6 +445,7 @@ export interface Author {
   instagram: string
   linkedin: string
   youtube: string
+  is_active?: boolean
 }
 
 export const ID_DOCUMENT_TYPES = [

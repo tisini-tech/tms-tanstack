@@ -26,6 +26,7 @@ import {
   getModuleNavKey,
   getSiteModules,
   walletNavItems,
+  adminNavItems,
 } from './nav-data'
 
 function itemVisibleToRole(
@@ -46,6 +47,8 @@ function navItemsForModule(navKey: string | undefined): NavItem[] {
       return walletNavItems
     case 'engagement':
       return engagementNavItems
+    case 'administration':
+      return adminNavItems
     default:
       return []
   }

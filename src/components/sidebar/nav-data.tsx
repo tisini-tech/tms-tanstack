@@ -171,7 +171,14 @@ export const contentNavItems: NavItem[] = linkOptions([
     to: '/articles',
     label: 'Articles',
     icon: FileTextIcon,
-    activeOptions: { exact: false },
+    activeOptions: { exact: true },
+  },
+  {
+    to: '/articles/authors',
+    label: 'Authors',
+    icon: UserIcon,
+    activeOptions: { exact: true },
+    roles: ['1', '7', '25'],
   },
 ])
 
@@ -181,5 +188,20 @@ export const engagementNavItems: NavItem[] = linkOptions([
     label: 'Engagements',
     icon: SparklesIcon,
     activeOptions: { exact: false },
+  },
+])
+
+export const adminNavItems: NavItem[] = linkOptions([
+  {
+    to: '/admin',
+    label: 'Admin',
+    icon: GalleryVerticalEndIcon,
+    activeOptions: { exact: true },
+  },
+  {
+    to: '/admin/users',
+    label: 'Users',
+    icon: UserIcon,
+    activeOptions: { exact: true },
   },
 ])

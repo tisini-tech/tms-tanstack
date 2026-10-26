@@ -34,6 +34,9 @@ interface DataTableProps<TData, TValue> {
   globalFilterFn?: FilterFn<TData>
   className?: string
   pageSize?: number
+  /** When set, the search box calls this instead of filtering the loaded rows. */
+  onSearchChange?: (value: string) => void
+  searching?: boolean
 }
 
 export function DataTable<TData, TValue>({
@@ -45,7 +48,10 @@ export function DataTable<TData, TValue>({
   globalFilterFn,
   className,
   pageSize,
+  onSearchChange,
+  searching = false,
 }: DataTableProps<TData, TValue>) {
+  const manualSearch = onSearchChange != null
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [globalFilter, setGlobalFilter] = useState('')
@@ -73,7 +79,7 @@ export function DataTable<TData, TValue>({
     state: {
       sorting,
       columnFilters,
-      globalFilter,
+      globalFilter: manualSearch ? '' : globalFilter,
       ...(pageSize ? { pagination } : {}),
     },
   })
@@ -91,7 +97,11 @@ export function DataTable<TData, TValue>({
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <Input
           value={globalFilter}
-          onChange={(e) => setGlobalFilter(e.target.value)}
+          onChange={(e) => {
+            const value = e.target.value
+            setGlobalFilter(value)
+            onSearchChange?.(value)
+          }}
           placeholder={searchPlaceholder}
           className="h-9 w-full max-w-sm"
           aria-label="Search table"
@@ -101,7 +111,13 @@ export function DataTable<TData, TValue>({
         ) : null}
       </div>
 
-      <div className="w-full min-w-0 overflow-x-auto rounded-xl border border-border">
+      <div
+        className={cn(
+          'w-full min-w-0 overflow-x-auto rounded-xl border border-border',
+          searching && 'pointer-events-none opacity-50',
+        )}
+        aria-busy={searching}
+      >
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
