@@ -1,7 +1,11 @@
-import { useEffect } from 'react'
 import { z } from 'zod'
+import { useEffect } from 'react'
 import { format } from 'date-fns'
-import { createFileRoute, getRouteApi } from '@tanstack/react-router'
+import {
+  createFileRoute,
+  getRouteApi,
+  useRouterState,
+} from '@tanstack/react-router'
 
 import { getEngResponsesFn } from '#/data/engagements'
 import { ResponseResults } from '#/components/engagements/response-results'
@@ -16,23 +20,32 @@ function todayDate() {
 
 const responseSearchSchema = z.object({
   date: z.string().regex(datePattern).optional(),
+  from: z.string().regex(datePattern).optional(),
+  to: z.string().regex(datePattern).optional(),
+  all: z.literal(true).optional(),
 })
 
 export const Route = createFileRoute(
   '/_dashboard/_content/engagements/$engId/responses',
 )({
   validateSearch: responseSearchSchema,
-  loaderDeps: ({ search }) => ({ date: search.date ?? todayDate() }),
+  loaderDeps: ({ search }) => {
+    if (search.all) return {}
+    if (search.from && search.to) {
+      return { dateFrom: search.from, dateTo: search.to }
+    }
+    return { date: search.date ?? todayDate() }
+  },
   loader: async ({ params: { engId }, deps }) => {
     if (!engId) {
       throw new Error('Engagement ID is required')
     }
 
     const responses = await getEngResponsesFn({
-      data: { engId, date: deps.date },
+      data: { engId, ...deps },
     })
 
-    return { responses }
+    return { responses: responses.results }
   },
   component: RouteComponent,
 })
@@ -40,17 +53,19 @@ export const Route = createFileRoute(
 function RouteComponent() {
   const { engagement } = engRoute.useLoaderData()
   const { responses } = Route.useLoaderData() ?? {}
-  const { date: searchDate } = Route.useSearch()
+  const { date: searchDate, from, to, all } = Route.useSearch()
   const navigate = Route.useNavigate()
+  const isLoading = useRouterState({ select: (state) => state.isLoading })
+  const hasRange = Boolean(from && to)
   const date = searchDate ?? todayDate()
 
   useEffect(() => {
-    if (searchDate) return
+    if (searchDate || hasRange || all) return
     void navigate({
       search: { date: todayDate() },
       replace: true,
     })
-  }, [navigate, searchDate])
+  }, [all, hasRange, navigate, searchDate])
 
   return (
     <ResponseResults
@@ -58,9 +73,19 @@ function RouteComponent() {
       questions={engagement?.questions ?? []}
       responses={responses ?? []}
       date={date}
-      onDateChange={(next) => {
+      from={from}
+      to={to}
+      all={all}
+      isLoading={isLoading}
+      onDayChange={(next) => {
+        void navigate({ search: { date: next } })
+      }}
+      onRangeChange={(nextFrom, nextTo) => {
+        void navigate({ search: { from: nextFrom, to: nextTo } })
+      }}
+      onShowAll={() => {
         void navigate({
-          search: (prev) => ({ ...prev, date: next }),
+          search: all ? { date: todayDate() } : { all: true },
         })
       }}
     />

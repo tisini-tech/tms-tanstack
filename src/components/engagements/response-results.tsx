@@ -1,9 +1,11 @@
 import { useState } from 'react'
-import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react'
+import { ChevronLeftIcon, ChevronRightIcon, Loader2Icon } from 'lucide-react'
 
+import { cn } from '#/lib/utils'
+import { Button } from '#/components/ui/button'
 import DownloadEngagements from '#/components/engagements/download-eng'
 import { ResponseDatePicker } from '#/components/engagements/response-date-picker'
-import { Button } from '#/components/ui/button'
+import type { EngAnswer, EngResponse, EngagementQuestion } from '#/lib/types'
 import {
   Select,
   SelectContent,
@@ -11,7 +13,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '#/components/ui/select'
-import type { EngAnswer, EngResponse, EngagementQuestion } from '#/lib/types'
 
 const BAR_COLORS = [
   '#3498db',
@@ -49,7 +50,7 @@ function talliesForQuestion(
   for (const answer of answers) {
     const selected =
       question.answer_type === 'MA'
-        ? answer.selected_choice_ids ?? []
+        ? (answer.selected_choice_ids ?? [])
         : answer.choice_id != null
           ? [answer.choice_id]
           : []
@@ -79,7 +80,9 @@ function responseMoments(responses: EngResponse[]) {
   return responses
     .map((response) => response.created_at || response.completed_at)
     .map((value) => (value ? new Date(value) : null))
-    .filter((date): date is Date => date != null && !Number.isNaN(date.getTime()))
+    .filter(
+      (date): date is Date => date != null && !Number.isNaN(date.getTime()),
+    )
     .sort((left, right) => left.getTime() - right.getTime())
 }
 
@@ -158,7 +161,8 @@ function ResponseTiming({ responses }: { responses: EngResponse[] }) {
       </div>
       <div className="mt-3 flex h-10 items-end gap-1">
         {buckets.map((bucket) => {
-          const height = bucket.count === 0 ? 4 : Math.max(8, (bucket.count / peak) * 100)
+          const height =
+            bucket.count === 0 ? 4 : Math.max(8, (bucket.count / peak) * 100)
           const label = new Date(bucket.key).toLocaleString(undefined, {
             month: 'short',
             day: 'numeric',
@@ -206,7 +210,10 @@ function axisLabel(
 
   const date = new Date(key)
   if (byDay) {
-    return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
+    return date.toLocaleDateString(undefined, {
+      month: 'short',
+      day: 'numeric',
+    })
   }
 
   return date.toLocaleTimeString(undefined, { hour: 'numeric' })
@@ -235,24 +242,61 @@ export function ResponseResults({
   questions,
   responses,
   date,
-  onDateChange,
+  from,
+  to,
+  all,
+  isLoading,
+  onDayChange,
+  onRangeChange,
+  onShowAll,
 }: {
   title: string
   questions: EngagementQuestion[]
   responses: EngResponse[]
   date: string
-  onDateChange: (date: string) => void
+  from?: string
+  to?: string
+  all?: boolean
+  isLoading?: boolean
+  onDayChange: (date: string) => void
+  onRangeChange: (from: string, to: string) => void
+  onShowAll: () => void
 }) {
   const ordered = [...questions].sort(byOrder)
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-6">
       <div className="flex shrink-0 flex-wrap items-center justify-between gap-3">
-        <p className="text-base font-medium tabular-nums text-foreground">
-          {responses.length} response{responses.length === 1 ? '' : 's'}
+        <p className="flex items-center gap-2 text-base font-medium tabular-nums text-foreground">
+          {isLoading ? (
+            <>
+              <Loader2Icon className="size-4 animate-spin text-muted-foreground" />
+              <span className="text-muted-foreground">Loading responses</span>
+            </>
+          ) : (
+            <>
+              {responses.length} response{responses.length === 1 ? '' : 's'}
+            </>
+          )}
         </p>
         <div className="flex flex-wrap items-center gap-2">
-          <ResponseDatePicker value={date} onChange={onDateChange} />
+          <Button
+            type="button"
+            variant={all ? 'secondary' : 'outline'}
+            size="lg"
+            aria-pressed={all}
+            onClick={onShowAll}
+          >
+            Show all
+          </Button>
+          <ResponseDatePicker
+            date={date}
+            from={from}
+            to={to}
+            all={all}
+            onDayChange={onDayChange}
+            onRangeChange={onRangeChange}
+          />
           <DownloadEngagements
             title={title}
             questions={ordered}
@@ -261,17 +305,26 @@ export function ResponseResults({
         </div>
       </div>
 
-      {!responses.length ? (
-        <p className="flex h-40 items-center justify-center rounded-xl border border-dashed border-border text-sm text-muted-foreground">
-          No responses for this day.
-        </p>
-      ) : !ordered.length ? (
-        <p className="flex h-40 items-center justify-center rounded-xl border border-dashed border-border text-sm text-muted-foreground">
-          No questions for this engagement.
-        </p>
-      ) : (
-        <QuestionFocus questions={ordered} responses={responses} />
-      )}
+      <div
+        className={cn(
+          'flex min-h-0 flex-1 flex-col gap-6',
+          isLoading && 'pointer-events-none opacity-50',
+        )}
+        aria-busy={isLoading}
+      >
+        {!responses.length ? (
+          <p className="flex h-40 items-center justify-center rounded-xl border border-dashed border-border text-sm text-muted-foreground">
+            No responses for{' '}
+            {all ? 'this engagement' : from && to ? 'these dates' : 'this day'}.
+          </p>
+        ) : !ordered.length ? (
+          <p className="flex h-40 items-center justify-center rounded-xl border border-dashed border-border text-sm text-muted-foreground">
+            No questions for this engagement.
+          </p>
+        ) : (
+          <QuestionFocus questions={ordered} responses={responses} />
+        )}
+      </div>
     </div>
   )
 }
