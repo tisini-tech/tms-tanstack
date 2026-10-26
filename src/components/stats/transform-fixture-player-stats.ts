@@ -30,101 +30,103 @@ export type PlayerStatRow = {
   values: Record<string, string | number>
 }
 
-export const SPORT_CATEGORIES: Record<SportKind, Record<string, StatColumn[]>> =
-  {
-    football: {
-      Attacking: [
-        { key: 'goal', label: 'Goal' },
-        { key: 'assist', label: 'Assist' },
-        { key: 'chances', label: 'Chances' },
-        { key: 'offside', label: 'Offside' },
-        { key: 'boxTouch', label: 'Box touch' },
-        { key: 'boxCarry', label: 'Box carry' },
-        { key: 'shots', label: 'Shots' },
-        { key: 'crosses', label: 'Crosses' },
-      ],
-      Passing: [
-        { key: 'pass', label: 'Pass' },
-        { key: 'progPass', label: 'Prog pass' },
-      ],
-      Defense: [
-        { key: 'tackles', label: 'Tackles' },
-        { key: 'ballEfficiency', label: 'Ball efficiency' },
-        { key: 'secondBall', label: 'Second ball' },
-        { key: 'interception', label: 'Interception' },
-        { key: 'clearance', label: 'Clearance' },
-        { key: 'blocks', label: 'Blocks' },
-        { key: 'aerial', label: 'Aerial' },
-      ],
-      Goalkeeping: [
-        { key: 'claims', label: 'Claims' },
-        { key: 'distribution', label: 'Distribution' },
-        { key: 'saves', label: 'Saves' },
-        { key: 'runouts', label: 'Runouts' },
-        { key: 'throwouts', label: 'Throwouts' },
-      ],
-      Discipline: [
-        { key: 'fouls', label: 'Fouls' },
-        { key: 'cards', label: 'Cards' },
-      ],
-    },
-    rugby: {
-      Attacking: [
-        { key: 'tries', label: 'Tries' },
-        { key: 'assists', label: 'Assists' },
-        { key: 'goalKicks', label: 'Goal kicks' },
-        { key: 'linebreaks', label: 'Linebreaks' },
-        { key: 'carries', label: 'Carries' },
-        { key: 'offloads', label: 'Offloads' },
-        { key: 'passes', label: 'Passes' },
-        { key: 'handlingEfficiency', label: 'Handling efficiency' },
-      ],
-      Defense: [
-        { key: 'tackleSuccess', label: 'Tackle success' },
-        { key: 'tackleDominance', label: 'Tackle dominance' },
-        { key: 'turnoverWon', label: 'Turnover won' },
-      ],
-      Setpiece: [
-        { key: 'lineoutThrows', label: 'Lineout throws' },
-        { key: 'lineoutSteals', label: 'Lineout steals' },
-        { key: 'scrumsWon', label: 'Scrums won' },
-        { key: 'scrumSteals', label: 'Scrum steals' },
-        { key: 'ruckContest', label: 'Ruck contest' },
-      ],
-      Restarts: [
-        { key: 'restartRetrievals', label: 'Restart retrievals' },
-        { key: 'restartReception', label: 'Restart reception' },
-        { key: 'retainedKicks', label: 'Retained kicks' },
-        { key: 'kickingErrors', label: 'Kicking errors' },
-      ],
-      Discipline: [
-        { key: 'penalties', label: 'Penalties' },
-        { key: 'cards', label: 'Cards' },
-      ],
-    },
-    basketball: {
-      Scoring: [
-        { key: 'points', label: 'Points' },
-        { key: 'fieldGoals', label: 'Field goals' },
-        { key: 'threePointers', label: '3PT' },
-        { key: 'freeThrows', label: 'Free throws' },
-      ],
-      Playmaking: [
-        { key: 'assists', label: 'Assists' },
-        { key: 'turnovers', label: 'Turnovers' },
-      ],
-      Rebounding: [
-        { key: 'rebounds', label: 'Rebounds' },
-        { key: 'offensiveRebounds', label: 'Offensive' },
-        { key: 'defensiveRebounds', label: 'Defensive' },
-      ],
-      Defense: [
-        { key: 'steals', label: 'Steals' },
-        { key: 'blocks', label: 'Blocks' },
-        { key: 'fouls', label: 'Fouls' },
-      ],
-    },
-  }
+export const SPORT_CATEGORIES: Record<
+  SportKind,
+  Record<string, StatColumn[]>
+> = {
+  football: {
+    Attacking: [
+      { key: 'goal', label: 'Goal' },
+      { key: 'assist', label: 'Assist' },
+      { key: 'chances', label: 'Chances' },
+      { key: 'offside', label: 'Offside' },
+      { key: 'boxTouch', label: 'Box touch' },
+      { key: 'boxCarry', label: 'Box carry' },
+      { key: 'shots', label: 'Shots' },
+      { key: 'crosses', label: 'Crosses' },
+    ],
+    Passing: [
+      { key: 'pass', label: 'Pass' },
+      { key: 'progPass', label: 'Prog pass' },
+    ],
+    Defense: [
+      { key: 'tackles', label: 'Tackles' },
+      { key: 'ballEfficiency', label: 'Ball efficiency' },
+      { key: 'secondBall', label: 'Second ball' },
+      { key: 'interception', label: 'Interception' },
+      { key: 'clearance', label: 'Clearance' },
+      { key: 'blocks', label: 'Blocks' },
+      { key: 'aerial', label: 'Aerial' },
+    ],
+    Goalkeeping: [
+      { key: 'claims', label: 'Claims' },
+      { key: 'distribution', label: 'Distribution' },
+      { key: 'saves', label: 'Saves' },
+      { key: 'runouts', label: 'Runouts' },
+      { key: 'throwouts', label: 'Throwouts' },
+    ],
+    Discipline: [
+      { key: 'fouls', label: 'Fouls' },
+      { key: 'cards', label: 'Cards' },
+    ],
+  },
+  rugby: {
+    Attacking: [
+      { key: 'tries', label: 'Tries' },
+      { key: 'assists', label: 'Assists' },
+      { key: 'goalKicks', label: 'Goal kicks' },
+      { key: 'linebreaks', label: 'Linebreaks' },
+      { key: 'carries', label: 'Carries' },
+      { key: 'offloads', label: 'Offloads' },
+      { key: 'passes', label: 'Passes' },
+      { key: 'handlingEfficiency', label: 'Handling efficiency' },
+    ],
+    Defense: [
+      { key: 'tackleSuccess', label: 'Tackle success' },
+      { key: 'tackleDominance', label: 'Tackle dominance' },
+      { key: 'turnoverWon', label: 'Turnover won' },
+    ],
+    Setpiece: [
+      { key: 'lineoutThrows', label: 'Lineout throws' },
+      { key: 'lineoutSteals', label: 'Lineout steals' },
+      { key: 'scrumsWon', label: 'Scrums won' },
+      { key: 'scrumSteals', label: 'Scrum steals' },
+      { key: 'ruckContest', label: 'Ruck contest' },
+    ],
+    Restarts: [
+      { key: 'restartRetrievals', label: 'Restart retrievals' },
+      { key: 'restartReception', label: 'Restart reception' },
+      { key: 'retainedKicks', label: 'Retained kicks' },
+      { key: 'kickingErrors', label: 'Kicking errors' },
+    ],
+    Discipline: [
+      { key: 'penalties', label: 'Penalties' },
+      { key: 'cards', label: 'Cards' },
+    ],
+  },
+  basketball: {
+    Scoring: [
+      { key: 'points', label: 'Points' },
+      { key: 'fieldGoals', label: 'Field goals' },
+      { key: 'threePointers', label: '3PT' },
+      { key: 'freeThrows', label: 'Free throws' },
+    ],
+    Playmaking: [
+      { key: 'assists', label: 'Assists' },
+      { key: 'turnovers', label: 'Turnovers' },
+    ],
+    Rebounding: [
+      { key: 'rebounds', label: 'Rebounds' },
+      { key: 'offensiveRebounds', label: 'Offensive' },
+      { key: 'defensiveRebounds', label: 'Defensive' },
+    ],
+    Defense: [
+      { key: 'steals', label: 'Steals' },
+      { key: 'blocks', label: 'Blocks' },
+      { key: 'fouls', label: 'Fouls' },
+    ],
+  },
+}
 
 function playerName(player: FixturePlayerStats) {
   return [player.first_name, player.sir_name, player.other_name]
@@ -318,12 +320,11 @@ function computeRugbyValues(player: FixturePlayerStats) {
   const penalty = sumSubs(['33', '53'], ['49', '44'])
   const missedPenalty = sumSubs(['33', '70'], ['49', '61'])
   const goalKicksMade = penalty + conversion
-  const goalKicksTotal =
-    penalty + conversion + missedPenalty + missConversion
+  const goalKicksTotal = penalty + conversion + missedPenalty + missConversion
   const goalKicksPct = getPercent(goalKicksTotal, goalKicksMade)
 
   // Assists still legacy-only (no unified assist event yet)
-  const assists = sumEvents('180', '179')
+  const assists = sumEvents('180', '179', '254')
   // Carries 58/44 + unified 250; Linebreak 37/47 + 243; Offload 83/92 + 244; Pass 82/91 + 241
   const carries = sumEvents('58', '44', '250')
   const linebreaks = sumEvents('37', '47', '243')

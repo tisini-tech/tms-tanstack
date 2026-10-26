@@ -57,10 +57,7 @@ function RouteComponent() {
 
   if (sport === 'rugby') {
     return (
-      <RugbyTeamStats
-        stats={stats ?? []}
-        sevens={isRugbySevens(fixture.match_type)}
-      />
+      <RugbyTeamStats stats={stats ?? []} />
     )
   }
 
@@ -69,9 +66,4 @@ function RouteComponent() {
       No data!
     </p>
   )
-}
-
-function isRugbySevens(matchType: string) {
-  const value = matchType.trim().toLowerCase()
-  return value.includes('7') || value.includes('seven')
 }
