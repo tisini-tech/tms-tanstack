@@ -86,6 +86,11 @@ export interface Category {
   name: string
 }
 
+export interface Stage {
+  id: number
+  name: string
+}
+
 export interface Competition {
   id: number
   name: string
@@ -96,6 +101,27 @@ export interface Competition {
   seasons: Season[]
   divisions: Division[]
   categories: Category[]
+  stages: Stage[]
+}
+
+export interface Venue {
+  id: number
+  pitchname: string
+  county: string
+  latitude: string
+  longitude: string
+  country: number
+}
+
+export interface FixtureType {
+  id: number
+  type_code: string
+  type_name: string
+  sub_type: string
+  order_type: number
+  no_player: number
+  quarter: number
+  fix_time: number
 }
 
 export interface Fixture {
@@ -154,6 +180,17 @@ export interface Fixture {
   match_time: string
   minute: number
   second: number
+  highlight_url?: string | null
+  video_url?: string | null
+  video_url2?: string | null
+  is_featured?: boolean
+  appeal_status?: string
+  appeal_reason?: string | null
+  added_halftime?: number | null
+  added_fulltime?: number | null
+  added_extra?: number | null
+  added_extra_second?: number | null
+  agents?: Array<{ id: number; name: string }>
 }
 
 export interface SimpleFixture {

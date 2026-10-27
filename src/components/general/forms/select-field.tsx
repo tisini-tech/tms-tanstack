@@ -37,6 +37,9 @@ export type SelectFieldProps<T extends string = string> = {
   orientation?: "vertical" | "horizontal" | "responsive"
   className?: string
   triggerClassName?: string
+  disabled?: boolean
+  hint?: ReactNode
+  onValueChange?: (value: T) => void
 }
 
 export function SelectField<T extends string = string>({
@@ -50,6 +53,9 @@ export function SelectField<T extends string = string>({
   orientation = "responsive",
   className,
   triggerClassName,
+  disabled = false,
+  hint,
+  onValueChange,
 }: SelectFieldProps<T>) {
   const id = idProp ?? field.name
   const isInvalid =
@@ -88,9 +94,12 @@ export function SelectField<T extends string = string>({
       <Select
         name={field.name}
         items={options}
+        disabled={disabled}
         value={field.state.value === "" ? null : field.state.value}
         onValueChange={(value) => {
-          if (value != null) field.handleChange(value as T)
+          if (value == null) return
+          field.handleChange(value)
+          onValueChange?.(value)
         }}
       >
         <SelectTrigger
@@ -109,6 +118,9 @@ export function SelectField<T extends string = string>({
           ))}
         </SelectContent>
       </Select>
+      {hint ? (
+        <p className="text-xs text-muted-foreground">{hint}</p>
+      ) : null}
     </Field>
   )
 }

@@ -204,4 +204,10 @@ export const adminNavItems: NavItem[] = linkOptions([
     icon: UserIcon,
     activeOptions: { exact: true },
   },
+  {
+    to: '/admin/fixtures',
+    label: 'Fixtures',
+    icon: CalendarIcon,
+    activeOptions: { exact: false },
+  },
 ])

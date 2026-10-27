@@ -33,6 +33,8 @@ import { Route as DashboardContentWalletEstimatesRouteImport } from './routes/_d
 import { Route as DashboardContentWalletPaymentsRouteImport } from './routes/_dashboard/_content/wallet/payments'
 import { Route as DashboardContentWalletPendingPaymentsRouteImport } from './routes/_dashboard/_content/wallet/pending-payments'
 import { Route as DashboardContentWalletStatementsRouteImport } from './routes/_dashboard/_content/wallet/statements'
+import { Route as DashboardContentAdminFixturesIndexRouteImport } from './routes/_dashboard/_content/admin/fixtures/index'
+import { Route as DashboardContentAdminFixturesAddRouteImport } from './routes/_dashboard/_content/admin/fixtures/add'
 import { Route as DashboardContentArticlesArticleIdEditRouteImport } from './routes/_dashboard/_content/articles/$articleId/edit'
 import { Route as DashboardContentArticlesAuthorsIndexRouteImport } from './routes/_dashboard/_content/articles/authors/index'
 import { Route as DashboardContentArticlesCreateIndexRouteImport } from './routes/_dashboard/_content/articles/create/index'
@@ -196,6 +198,18 @@ const DashboardContentWalletStatementsRoute =
   DashboardContentWalletStatementsRouteImport.update({
     id: '/wallet/statements',
     path: '/wallet/statements',
+    getParentRoute: () => DashboardContentRouteRoute,
+  } as any)
+const DashboardContentAdminFixturesIndexRoute =
+  DashboardContentAdminFixturesIndexRouteImport.update({
+    id: '/admin/fixtures/',
+    path: '/admin/fixtures/',
+    getParentRoute: () => DashboardContentRouteRoute,
+  } as any)
+const DashboardContentAdminFixturesAddRoute =
+  DashboardContentAdminFixturesAddRouteImport.update({
+    id: '/admin/fixtures/add',
+    path: '/admin/fixtures/add',
     getParentRoute: () => DashboardContentRouteRoute,
   } as any)
 const DashboardContentArticlesArticleIdEditRoute =
@@ -439,10 +453,12 @@ export interface FileRoutesByFullPath {
   '/tickets/': typeof DashboardContentTicketsIndexRoute
   '/wallet/': typeof DashboardContentWalletIndexRoute
   '/competitions/$compId/stats': typeof DashboardContentCompetitionsCompIdStatsRouteRouteWithChildren
+  '/admin/fixtures/add': typeof DashboardContentAdminFixturesAddRoute
   '/articles/$articleId/edit': typeof DashboardContentArticlesArticleIdEditRoute
   '/engagements/$engId/actions': typeof DashboardContentEngagementsEngIdActionsRoute
   '/engagements/$engId/leaderboard': typeof DashboardContentEngagementsEngIdLeaderboardRoute
   '/engagements/$engId/responses': typeof DashboardContentEngagementsEngIdResponsesRoute
+  '/admin/fixtures/': typeof DashboardContentAdminFixturesIndexRoute
   '/articles/authors/': typeof DashboardContentArticlesAuthorsIndexRoute
   '/articles/create/': typeof DashboardContentArticlesCreateIndexRoute
   '/engagements/$engId/': typeof DashboardContentEngagementsEngIdIndexRoute
@@ -492,10 +508,12 @@ export interface FileRoutesByTo {
   '/engagements': typeof DashboardContentEngagementsIndexRoute
   '/tickets': typeof DashboardContentTicketsIndexRoute
   '/wallet': typeof DashboardContentWalletIndexRoute
+  '/admin/fixtures/add': typeof DashboardContentAdminFixturesAddRoute
   '/articles/$articleId/edit': typeof DashboardContentArticlesArticleIdEditRoute
   '/engagements/$engId/actions': typeof DashboardContentEngagementsEngIdActionsRoute
   '/engagements/$engId/leaderboard': typeof DashboardContentEngagementsEngIdLeaderboardRoute
   '/engagements/$engId/responses': typeof DashboardContentEngagementsEngIdResponsesRoute
+  '/admin/fixtures': typeof DashboardContentAdminFixturesIndexRoute
   '/articles/authors': typeof DashboardContentArticlesAuthorsIndexRoute
   '/articles/create': typeof DashboardContentArticlesCreateIndexRoute
   '/engagements/$engId': typeof DashboardContentEngagementsEngIdIndexRoute
@@ -551,10 +569,12 @@ export interface FileRoutesById {
   '/_dashboard/_content/competitions/$compId/_dashboards': typeof DashboardContentCompetitionsCompIdDashboardsRouteRouteWithChildren
   '/_dashboard/_content/competitions/$compId/_settings': typeof DashboardContentCompetitionsCompIdSettingsRouteRouteWithChildren
   '/_dashboard/_content/competitions/$compId/stats': typeof DashboardContentCompetitionsCompIdStatsRouteRouteWithChildren
+  '/_dashboard/_content/admin/fixtures/add': typeof DashboardContentAdminFixturesAddRoute
   '/_dashboard/_content/articles/$articleId/edit': typeof DashboardContentArticlesArticleIdEditRoute
   '/_dashboard/_content/engagements/$engId/actions': typeof DashboardContentEngagementsEngIdActionsRoute
   '/_dashboard/_content/engagements/$engId/leaderboard': typeof DashboardContentEngagementsEngIdLeaderboardRoute
   '/_dashboard/_content/engagements/$engId/responses': typeof DashboardContentEngagementsEngIdResponsesRoute
+  '/_dashboard/_content/admin/fixtures/': typeof DashboardContentAdminFixturesIndexRoute
   '/_dashboard/_content/articles/authors/': typeof DashboardContentArticlesAuthorsIndexRoute
   '/_dashboard/_content/articles/create/': typeof DashboardContentArticlesCreateIndexRoute
   '/_dashboard/_content/engagements/$engId/': typeof DashboardContentEngagementsEngIdIndexRoute
@@ -608,10 +628,12 @@ export interface FileRouteTypes {
     | '/tickets/'
     | '/wallet/'
     | '/competitions/$compId/stats'
+    | '/admin/fixtures/add'
     | '/articles/$articleId/edit'
     | '/engagements/$engId/actions'
     | '/engagements/$engId/leaderboard'
     | '/engagements/$engId/responses'
+    | '/admin/fixtures/'
     | '/articles/authors/'
     | '/articles/create/'
     | '/engagements/$engId/'
@@ -661,10 +683,12 @@ export interface FileRouteTypes {
     | '/engagements'
     | '/tickets'
     | '/wallet'
+    | '/admin/fixtures/add'
     | '/articles/$articleId/edit'
     | '/engagements/$engId/actions'
     | '/engagements/$engId/leaderboard'
     | '/engagements/$engId/responses'
+    | '/admin/fixtures'
     | '/articles/authors'
     | '/articles/create'
     | '/engagements/$engId'
@@ -719,10 +743,12 @@ export interface FileRouteTypes {
     | '/_dashboard/_content/competitions/$compId/_dashboards'
     | '/_dashboard/_content/competitions/$compId/_settings'
     | '/_dashboard/_content/competitions/$compId/stats'
+    | '/_dashboard/_content/admin/fixtures/add'
     | '/_dashboard/_content/articles/$articleId/edit'
     | '/_dashboard/_content/engagements/$engId/actions'
     | '/_dashboard/_content/engagements/$engId/leaderboard'
     | '/_dashboard/_content/engagements/$engId/responses'
+    | '/_dashboard/_content/admin/fixtures/'
     | '/_dashboard/_content/articles/authors/'
     | '/_dashboard/_content/articles/create/'
     | '/_dashboard/_content/engagements/$engId/'
@@ -928,6 +954,20 @@ declare module '@tanstack/react-router' {
       path: '/wallet/statements'
       fullPath: '/wallet/statements'
       preLoaderRoute: typeof DashboardContentWalletStatementsRouteImport
+      parentRoute: typeof DashboardContentRouteRoute
+    }
+    '/_dashboard/_content/admin/fixtures/': {
+      id: '/_dashboard/_content/admin/fixtures/'
+      path: '/admin/fixtures'
+      fullPath: '/admin/fixtures/'
+      preLoaderRoute: typeof DashboardContentAdminFixturesIndexRouteImport
+      parentRoute: typeof DashboardContentRouteRoute
+    }
+    '/_dashboard/_content/admin/fixtures/add': {
+      id: '/_dashboard/_content/admin/fixtures/add'
+      path: '/admin/fixtures/add'
+      fullPath: '/admin/fixtures/add'
+      preLoaderRoute: typeof DashboardContentAdminFixturesAddRouteImport
       parentRoute: typeof DashboardContentRouteRoute
     }
     '/_dashboard/_content/articles/$articleId/edit': {
@@ -1370,7 +1410,9 @@ interface DashboardContentRouteRouteChildren {
   DashboardContentEngagementsIndexRoute: typeof DashboardContentEngagementsIndexRoute
   DashboardContentTicketsIndexRoute: typeof DashboardContentTicketsIndexRoute
   DashboardContentWalletIndexRoute: typeof DashboardContentWalletIndexRoute
+  DashboardContentAdminFixturesAddRoute: typeof DashboardContentAdminFixturesAddRoute
   DashboardContentArticlesArticleIdEditRoute: typeof DashboardContentArticlesArticleIdEditRoute
+  DashboardContentAdminFixturesIndexRoute: typeof DashboardContentAdminFixturesIndexRoute
   DashboardContentArticlesAuthorsIndexRoute: typeof DashboardContentArticlesAuthorsIndexRoute
   DashboardContentArticlesCreateIndexRoute: typeof DashboardContentArticlesCreateIndexRoute
 }
@@ -1393,8 +1435,11 @@ const DashboardContentRouteRouteChildren: DashboardContentRouteRouteChildren = {
   DashboardContentEngagementsIndexRoute: DashboardContentEngagementsIndexRoute,
   DashboardContentTicketsIndexRoute: DashboardContentTicketsIndexRoute,
   DashboardContentWalletIndexRoute: DashboardContentWalletIndexRoute,
+  DashboardContentAdminFixturesAddRoute: DashboardContentAdminFixturesAddRoute,
   DashboardContentArticlesArticleIdEditRoute:
     DashboardContentArticlesArticleIdEditRoute,
+  DashboardContentAdminFixturesIndexRoute:
+    DashboardContentAdminFixturesIndexRoute,
   DashboardContentArticlesAuthorsIndexRoute:
     DashboardContentArticlesAuthorsIndexRoute,
   DashboardContentArticlesCreateIndexRoute:

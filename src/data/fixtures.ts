@@ -1,6 +1,8 @@
 import { apiService } from '#/lib/api'
 import { authFnMiddleware } from '#/middlewares/auth'
+import { queryOptions } from '@tanstack/react-query'
 import { createServerFn } from '@tanstack/react-start'
+
 import type {
   Fixture,
   FixtureTeamStats,
@@ -10,8 +12,130 @@ import type {
   ReviewStats,
   ReviewComment,
   RawFixtureEvent,
+  FixtureType,
 } from '#/lib/types'
-import { queryOptions } from '@tanstack/react-query'
+
+export type CreateFixtureInput = {
+  matchTypeId: number
+  homeTeamId: number
+  awayTeamId: number
+  competitionId: number
+  seasonId: number
+  divisionId: number | null
+  categoryId: number | null
+  stageId: number | null
+  live: number
+  collectionMode: 'both' | 'home_only' | 'away_only'
+  matchday: string
+  matchDate: string | null
+  matchTime: string | null
+  venueId: number | null
+  agentIds: number[]
+  separateFixtures: boolean
+}
+
+export const createFixtureFn = createServerFn({ method: 'POST' })
+  .middleware([authFnMiddleware])
+  .validator((data: CreateFixtureInput) => data)
+  .handler(async ({ data }) => {
+    const params = new URLSearchParams()
+    if (data.separateFixtures) params.set('separate_fixtures', 'true')
+    const query = params.toString()
+
+    return apiService.post<{ message?: string }>(
+      query ? `/fixtures?${query}` : '/fixtures',
+      {
+        match_type_id: data.matchTypeId,
+        home_team_id: data.homeTeamId,
+        away_team_id: data.awayTeamId,
+        competition_id: data.competitionId,
+        season_id: data.seasonId,
+        division_id: data.divisionId,
+        category_id: data.categoryId,
+        stage_id: data.stageId,
+        venue_id: data.venueId,
+        matchday: data.matchday,
+        match_date: data.matchDate,
+        match_time: data.matchTime,
+        collection_mode: data.collectionMode,
+        live: data.live,
+        agent_ids: data.agentIds,
+      },
+    )
+  })
+
+export const getFixtureFn = createServerFn({ method: 'GET' })
+  .middleware([authFnMiddleware])
+  .validator((data: { id: string }) => data)
+  .handler(async ({ data }) => {
+    return apiService.get<Fixture>(`/fixtures/${data.id}`)
+  })
+
+export type UpdateFixtureInput = {
+  fixtureId: number
+  teamView: number
+  status: string
+  matchStatus: string
+  matchMoment: string
+  minute: number
+  second: number
+  highlightUrl: string | null
+  videoUrl: string | null
+  videoUrl2: string | null
+  isFeatured: boolean
+  appealStatus: string
+  appealReason: string | null
+  addedHalftime: number | null
+  addedFulltime: number | null
+  addedExtra: number | null
+  addedExtraSecond: number | null
+} & CreateFixtureInput
+
+export const updateFixtureFn = createServerFn({ method: 'POST' })
+  .middleware([authFnMiddleware])
+  .validator((data: UpdateFixtureInput) => data)
+  .handler(async ({ data }) => {
+    return apiService.patch<Fixture>(`/fixtures/${data.fixtureId}`, {
+      match_type_id: data.matchTypeId,
+      home_team_id: data.homeTeamId,
+      away_team_id: data.awayTeamId,
+      competition_id: data.competitionId,
+      season_id: data.seasonId,
+      division_id: data.divisionId,
+      category_id: data.categoryId,
+      stage_id: data.stageId,
+      venue_id: data.venueId,
+      matchday: data.matchday,
+      match_date: data.matchDate,
+      match_time: data.matchTime,
+      collection_mode: data.collectionMode,
+      live: data.live,
+      team_view: data.teamView,
+      status: data.status,
+      match_status: data.matchStatus,
+      match_moment: data.matchMoment,
+      minute: data.minute,
+      second: data.second,
+      highlight_url: data.highlightUrl,
+      video_url: data.videoUrl,
+      video_url2: data.videoUrl2,
+      is_featured: data.isFeatured,
+      appeal_status: data.appealStatus,
+      appeal_reason: data.appealReason,
+      added_halftime: data.addedHalftime,
+      added_fulltime: data.addedFulltime,
+      added_extra: data.addedExtra,
+      added_extra_second: data.addedExtraSecond,
+      agent_ids: data.agentIds,
+    })
+  })
+
+export const getFixtureTypesFn = createServerFn({ method: 'GET' })
+  .middleware([authFnMiddleware])
+  .handler(async () => {
+    const fixtureTypes = await apiService.get<FixtureType[]>('/fixture-types')
+    return fixtureTypes
+  })
 
 export const getFixturesFn = createServerFn({ method: 'GET' })
   .middleware([authFnMiddleware])

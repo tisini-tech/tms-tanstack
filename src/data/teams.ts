@@ -1,7 +1,9 @@
-import { apiService } from '#/lib/api'
-import { authFnMiddleware } from '#/middlewares/auth'
+import { queryOptions } from '@tanstack/react-query'
 import { createServerFn } from '@tanstack/react-start'
+
+import { apiService } from '#/lib/api'
 import type { PaginatedResponse, Team, TeamDashboard } from '#/lib/types'
+import { authFnMiddleware } from '#/middlewares/auth'
 
 function teamsPath(opts?: {
   competitionId?: string
@@ -10,6 +12,7 @@ function teamsPath(opts?: {
   categoryId?: string
   search?: string
   pageSize?: number
+  teamType?: string
 }) {
   const params = new URLSearchParams()
   const search = opts?.search?.trim()
@@ -19,6 +22,8 @@ function teamsPath(opts?: {
   if (opts?.categoryId) params.set('category_id', opts.categoryId)
   if (search) params.set('search', search)
   if (opts?.pageSize) params.set('page_size', String(opts.pageSize))
+  if (opts?.teamType) params.set('team_type', opts.teamType)
+
   const query = params.toString()
   return query ? `/teams?${query}` : '/teams'
 }
@@ -35,6 +40,7 @@ export const getTeamsFn = createServerFn({ method: 'GET' })
             categoryId?: string
             search?: string
             pageSize?: number
+            teamType?: string
           }
         | undefined,
     ) => ({
@@ -44,6 +50,7 @@ export const getTeamsFn = createServerFn({ method: 'GET' })
       categoryId: data?.categoryId?.trim() || undefined,
       search: data?.search?.trim() || undefined,
       pageSize: data?.pageSize ?? 200,
+      teamType: data?.teamType?.trim() || undefined,
     }),
   )
   .handler(async ({ data }) => {
@@ -55,9 +62,17 @@ export const getTeamsFn = createServerFn({ method: 'GET' })
         categoryId: data.categoryId,
         search: data.search,
         pageSize: data.pageSize,
+        teamType: data.teamType,
       }),
     )
     return response.results
+  })
+
+export const teamsByTypeQuery = (teamType: string) =>
+  queryOptions({
+    queryKey: ['teams', teamType],
+    queryFn: () => getTeamsFn({ data: { teamType } }),
+    enabled: teamType.length > 0,
   })
 
 export const getTeamFn = createServerFn({ method: 'GET' })

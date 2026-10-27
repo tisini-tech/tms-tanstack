@@ -479,6 +479,61 @@ export function playerToFormValues(
   }
 }
 
+export const createFixtureSchema = z
+  .object({
+    fixtureType: z.string().min(1, 'Select a fixture type'),
+    competitionId: z.string().min(1, 'Select a competition'),
+    divisionId: z.string(),
+    categoryId: z.string(),
+    seasonId: z.string().min(1, 'Select a season'),
+    stageId: z.string(),
+    homeTeamId: z.string().min(1, 'Select a home team'),
+    awayTeamId: z.string().min(1, 'Select an away team'),
+    live: z.number(),
+    teamView: z.number(),
+    collectionMode: z.enum(['both', 'home_only', 'away_only']),
+    matchday: z.string().trim(),
+    matchDate: z.string(),
+    matchTime: z.string(),
+    venueId: z.string(),
+    agentIds: z.array(z.string()),
+    separateFixtures: z.boolean(),
+    status: z.string(),
+    matchStatus: z.string(),
+    matchMoment: z.string().max(20, 'Match moment must be 20 characters or fewer'),
+    minute: z.number().int().min(0),
+    second: z.number().int().min(0),
+    highlightUrl: z.string(),
+    videoUrl: z.string(),
+    videoUrl2: z.string(),
+    isFeatured: z.boolean(),
+    appealStatus: z.string(),
+    appealReason: z.string(),
+    addedHalftime: z.string(),
+    addedFulltime: z.string(),
+    addedExtra: z.string(),
+    addedExtraSecond: z.string(),
+  })
+  .refine((value) => value.homeTeamId !== value.awayTeamId, {
+    message: 'Home and away teams must be different',
+    path: ['awayTeamId'],
+  })
+  .refine((value) => value.separateFixtures || value.matchday.length > 0, {
+    message: 'Enter a matchday',
+    path: ['matchday'],
+  })
+  .refine(
+    (value) =>
+      !value.separateFixtures ||
+      value.agentIds.some((id) => id.trim().length > 0),
+    {
+      message: 'Select at least one agent',
+      path: ['agentIds'],
+    },
+  )
+
+export type CreateFixtureSchema = z.infer<typeof createFixtureSchema>
+
 /** "Charles Momanyi Saramu" → fname / oname / sname */
 export function splitPlayerName(name: string) {
   const parts = name.trim().split(/\s+/).filter(Boolean)

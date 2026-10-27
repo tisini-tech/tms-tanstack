@@ -1,3 +1,4 @@
+import { useRef } from 'react'
 import { Combobox } from '@base-ui/react/combobox'
 import { CheckIcon, ChevronDownIcon } from 'lucide-react'
 
@@ -41,6 +42,10 @@ type ComboboxFieldProps<T extends string = string> = {
   required?: boolean
   id?: string
   className?: string
+  disabled?: boolean
+  hint?: string
+  onValueChange?: (value: T) => void
+  onSearchChange?: (query: string) => void
 }
 
 export function ComboboxField<T extends string = string>({
@@ -53,11 +58,28 @@ export function ComboboxField<T extends string = string>({
   required = false,
   id: idProp,
   className,
+  disabled = false,
+  hint,
+  onValueChange,
+  onSearchChange,
 }: ComboboxFieldProps<T>) {
   const id = idProp ?? field.name
   const isInvalid = field.state.meta.errors.length > 0
-  const selected =
+  const knownLabels = useRef(new Map<string, string>())
+  for (const option of options) {
+    knownLabels.current.set(option.value, option.label)
+  }
+  const matched =
     options.find((option) => option.value === field.state.value) ?? null
+  const selected =
+    matched ??
+    (onSearchChange && field.state.value
+      ? {
+          value: field.state.value,
+          label:
+            knownLabels.current.get(field.state.value) ?? field.state.value,
+        }
+      : null)
 
   return (
     <Field className={cn(className)} data-invalid={isInvalid ? true : undefined}>
@@ -82,18 +104,23 @@ export function ComboboxField<T extends string = string>({
 
       <Combobox.Root
         items={options}
+        disabled={disabled}
+        filter={onSearchChange ? null : undefined}
         value={selected}
+        onInputValueChange={(inputValue) => onSearchChange?.(inputValue)}
         onValueChange={(item) => {
-          field.handleChange((item?.value ?? '') as T)
+          const next = (item?.value ?? '') as T
+          field.handleChange(next)
           field.handleBlur()
+          onValueChange?.(next)
         }}
-        itemToStringLabel={(item) => item?.label ?? ''}
-        isItemEqualToValue={(a, b) => a?.value === b?.value}
+        itemToStringLabel={(item) => item.label}
+        isItemEqualToValue={(a, b) => a.value === b.value}
       >
         <Combobox.Trigger
           id={id}
           aria-invalid={isInvalid || undefined}
-          className={triggerClassName}
+          className={cn(triggerClassName, disabled && 'pointer-events-none opacity-50')}
           onBlur={field.handleBlur}
         >
           <Combobox.Value placeholder={placeholder} />
@@ -142,6 +169,7 @@ export function ComboboxField<T extends string = string>({
           </Combobox.Positioner>
         </Combobox.Portal>
       </Combobox.Root>
+      {hint ? <p className="text-xs text-muted-foreground">{hint}</p> : null}
     </Field>
   )
 }

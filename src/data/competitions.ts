@@ -12,8 +12,23 @@ import type {
 
 export const getCompetitionsFn = createServerFn({ method: 'GET' })
   .middleware([authFnMiddleware])
-  .handler(async () => {
-    const competitions = await apiService.get<Competition[]>('/competitions')
+  .validator((data?: { matchType?: string; search?: string }) => data ?? {})
+  .handler(async ({ data }) => {
+    const { matchType, search } = data
+
+    const params = new URLSearchParams()
+    if (matchType) {
+      params.set('match_type', matchType)
+    }
+    if (search) {
+      params.set('search', search)
+    }
+
+    const query = params.toString()
+
+    const path = query ? `/competitions?${query}` : '/competitions'
+
+    const competitions = await apiService.get<Competition[]>(path)
 
     return competitions
   })
@@ -22,6 +37,13 @@ export const competitionQueryOptions = queryOptions({
   queryKey: ['competitions'],
   queryFn: () => getCompetitionsFn(),
 })
+
+export const competitionsByTypeQuery = (matchType: string) =>
+  queryOptions({
+    queryKey: ['competitions', matchType],
+    queryFn: () => getCompetitionsFn({ data: { matchType } }),
+    enabled: matchType.length > 0,
+  })
 
 export const getCompetitionRoundsFn = createServerFn({ method: 'GET' })
   .middleware([authFnMiddleware])
