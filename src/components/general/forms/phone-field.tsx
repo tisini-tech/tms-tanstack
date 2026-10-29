@@ -33,9 +33,8 @@ export function PhoneField({
   className?: string
 }) {
   const isInvalid =
-    (phoneField.state.meta.isTouched && !phoneField.state.meta.isValid) ||
-    (countryCodeField.state.meta.isTouched &&
-      !countryCodeField.state.meta.isValid)
+    phoneField.state.meta.errors.length > 0 ||
+    countryCodeField.state.meta.errors.length > 0
 
   const sortedCountries = useMemo(
     () => [...countries].sort((a, b) => a.name.localeCompare(b.name)),
@@ -69,11 +68,14 @@ export function PhoneField({
           inputMode="numeric"
           autoComplete="tel-national"
           placeholder="712 345 678"
-          maxLength={9}
+          maxLength={10}
           value={phoneField.state.value}
           onBlur={phoneField.handleBlur}
           onChange={(e) => {
-            const digits = e.target.value.replace(/\D/g, '').slice(0, 9)
+            const digits = e.target.value
+              .replace(/\D/g, '')
+              .replace(/^0/, '')
+              .slice(0, 10)
             phoneField.handleChange(digits)
           }}
           data-invalid={isInvalid || undefined}
@@ -94,11 +96,11 @@ export function PhoneField({
                 : { message: String(error ?? '') },
           )}
         />
-      ) : (
+      ) : phoneField.state.value.length === 0 ? (
         <p className="text-xs text-muted-foreground">
           Enter 9 digits without the leading 0
         </p>
-      )}
+      ) : null}
     </Field>
   )
 }

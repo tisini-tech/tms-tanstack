@@ -4,7 +4,7 @@ import { useForm } from '@tanstack/react-form'
 import type { TurnstileInstance } from '@marsidev/react-turnstile'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 
-import { registerSchema } from '#/lib/schemas'
+import { localPhoneSchema, registerSchema } from '#/lib/schemas'
 import { Button } from '#/components/ui/button'
 import { getCountriesFn, registerFn } from '#/data/auth'
 import { PhoneField } from '#/components/general/forms/phone-field'
@@ -171,6 +171,10 @@ function Register() {
             children={(countryCodeField) => (
               <form.Field
                 name="phone"
+                validators={{
+                  onChange: localPhoneSchema,
+                  onSubmit: localPhoneSchema,
+                }}
                 children={(phoneField) => (
                   <PhoneField
                     countries={countries}

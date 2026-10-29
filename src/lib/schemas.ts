@@ -63,9 +63,9 @@ const passwordSchema = z
   .min(6, 'Password must be at least 6 characters')
   .regex(/[^A-Za-z0-9]/, 'Password must include at least one special character')
 
-const localPhoneSchema = z
+export const localPhoneSchema = z
   .string()
-  .regex(/^\d{9}$/, 'Phone number must be exactly 9 digits')
+  .regex(/^[1-9]\d{8}$/, 'Enter 9 digits without the leading 0')
 
 export const registerSchema = z
   .object({
