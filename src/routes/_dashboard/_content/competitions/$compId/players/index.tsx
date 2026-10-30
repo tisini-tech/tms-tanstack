@@ -24,7 +24,7 @@ function teamPlaceholder(id: number, name?: string | null): Team {
     id,
     name: name?.trim() || `Team ${id}`,
     teamlogo: '',
-    team_type: { id: 0, name: '' },
+    team_type: null,
     country: {
       id: 0,
       name: '',

@@ -7,7 +7,7 @@ import {
   useRouterState,
 } from '@tanstack/react-router'
 
-import { cn } from '#/lib/utils'
+import { cn, toFixtureType } from '#/lib/utils'
 
 import type { Team } from '#/lib/types'
 import { getMetricsFn } from '#/data/metrics'
@@ -100,10 +100,7 @@ export const Route = createFileRoute(
 
     const metricsPromise = getMetricsFn({
       data: {
-        fixType:
-          teams
-            .map((team) => team.team_type.name.toLowerCase())
-            .find(Boolean) ?? 'football',
+        fixType: toFixtureType(sportCodeFromTeams(teams)),
       },
     })
 
@@ -299,6 +296,15 @@ function RouteComponent() {
       </div>
     </div>
   )
+}
+
+function sportCodeFromTeams(teams: Team[]) {
+  for (const team of teams) {
+    const code =
+      typeof team.team_type === 'string' ? team.team_type.trim() : ''
+    if (code) return code
+  }
+  return 'football'
 }
 
 async function categoryNameFor(compId: string, categoryId: number | undefined) {

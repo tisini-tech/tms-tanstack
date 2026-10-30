@@ -254,7 +254,7 @@ function TeamCard({
             {team.name}
           </Link>
           <p className="truncate text-sm text-muted-foreground">
-            {team.team_type.name}
+            {team.team_type || '—'}
           </p>
         </div>
 

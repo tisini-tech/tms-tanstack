@@ -360,11 +360,6 @@ export interface FixturePassMatrix {
   away: PassMatrix
 }
 
-export interface TeamType {
-  id: number
-  name: string
-}
-
 export interface Country {
   id: number
   name: string
@@ -375,7 +370,8 @@ export interface Team {
   id: number
   name: string
   teamlogo: string
-  team_type: TeamType
+  /** Sport code from the API, e.g. `football`. */
+  team_type: string | null
   country: Country
   short_name: string
   pricing: string
