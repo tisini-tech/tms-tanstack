@@ -1,4 +1,5 @@
-import { useState, type ReactNode } from 'react'
+import { useState } from 'react'
+import type { ReactNode } from 'react'
 
 import type {
   DashboardMatch,
@@ -52,7 +53,6 @@ type MatchRow = {
   facedTotal: number
   fouls: number
   foulThrows: number
-  seqPoints: number
 }
 
 export default function TeamDashboardSimple({
@@ -91,13 +91,8 @@ export default function TeamDashboardSimple({
         new Set([FOUL_THROW_SUB]),
         matchId,
       ),
-      seqPoints: seqPoints(sequence),
     }
   })
-
-  const totalSeqPoints = matchRows.reduce((sum, row) => sum + row.seqPoints, 0)
-  const avgSeqPoints =
-    matchRows.length > 0 ? totalSeqPoints / matchRows.length : 0
 
   const [selectedId, setSelectedId] = useState<number | null>(null)
 
@@ -122,7 +117,6 @@ export default function TeamDashboardSimple({
     facedTotal: eventTotal(opponents, SHOT),
     fouls: eventTotal(teamStats, FOUL),
     foulThrows: subTotal(teamStats, THROW_IN, new Set([FOUL_THROW_SUB])),
-    seqPoints: avgSeqPoints,
   }
 
   const selected = matchRows.find((row) => row.id === selectedId) ?? null
@@ -134,9 +128,9 @@ export default function TeamDashboardSimple({
   }
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-hidden">
+    <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto">
       <div className="shrink-0 space-y-4">
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <KpiCard
             label="Games"
             value={String(gameCount)}
@@ -146,11 +140,6 @@ export default function TeamDashboardSimple({
             label="Seq. average"
             value={formatNumber(seasonSeq?.average ?? 0, true)}
             hint={`${seasonSeq?.total ?? 0} sequences`}
-          />
-          <KpiCard
-            label="Seq. points"
-            value={String(totalSeqPoints)}
-            hint={`avg ${formatNumber(avgSeqPoints, true)} / game`}
           />
           <KpiCard
             label="Shot on target"
@@ -192,11 +181,11 @@ export default function TeamDashboardSimple({
       </div>
 
       <Section
-        className="flex min-h-0 flex-1 flex-col overflow-hidden"
+        className="flex min-h-0 flex-1 flex-col overflow-visible"
         title="Match board"
         subtitle="Compare every game — select a match to filter the overview"
       >
-        <div className="min-h-0 flex-1 overflow-auto">
+        <div className="min-h-0 flex-1 overflow-x-auto overflow-y-hidden pb-1">
           <div className="min-w-[52rem]">
             <MatchBoardHeader />
             {matchRows.map((row) => (
@@ -212,7 +201,6 @@ export default function TeamDashboardSimple({
               selected={isSeason}
               onSelect={() => setSelectedId(null)}
               emphasize
-              isSeason
             />
           </div>
         </div>
@@ -251,20 +239,16 @@ function MatchBoardRow({
   selected,
   onSelect,
   emphasize = false,
-  isSeason = false,
 }: {
   row: MatchRow
   selected: boolean
   onSelect?: () => void
   emphasize?: boolean
-  isSeason?: boolean
 }) {
   const shotPct = percent(row.shotTotal, row.shotOn)
   const facedPct = percent(row.facedTotal, row.facedOn)
   const interactive = Boolean(onSelect)
-  const seqPtsLabel = isSeason
-    ? `${formatNumber(row.seqPoints, true)} pts`
-    : `${row.seqPoints} pts`
+  const seqAverageLabel = formatNumber(row.sequence?.average ?? 0, true)
 
   return (
     <button
@@ -294,10 +278,9 @@ function MatchBoardRow({
         {row.sequence?.over10 ?? 0}
       </div>
       <div className="text-center">
-        <div className="text-sm font-semibold tabular-nums">{seqPtsLabel}</div>
+        <div className="text-sm font-semibold tabular-nums">{seqAverageLabel}</div>
         <div className="text-[11px] tabular-nums text-muted-foreground">
-          {row.sequence?.total ?? 0} tot · avg{' '}
-          {formatNumber(row.sequence?.average ?? 0, true)}
+          {row.sequence?.total ?? 0} tot · avg {seqAverageLabel}
         </div>
       </div>
       <div className="text-center text-sm tabular-nums">
@@ -344,10 +327,7 @@ function OverviewPanel({
           </div>
           <div className="text-xs tabular-nums text-muted-foreground">
             {row.sequence?.total ?? 0} sequences · avg{' '}
-            {formatNumber(row.sequence?.average ?? 0, true)} · seq pts{' '}
-            <span className="font-medium text-foreground">
-              {isSeason ? formatNumber(row.seqPoints, true) : row.seqPoints}
-            </span>
+            {formatNumber(row.sequence?.average ?? 0, true)}
           </div>
         </div>
         <div className="space-y-2 rounded-lg border border-border/70 bg-background/40 px-3 py-2.5">
@@ -404,9 +384,9 @@ function OverviewPanel({
         </div>
         <div className="grid grid-cols-3 gap-2">
           <StatTile
-            label="Seq points"
-            value={isSeason ? formatNumber(row.seqPoints, true) : row.seqPoints}
-            hint={isSeason ? 'Avg earned / match' : 'Earned this match'}
+            label="Avg seq"
+            value={formatNumber(row.sequence?.average ?? 0, true)}
+            hint={isSeason ? 'Across the season' : 'This match'}
           />
           <StatTile
             label="Fouls committed"
@@ -530,16 +510,6 @@ function StatTile({
       <div className="mt-0.5 text-xl font-semibold tabular-nums">{value}</div>
       <div className="text-xs text-muted-foreground">{hint}</div>
     </div>
-  )
-}
-
-/** Presence rule: ≥1 in 4–6 → +1, ≥1 in 7–9 → +2, ≥1 over 10 → +1 (max 4). */
-function seqPoints(sequence?: SeqSlice | null) {
-  if (!sequence) return 0
-  return (
-    ((sequence.btwn4to6 ?? 0) > 0 ? 1 : 0) +
-    ((sequence.btwn7to9 ?? 0) > 0 ? 2 : 0) +
-    ((sequence.over10 ?? 0) > 0 ? 1 : 0)
   )
 }
 

@@ -148,7 +148,6 @@ type TeamRow = {
   over10: number
   seqTotal: number
   seqAverage: number
-  seqPoints: number
   shotOn: number
   shotTotal: number
   fouls: number
@@ -163,7 +162,6 @@ type SortKey =
   | 'btwn7to9'
   | 'over10'
   | 'seqAverage'
-  | 'seqPoints'
   | 'shotPct'
   | 'fouls'
   | 'foulThrows'
@@ -178,17 +176,12 @@ const STICKY_TEAM =
 
 export type LeagueDashboardTableProps = {
   dashboard: LeagueDashboard
-  seqPointsByTeamId?: Record<number, number>
 }
 
 export default function LeagueDashboardTable({
   dashboard,
-  seqPointsByTeamId = {},
 }: LeagueDashboardTableProps) {
-  const baseRows = useMemo(
-    () => buildTeamRows(dashboard, seqPointsByTeamId),
-    [dashboard, seqPointsByTeamId],
-  )
+  const baseRows = useMemo(() => buildTeamRows(dashboard), [dashboard])
   const [sortKey, setSortKey] = useState<SortKey>('seqAverage')
   const [sortDir, setSortDir] = useState<SortDir>('desc')
   const [selectedId, setSelectedId] = useState<number | null>(null)
@@ -218,7 +211,6 @@ export default function LeagueDashboardTable({
   const shotOn = baseRows.reduce((sum, row) => sum + row.shotOn, 0)
   const shotTotal = baseRows.reduce((sum, row) => sum + row.shotTotal, 0)
   const fouls = baseRows.reduce((sum, row) => sum + row.fouls, 0)
-  const seqPointsTotal = baseRows.reduce((sum, row) => sum + row.seqPoints, 0)
   const gamesPlayed = Math.max(...baseRows.map((row) => row.games), 0)
   const averages = averageRow(baseRows)
 
@@ -236,8 +228,8 @@ export default function LeagueDashboardTable({
   }
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-hidden">
-      <div className="grid shrink-0 gap-3 sm:grid-cols-2 xl:grid-cols-5">
+    <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto">
+      <div className="grid shrink-0 gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <KpiCard
           label="Teams"
           value={String(teamCount)}
@@ -247,11 +239,6 @@ export default function LeagueDashboardTable({
           label="Seq. average"
           value={formatNumber(seqAverage, true)}
           hint={`${seqTotal} sequences`}
-        />
-        <KpiCard
-          label="Seq. points"
-          value={String(seqPointsTotal)}
-          hint={`avg ${formatNumber(seqPointsTotal / teamCount, true)} / team`}
         />
         <KpiCard
           label="Shot on target"
@@ -290,7 +277,7 @@ export default function LeagueDashboardTable({
         <OverviewPanel row={focus} isLeague={isLeague} teamCount={teamCount} />
       </section>
 
-      <section className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-border bg-card p-4">
+      <section className="flex min-h-0 flex-1 flex-col overflow-visible rounded-xl border border-border bg-card p-4">
         <div className="mb-3 shrink-0">
           <h2 className="text-sm font-semibold tracking-tight">Team board</h2>
           <p className="text-xs text-muted-foreground">
@@ -299,7 +286,7 @@ export default function LeagueDashboardTable({
           </p>
         </div>
 
-        <div className="min-h-0 flex-1 overflow-auto">
+        <div className="min-h-0 flex-1 overflow-x-auto overflow-y-hidden pb-1">
           <div className="min-w-[52rem]">
             <div
               className={cn(
@@ -360,13 +347,6 @@ export default function LeagueDashboardTable({
                 onSort={toggleSort}
               />
               <SortHeader
-                label="Seq pts"
-                sortKey="seqPoints"
-                activeKey={sortKey}
-                dir={sortDir}
-                onSort={toggleSort}
-              />
-              <SortHeader
                 label="Attempts"
                 sortKey="shotPct"
                 activeKey={sortKey}
@@ -391,7 +371,7 @@ export default function LeagueDashboardTable({
 
             {rows.map((row, index) => {
               const shotPct = percent(row.shotTotal, row.shotOn)
-              const selected = row.id === selectedId
+              const isSelected = row.id === selectedId
               return (
                 <button
                   key={row.id}
@@ -402,7 +382,7 @@ export default function LeagueDashboardTable({
                     BOARD_COLS,
                     index % 2 === 1 && 'bg-muted',
                     'hover:bg-muted/70',
-                    selected && 'bg-muted/80 ring-1 ring-border',
+                    isSelected && 'bg-muted/80 ring-1 ring-border',
                   )}
                 >
                   <div
@@ -440,18 +420,6 @@ export default function LeagueDashboardTable({
                     </div>
                     <div className="text-[11px] tabular-nums text-muted-foreground">
                       avg {formatNumber(row.seqAverage, true)}
-                    </div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-sm font-semibold tabular-nums">
-                      {row.seqPoints}
-                    </div>
-                    <div className="text-[11px] tabular-nums text-muted-foreground">
-                      avg{' '}
-                      {formatNumber(
-                        row.games > 0 ? row.seqPoints / row.games : 0,
-                        true,
-                      )}
                     </div>
                   </div>
                   <div className="text-center text-sm tabular-nums">
@@ -524,14 +492,6 @@ export default function LeagueDashboardTable({
                   avg {formatNumber(averages.seqAverage, true)}
                 </div>
               </div>
-              <div className="text-center">
-                <div className="text-sm font-semibold tabular-nums">
-                  {formatNumber(averages.seqPoints, true)}
-                </div>
-                <div className="text-[11px] tabular-nums text-muted-foreground">
-                  avg {formatNumber(averages.seqPointsPerGame, true)}
-                </div>
-              </div>
               <div className="text-center text-sm font-semibold tabular-nums">
                 {formatNumber(averages.shotOn, true)}/
                 {formatNumber(averages.shotTotal, true)}{' '}
@@ -589,11 +549,7 @@ function OverviewPanel({
             Sequence mix
           </div>
           <div className="text-xs tabular-nums text-muted-foreground">
-            {row.seqTotal} sequences · avg {formatNumber(row.seqAverage, true)}{' '}
-            · seq pts{' '}
-            <span className="font-medium text-foreground">
-              {isLeague ? formatNumber(row.seqPoints, true) : row.seqPoints}
-            </span>
+            {row.seqTotal} sequences · avg {formatNumber(row.seqAverage, true)}
           </div>
         </div>
         <div className="space-y-2 rounded-lg border border-border/70 bg-background/40 px-3 py-2.5">
@@ -640,15 +596,9 @@ function OverviewPanel({
         </div>
         <div className="grid grid-cols-3 gap-2">
           <StatTile
-            label="Seq points"
-            value={
-              isLeague ? formatNumber(row.seqPoints, true) : row.seqPoints
-            }
-            hint={
-              isLeague
-                ? `avg ${formatNumber(row.seqPoints / Math.max(teamCount, 1), true)} / team`
-                : `avg ${formatNumber(row.games > 0 ? row.seqPoints / row.games : 0, true)} / game`
-            }
+            label="Avg seq"
+            value={formatNumber(row.seqAverage, true)}
+            hint={isLeague ? 'Average per team' : 'This team'}
           />
           <StatTile
             label="Fouls committed"
@@ -796,7 +746,6 @@ function leagueAggregate(rows: TeamRow[]): TeamRow {
     over10: rows.reduce((sum, row) => sum + row.over10, 0),
     seqTotal: rows.reduce((sum, row) => sum + row.seqTotal, 0),
     seqAverage: rows.reduce((sum, row) => sum + row.seqAverage, 0) / n,
-    seqPoints: rows.reduce((sum, row) => sum + row.seqPoints, 0),
     shotOn: rows.reduce((sum, row) => sum + row.shotOn, 0),
     shotTotal: rows.reduce((sum, row) => sum + row.shotTotal, 0),
     fouls: rows.reduce((sum, row) => sum + row.fouls, 0),
@@ -804,10 +753,7 @@ function leagueAggregate(rows: TeamRow[]): TeamRow {
   }
 }
 
-function buildTeamRows(
-  dashboard: LeagueDashboard,
-  seqPointsByTeamId: Record<number, number>,
-): TeamRow[] {
+function buildTeamRows(dashboard: LeagueDashboard): TeamRow[] {
   const shot = shotEvent(dashboard.events)
   const fouls = foulEvent(dashboard.events)?.teams ?? []
   const foulThrows = foulThrowTeams(dashboard.events)
@@ -830,7 +776,6 @@ function buildTeamRows(
       over10: team.sequences?.over10 ?? 0,
       seqTotal: team.sequences?.total ?? 0,
       seqAverage: team.sequences?.average ?? 0,
-      seqPoints: seqPointsByTeamId[team.team_id] ?? 0,
       shotOn,
       shotTotal,
       fouls: totalFor(fouls, team.team_id),
@@ -871,10 +816,6 @@ function averageRow(rows: TeamRow[]) {
     over10: sum((row) => row.over10),
     seqTotal: sum((row) => row.seqTotal),
     seqAverage: sum((row) => row.seqAverage),
-    seqPoints: sum((row) => row.seqPoints),
-    seqPointsPerGame: sum((row) =>
-      row.games > 0 ? row.seqPoints / row.games : 0,
-    ),
     shotOn: sum((row) => row.shotOn),
     shotTotal: sum((row) => row.shotTotal),
     fouls: sum((row) => row.fouls),

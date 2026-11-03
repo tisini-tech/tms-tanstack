@@ -194,7 +194,7 @@ function RouteComponent() {
 
   if (!dashboardData || selectedTeamId == null) {
     return (
-      <div className="flex h-[calc(100dvh-7rem)] flex-col gap-2">
+      <div className="flex h-[calc(100dvh-7rem)] flex-col gap-2 overflow-y-auto">
         <div className="ml-auto flex flex-wrap items-center justify-end gap-2">
           <MetricsMultiSelect
             metrics={metrics}
@@ -220,7 +220,7 @@ function RouteComponent() {
 
   if (compId === '252') {
     return (
-      <div className="flex h-[calc(100dvh-7rem)] flex-col gap-2">
+      <div className="flex h-[calc(100dvh-7rem)] flex-col gap-2 overflow-y-auto">
         <div className="ml-auto flex flex-wrap items-center justify-end gap-2">
           <SimpleTeamReportDownload
             teamName={
@@ -240,7 +240,7 @@ function RouteComponent() {
         </div>
         <div
           className={cn(
-            'flex min-h-0 flex-1 flex-col transition-opacity',
+            'flex min-h-0 flex-1 flex-col overflow-y-auto transition-opacity',
             isLoading && 'pointer-events-none opacity-50',
           )}
         >
@@ -256,7 +256,7 @@ function RouteComponent() {
   }
 
   return (
-    <div className="flex h-[calc(100dvh-7rem)] flex-col gap-2">
+    <div className="flex h-[calc(100dvh-7rem)] flex-col gap-2 overflow-y-auto">
       <div className="flex w-full shrink-0 flex-wrap items-end justify-between gap-2">
         <DashboardKpiCards
           teamStats={teamStats}
@@ -300,8 +300,7 @@ function RouteComponent() {
 
 function sportCodeFromTeams(teams: Team[]) {
   for (const team of teams) {
-    const code =
-      typeof team.team_type === 'string' ? team.team_type.trim() : ''
+    const code = typeof team.team_type === 'string' ? team.team_type.trim() : ''
     if (code) return code
   }
   return 'football'

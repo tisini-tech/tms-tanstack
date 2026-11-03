@@ -1,5 +1,9 @@
 import z from 'zod'
-import { createFileRoute, getRouteApi, useRouterState } from '@tanstack/react-router'
+import {
+  createFileRoute,
+  getRouteApi,
+  useRouterState,
+} from '@tanstack/react-router'
 
 import { cn } from '#/lib/utils'
 import {
@@ -85,16 +89,20 @@ function RouteComponent() {
   const { seasonId, divisionId, categoryId } = Route.useSearch()
   const isLoading = useRouterState({ select: (state) => state.isLoading })
 
+  console.log('league-dashboard', dashboard)
+
   const seasonName =
     competition.seasons.find((entry) => entry.id === seasonId)?.name ?? ''
   const divisionName =
     competition.divisions.find((entry) => entry.id === divisionId)?.name ?? ''
+  const categories = Array.isArray(competition.categories)
+    ? competition.categories
+    : []
   const categoryName =
-    (competition.categories ?? []).find((entry) => entry.id === categoryId)
-      ?.name ?? ''
+    categories.find((entry) => entry.id === categoryId)?.name ?? ''
 
   return (
-    <div className="flex h-[calc(100dvh-7rem)] flex-col gap-2">
+    <div className="flex h-[calc(100dvh-7rem)] flex-col gap-2 overflow-y-auto">
       <div className="ml-auto">
         <SimpleLeagueReportDownload
           dashboard={dashboard}
@@ -107,14 +115,11 @@ function RouteComponent() {
       </div>
       <div
         className={cn(
-          'flex min-h-0 flex-1 flex-col transition-opacity',
+          'flex min-h-0 flex-1 flex-col overflow-y-auto transition-opacity',
           isLoading && 'pointer-events-none opacity-50',
         )}
       >
-        <LeagueDashboardTable
-          dashboard={dashboard}
-          seqPointsByTeamId={seqPointsByTeamId}
-        />
+        <LeagueDashboardTable dashboard={dashboard} />
       </div>
     </div>
   )
@@ -124,10 +129,12 @@ function seqPointsFromStandings(standings: CompetitionStandings | null) {
   const map: Record<number, number> = {}
   if (!standings) return map
 
-  const teams = [
-    ...(standings.standings ?? []),
-    ...(standings.stages ?? []).flatMap((stage) => stage.standings),
-  ]
+  const stageStandings = Array.isArray(standings.stages)
+    ? standings.stages.flatMap((stage) =>
+        Array.isArray(stage.standings) ? stage.standings : [],
+      )
+    : []
+  const teams = [...(Array.isArray(standings.standings) ? standings.standings : []), ...stageStandings]
 
   for (const team of teams) {
     map[team.id] = team.seq_points ?? 0
