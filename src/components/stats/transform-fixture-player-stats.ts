@@ -1,3 +1,4 @@
+import { getPercent } from '#/lib/utils'
 import type { FixturePlayerStats } from '#/lib/types'
 import {
   getDashSubEvent,
@@ -8,7 +9,6 @@ import {
   detectSport as detectSportKind,
   type SportKind as FullSportKind,
 } from '#/lib/sports/detect-sport'
-import { getPercent } from '#/lib/utils'
 
 /** Player-stats column sports supported in the on-screen table today. */
 export type SportKind = 'football' | 'rugby' | 'basketball'
@@ -178,6 +178,10 @@ function computeFootballValues(player: FixturePlayerStats) {
   const totalShots = shotInBoxTotal + shotOutBoxTotal
   const shotAcc = getPercent(totalShots, shotOnTarget)
 
+  const dribbles = getDashTotal('96', stats)
+  const dribblesComplete = getDashSubEvent('96', '154', stats)
+  const dribblesAcc = getPercent(dribbles, dribblesComplete)
+
   const crossRightComplete =
     getDashSubEvent('166', '426', stats) + getDashSubEvent('240', '618', stats)
   const crossRightTotal =
@@ -269,6 +273,7 @@ function computeFootballValues(player: FixturePlayerStats) {
     boxTouch: getDashTotal('155', stats),
     boxCarry: getDashTotal('154', stats),
     shots: ratio(shotOnTarget, totalShots, shotAcc),
+    dribbles: ratio(dribblesComplete, dribbles, dribblesAcc),
     crosses: ratio(crossComplete, crossTotal, crossAcc),
     pass: ratio(passComplete, passTotal, passAcc),
     progPass: ratio(progPassComplete, progPassTotal, progPassAcc),

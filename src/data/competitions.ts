@@ -69,6 +69,13 @@ export const getCompetitionRoundsFn = createServerFn({ method: 'GET' })
     return rounds
   })
 
+export const competitionRoundsQueryOptions = (competitionId: string, seasonId: string, divisionId?: string) =>
+  queryOptions({
+    queryKey: ['competitionRounds', competitionId, seasonId, divisionId],
+    queryFn: () => getCompetitionRoundsFn({ data: { competitionId, seasonId, divisionId } }),
+    enabled: competitionId.length > 0 && seasonId.length > 0,
+  })
+
 export const getCompetitionImagesFn = createServerFn({ method: 'GET' })
   .middleware([authFnMiddleware])
   .validator(

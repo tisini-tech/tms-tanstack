@@ -89,8 +89,6 @@ function RouteComponent() {
   const { seasonId, divisionId, categoryId } = Route.useSearch()
   const isLoading = useRouterState({ select: (state) => state.isLoading })
 
-  console.log('league-dashboard', dashboard)
-
   const seasonName =
     competition.seasons.find((entry) => entry.id === seasonId)?.name ?? ''
   const divisionName =

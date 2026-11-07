@@ -97,6 +97,7 @@ export interface Competition {
   country: Country
   logo: string
   description: string
+  match_type: string
   status: number
   seasons: Season[]
   divisions: Division[]
@@ -290,6 +291,11 @@ export interface TopPlayerStats {
   avg_rating: number
   matches_played: number
   total_minutes_played: number
+  att_rating: number
+  def_rating: number
+  gk_rating: number
+  clean_sheets: number
+  points_scored: number
   stats: PlayerStats[]
 }
 

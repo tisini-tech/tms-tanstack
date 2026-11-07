@@ -1,16 +1,11 @@
-import { Fragment, useMemo, useState } from 'react'
-import { ChevronDown, ChevronRight } from 'lucide-react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
-import { Button } from '#/components/ui/button'
-import type { TopPlayerStats } from '#/lib/types'
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '#/components/ui/select'
+import { cn } from '#/lib/utils'
+import { Input } from '#/components/ui/input'
+import { StatsPreview } from '#/components/stats/stats-preview'
+import { SPORT_CATEGORIES } from '#/components/stats/stats-columns'
+import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar'
+import type { TopPlayerRow } from '#/components/stats/transform-top-player-stats'
 import {
   Table,
   TableBody,
@@ -20,45 +15,134 @@ import {
   TableRow,
 } from '#/components/ui/table'
 
+export type PlayerPanelView =
+  'overall' | 'attacking' | 'defensive' | 'goalkeeping'
+
+export type StatMode = 'stats' | 'total-p90' | 'complete-p90'
+
+const statModes = [
+  { value: 'stats', label: 'Stats' },
+  { value: 'total-p90', label: 'Total P90' },
+  { value: 'complete-p90', label: 'Complete P90' },
+] as const
+
 interface TopPlayersTableProps {
-  players: TopPlayerStats[]
+  rows: TopPlayerRow[]
+  panelView?: PlayerPanelView
+  matchType?: string
+  statMode: StatMode
+  onStatModeChange: (mode: StatMode) => void
 }
 
-const ALL_TEAMS = 'all'
+const FOOTBALL_CATEGORY: Record<PlayerPanelView, string> = {
+  overall: 'Overall',
+  attacking: 'Attacking',
+  defensive: 'Defense',
+  goalkeeping: 'Goalkeeping',
+}
 
-export function TopPlayersTable({ players }: TopPlayersTableProps) {
-  const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set())
-  const [teamFilter, setTeamFilter] = useState(ALL_TEAMS)
+const RUGBY_CATEGORY: Record<Exclude<PlayerPanelView, 'goalkeeping'>, string> = {
+  overall: 'Overall',
+  attacking: 'Attacking',
+  defensive: 'Defense',
+}
 
-  const teams = useMemo(() => {
-    const byId = new Map<number, string>()
-    for (const player of players) {
-      byId.set(player.team_id, player.team_name)
-    }
-    return [...byId.entries()]
-      .map(([id, name]) => ({ id, name }))
-      .sort((a, b) => a.name.localeCompare(b.name))
-  }, [players])
+function isRugby(matchType: string) {
+  return matchType.toLowerCase().includes('rugby')
+}
 
-  const filteredPlayers = useMemo(() => {
-    if (teamFilter === ALL_TEAMS) return players
-    const teamId = Number(teamFilter)
-    return players.filter((player) => player.team_id === teamId)
-  }, [players, teamFilter])
+function isFootball(matchType: string) {
+  return matchType.toLowerCase().includes('football')
+}
 
-  const toggleRow = (playerId: number) => {
-    setExpandedRows((current) => {
-      const next = new Set(current)
-      if (next.has(playerId)) {
-        next.delete(playerId)
-      } else {
-        next.add(playerId)
-      }
-      return next
+function initials(name: string) {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? '')
+    .join('')
+}
+
+function formatRating(value: number | null | undefined) {
+  if (typeof value !== 'number' || Number.isNaN(value)) return '—'
+  return value.toFixed(2)
+}
+
+function columnValue(row: TopPlayerRow, key: string) {
+  if (key === 'matchesPlayed') return row.matchesPlayed
+  if (key === 'minutesPlayed') return row.minutesPlayed
+  if (key === 'cleanSheets') return row.cleanSheets
+  if (key === 'rating') return formatRating(row.rating)
+  if (key === 'attRating') return formatRating(row.attRating)
+  if (key === 'defRating') return formatRating(row.defRating)
+  if (key === 'gkRating') return formatRating(row.gkRating)
+  if (key === 'pointsScored') return row.pointsScored ?? '—'
+  if (key === 'offside') return row.values.offsides ?? '—'
+  return row.values[key] ?? '—'
+}
+
+export function TopPlayersTable({
+  rows,
+  panelView = 'overall',
+  matchType = 'football',
+  statMode,
+  onStatModeChange,
+}: TopPlayersTableProps) {
+  const [query, setQuery] = useState('')
+  const [previewId, setPreviewId] = useState<number | null>(null)
+  const frameRef = useRef<HTMLDivElement>(null)
+  const [scrollEdges, setScrollEdges] = useState({ left: false, right: false })
+  const rugby = isRugby(matchType)
+  const football = isFootball(matchType)
+  const rugbyView = panelView === 'goalkeeping' ? 'overall' : panelView
+  const columns = rugby
+    ? (SPORT_CATEGORIES.rugby[RUGBY_CATEGORY[rugbyView]] ??
+      SPORT_CATEGORIES.rugby.Overall)
+    : (SPORT_CATEGORIES.football[FOOTBALL_CATEGORY[panelView]] ??
+      SPORT_CATEGORIES.football.Overall)
+
+  const visibleRows = useMemo(() => {
+    const needle = query.trim().toLowerCase()
+    if (!needle) return rows
+    return rows.filter((row) => {
+      const name = row.name.toLowerCase()
+      const team = row.teamName.toLowerCase()
+      return name.includes(needle) || team.includes(needle)
     })
-  }
+  }, [rows, query])
 
-  if (players.length === 0) {
+  const preview =
+    visibleRows.find((row) => row.id === previewId) ??
+    rows.find((row) => row.id === previewId) ??
+    null
+
+  useEffect(() => {
+    const frame = frameRef.current
+    const scroller =
+      frame?.closest<HTMLElement>('[data-stats-scroll]') ??
+      frame?.querySelector<HTMLElement>('[data-slot=table-container]')
+    if (!scroller) return
+
+    const update = () => {
+      const max = scroller.scrollWidth - scroller.clientWidth
+      setScrollEdges({
+        left: scroller.scrollLeft > 4,
+        right: max - scroller.scrollLeft > 4,
+      })
+    }
+
+    update()
+    scroller.addEventListener('scroll', update, { passive: true })
+    const observer = new ResizeObserver(update)
+    observer.observe(scroller)
+    return () => {
+      scroller.removeEventListener('scroll', update)
+      observer.disconnect()
+    }
+  }, [columns, visibleRows.length])
+
+  if (rows.length === 0) {
     return (
       <div className="rounded-lg border p-8 text-center text-muted-foreground">
         No player stats available.
@@ -67,162 +151,131 @@ export function TopPlayersTable({ players }: TopPlayersTableProps) {
   }
 
   return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-end">
-        <Select
-          value={teamFilter}
-          onValueChange={(value) => setTeamFilter(value ?? ALL_TEAMS)}
-        >
-          <SelectTrigger className="w-[220px]" aria-label="Filter by team">
-            <SelectValue placeholder="All teams">
-              {teamFilter === ALL_TEAMS
-                ? 'All teams'
-                : (teams.find((team) => String(team.id) === teamFilter)?.name ??
-                  'All teams')}
-            </SelectValue>
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectItem value={ALL_TEAMS}>All teams</SelectItem>
-              {teams.map((team) => (
-                <SelectItem key={team.id} value={String(team.id)}>
-                  {team.name}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+    <div className="min-w-0 space-y-3">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <Input
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          placeholder="Search players"
+          aria-label="Search players"
+          className="w-full sm:w-[220px]"
+        />
+
+        {football ? (
+          <div
+            className="grid grid-cols-3 gap-1 rounded-xl border border-border bg-muted p-1"
+            role="tablist"
+            aria-label="Stat calculation"
+          >
+            {statModes.map((mode) => {
+              const selected = statMode === mode.value
+              return (
+                <button
+                  key={mode.value}
+                  type="button"
+                  role="tab"
+                  aria-selected={selected}
+                  onClick={() => onStatModeChange(mode.value)}
+                  className={cn(
+                    'inline-flex items-center justify-center rounded-lg px-3 py-1.5 text-xs font-semibold tracking-wide whitespace-nowrap transition-colors',
+                    selected
+                      ? 'bg-card text-foreground shadow-sm ring-1 ring-border'
+                      : 'text-muted-foreground hover:text-foreground',
+                  )}
+                >
+                  {mode.label}
+                </button>
+              )
+            })}
+          </div>
+        ) : null}
       </div>
 
-      <div className="overflow-hidden rounded-lg border">
-        <Table>
+      <div
+        ref={frameRef}
+        className="relative min-w-0 rounded-lg border border-border bg-card [&_[data-slot=table-container]]:overflow-visible!"
+      >
+        <Table className="w-max min-w-full">
           <TableHeader>
             <TableRow className="bg-muted/40 hover:bg-muted/40">
-              <TableHead>Player</TableHead>
-              <TableHead>Team</TableHead>
-              <TableHead className="text-center">Jersey</TableHead>
-              <TableHead className="text-center">Mins</TableHead>
-              <TableHead className="text-center">Matches</TableHead>
-              <TableHead className="text-center">Rating</TableHead>
-              <TableHead className="text-right">Stats</TableHead>
+              <TableHead className="sticky top-0 left-0 z-30 w-[9rem] max-w-[9rem] min-w-[9rem] border-b border-border bg-muted px-2 shadow-[8px_0_12px_-10px] shadow-black/40 sm:w-[11rem] sm:max-w-[11rem] sm:min-w-[11rem]">
+                Player
+              </TableHead>
+              {columns.map((column) => (
+                <TableHead
+                  key={column.key}
+                  className="sticky top-0 z-20 min-w-[4.5rem] border-b border-border bg-muted px-2 text-center text-xs leading-tight whitespace-normal"
+                >
+                  {column.label}
+                </TableHead>
+              ))}
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredPlayers.length === 0 ? (
+            {visibleRows.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={7}
+                  colSpan={columns.length + 1}
                   className="h-24 text-center text-muted-foreground"
                 >
-                  No players for this team.
+                  No players match your search.
                 </TableCell>
               </TableRow>
             ) : (
-              filteredPlayers.map((player) => {
-                const isExpanded = expandedRows.has(player.player_id)
-
-                return (
-                  <Fragment key={player.player_id}>
-                    <TableRow>
-                      <TableCell className="font-medium">
-                        {player.name}
-                      </TableCell>
-                      <TableCell>{player.team_name}</TableCell>
-                      <TableCell className="text-center">
-                        {player.jersey_no}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {player.total_minutes_played}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {player.matches_played}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {player.avg_rating.toFixed(2)}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          className="gap-1"
-                          onClick={() => toggleRow(player.player_id)}
-                        >
-                          {isExpanded ? (
-                            <ChevronDown className="size-4" />
-                          ) : (
-                            <ChevronRight className="size-4" />
-                          )}
-                          Stats
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-
-                    {isExpanded && (
-                      <TableRow className="bg-muted/20 hover:bg-muted/20">
-                        <TableCell colSpan={7} className="p-0">
-                          <PlayerStatsDetail stats={player.stats} />
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </Fragment>
-                )
-              })
+              visibleRows.map((row) => (
+                <TableRow key={row.id}>
+                  <TableCell className="sticky left-0 z-10 w-[9rem] max-w-[9rem] min-w-[9rem] bg-card px-2 shadow-[8px_0_12px_-10px] shadow-black/40 sm:w-[11rem] sm:max-w-[11rem] sm:min-w-[11rem]">
+                    <div className="flex items-center gap-1.5">
+                      <Avatar size="sm">
+                        <AvatarImage src={row.photo} alt={row.name} />
+                        <AvatarFallback>{initials(row.name)}</AvatarFallback>
+                      </Avatar>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => setPreviewId(row.id)}
+                            className="min-w-0 truncate text-left font-medium text-foreground hover:underline"
+                          >
+                            {row.name}
+                          </button>
+                          <span className="shrink-0 rounded bg-muted px-1.5 py-0.5 text-[10px] font-semibold tabular-nums text-muted-foreground">
+                            #{row.jerseyNumber}
+                          </span>
+                        </div>
+                        <p className="truncate text-xs text-muted-foreground">
+                          {row.teamName}
+                        </p>
+                      </div>
+                    </div>
+                  </TableCell>
+                  {columns.map((column) => (
+                    <TableCell
+                      key={column.key}
+                      className="px-2 text-center whitespace-nowrap tabular-nums"
+                    >
+                      {columnValue(row, column.key)}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
             )}
           </TableBody>
         </Table>
+        {scrollEdges.left ? (
+          <div className="pointer-events-none absolute inset-y-0 left-[9rem] z-10 w-6 bg-gradient-to-r from-card to-transparent sm:left-[11rem]" />
+        ) : null}
+        {scrollEdges.right ? (
+          <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-8 bg-gradient-to-l from-card to-transparent" />
+        ) : null}
       </div>
-    </div>
-  )
-}
-
-function PlayerStatsDetail({ stats }: { stats: TopPlayerStats['stats'] }) {
-  if (stats.length === 0) {
-    return (
-      <div className="px-4 py-3 text-sm text-muted-foreground">
-        No detailed stats for this player.
-      </div>
-    )
-  }
-
-  return (
-    <div className="border-t px-4 py-3">
-      <Table>
-        <TableHeader>
-          <TableRow className="hover:bg-transparent">
-            <TableHead>Event</TableHead>
-            <TableHead>Sub-event</TableHead>
-            <TableHead className="text-right">Total</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {stats.map((stat) => (
-            <Fragment key={stat.event_id}>
-              <TableRow>
-                <TableCell className="font-medium">{stat.event_name}</TableCell>
-                <TableCell className="text-muted-foreground">—</TableCell>
-                <TableCell className="text-right tabular-nums">
-                  {stat.total}
-                </TableCell>
-              </TableRow>
-              {stat.sub_events.map((subEvent) => (
-                <TableRow
-                  key={`${stat.event_id}-${subEvent.sub_event_id}`}
-                  className="bg-muted/10"
-                >
-                  <TableCell className="text-muted-foreground">└</TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {subEvent.sub_event_name}
-                  </TableCell>
-                  <TableCell className="text-right tabular-nums text-muted-foreground">
-                    {subEvent.total}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </Fragment>
-          ))}
-        </TableBody>
-      </Table>
+      <StatsPreview
+        player={preview}
+        open={preview != null}
+        onOpenChange={(open) => {
+          if (!open) setPreviewId(null)
+        }}
+      />
     </div>
   )
 }

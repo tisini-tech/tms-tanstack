@@ -10,6 +10,7 @@ import {
   HomeIcon,
   LayoutDashboardIcon,
   ListOrderedIcon,
+  PieChartIcon,
   SparklesIcon,
   Table2Icon,
   TrophyIcon,
@@ -138,11 +139,18 @@ export const competitionNavItems: NavItem[] = [
   },
   {
     to: '/competitions/$compId/stats',
-    label: 'Stats',
+    label: 'Player Stats',
     icon: BarChartIcon,
     activeOptions: { exact: false },
     needsCompId: true,
   },
+  // {
+  //   to: '/competitions/$compId/stats/teams',
+  //   label: 'Team Stats',
+  //   icon: PieChartIcon,
+  //   activeOptions: { exact: false },
+  //   needsCompId: true,
+  // },
   {
     to: '/competitions/$compId/standings',
     label: 'Standings',

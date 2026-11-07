@@ -34,14 +34,14 @@ export const getTeamsFn = createServerFn({ method: 'GET' })
     (
       data:
         | {
-            competitionId?: string
-            seasonId?: string
-            divisionId?: string
-            categoryId?: string
-            search?: string
-            pageSize?: number
-            teamType?: string
-          }
+          competitionId?: string
+          seasonId?: string
+          divisionId?: string
+          categoryId?: string
+          search?: string
+          pageSize?: number
+          teamType?: string
+        }
         | undefined,
     ) => ({
       competitionId: data?.competitionId?.trim() || undefined,
@@ -67,6 +67,14 @@ export const getTeamsFn = createServerFn({ method: 'GET' })
     )
     return response.results
   })
+
+export const teamsQueryOptions = (competitionId: string, seasonId: string, divisionId?: string, categoryId?: string) =>
+  queryOptions({
+    queryKey: ['teams', competitionId, seasonId, divisionId, categoryId],
+    queryFn: () => getTeamsFn({ data: { competitionId, seasonId, divisionId, categoryId } }),
+    enabled: competitionId.length > 0 && seasonId.length > 0,
+  })
+
 
 export const teamsByTypeQuery = (teamType: string) =>
   queryOptions({

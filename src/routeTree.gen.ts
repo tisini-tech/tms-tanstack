@@ -58,7 +58,6 @@ import { Route as DashboardContentCompetitionsCompIdPlayersIndexRouteImport } fr
 import { Route as DashboardContentCompetitionsCompIdPlayersCreateRouteImport } from './routes/_dashboard/_content/competitions/$compId/players/create'
 import { Route as DashboardContentCompetitionsCompIdStandingsIndexRouteImport } from './routes/_dashboard/_content/competitions/$compId/standings/index'
 import { Route as DashboardContentCompetitionsCompIdStatsIndexRouteImport } from './routes/_dashboard/_content/competitions/$compId/stats/index'
-import { Route as DashboardContentCompetitionsCompIdStatsTeamsRouteImport } from './routes/_dashboard/_content/competitions/$compId/stats/teams'
 import { Route as DashboardContentCompetitionsCompIdTeamsIndexRouteImport } from './routes/_dashboard/_content/competitions/$compId/teams/index'
 import { Route as DashboardContentCompetitionsCompIdFixturesFixIdIndexRouteImport } from './routes/_dashboard/_content/competitions/$compId/fixtures/$fixId/index'
 import { Route as DashboardContentCompetitionsCompIdFixturesFixIdPassSequenceRouteImport } from './routes/_dashboard/_content/competitions/$compId/fixtures/$fixId/pass-sequence'
@@ -352,12 +351,6 @@ const DashboardContentCompetitionsCompIdStatsIndexRoute =
     path: '/',
     getParentRoute: () => DashboardContentCompetitionsCompIdStatsRouteRoute,
   } as any)
-const DashboardContentCompetitionsCompIdStatsTeamsRoute =
-  DashboardContentCompetitionsCompIdStatsTeamsRouteImport.update({
-    id: '/teams',
-    path: '/teams',
-    getParentRoute: () => DashboardContentCompetitionsCompIdStatsRouteRoute,
-  } as any)
 const DashboardContentCompetitionsCompIdTeamsIndexRoute =
   DashboardContentCompetitionsCompIdTeamsIndexRouteImport.update({
     id: '/teams/',
@@ -469,7 +462,6 @@ export interface FileRoutesByFullPath {
   '/competitions/$compId/images': typeof DashboardContentCompetitionsCompIdSettingsImagesRoute
   '/competitions/$compId/fixtures/review': typeof DashboardContentCompetitionsCompIdFixturesReviewRoute
   '/competitions/$compId/players/create': typeof DashboardContentCompetitionsCompIdPlayersCreateRoute
-  '/competitions/$compId/stats/teams': typeof DashboardContentCompetitionsCompIdStatsTeamsRoute
   '/competitions/$compId/': typeof DashboardContentCompetitionsCompIdSettingsIndexRoute
   '/competitions/$compId/fixtures/': typeof DashboardContentCompetitionsCompIdFixturesIndexRoute
   '/competitions/$compId/leagues/': typeof DashboardContentCompetitionsCompIdLeaguesIndexRoute
@@ -523,7 +515,6 @@ export interface FileRoutesByTo {
   '/competitions/$compId/images': typeof DashboardContentCompetitionsCompIdSettingsImagesRoute
   '/competitions/$compId/fixtures/review': typeof DashboardContentCompetitionsCompIdFixturesReviewRoute
   '/competitions/$compId/players/create': typeof DashboardContentCompetitionsCompIdPlayersCreateRoute
-  '/competitions/$compId/stats/teams': typeof DashboardContentCompetitionsCompIdStatsTeamsRoute
   '/competitions/$compId/fixtures': typeof DashboardContentCompetitionsCompIdFixturesIndexRoute
   '/competitions/$compId/leagues': typeof DashboardContentCompetitionsCompIdLeaguesIndexRoute
   '/competitions/$compId/players': typeof DashboardContentCompetitionsCompIdPlayersIndexRoute
@@ -585,7 +576,6 @@ export interface FileRoutesById {
   '/_dashboard/_content/competitions/$compId/_settings/images': typeof DashboardContentCompetitionsCompIdSettingsImagesRoute
   '/_dashboard/_content/competitions/$compId/fixtures/review': typeof DashboardContentCompetitionsCompIdFixturesReviewRoute
   '/_dashboard/_content/competitions/$compId/players/create': typeof DashboardContentCompetitionsCompIdPlayersCreateRoute
-  '/_dashboard/_content/competitions/$compId/stats/teams': typeof DashboardContentCompetitionsCompIdStatsTeamsRoute
   '/_dashboard/_content/competitions/$compId/_settings/': typeof DashboardContentCompetitionsCompIdSettingsIndexRoute
   '/_dashboard/_content/competitions/$compId/fixtures/': typeof DashboardContentCompetitionsCompIdFixturesIndexRoute
   '/_dashboard/_content/competitions/$compId/leagues/': typeof DashboardContentCompetitionsCompIdLeaguesIndexRoute
@@ -644,7 +634,6 @@ export interface FileRouteTypes {
     | '/competitions/$compId/images'
     | '/competitions/$compId/fixtures/review'
     | '/competitions/$compId/players/create'
-    | '/competitions/$compId/stats/teams'
     | '/competitions/$compId/'
     | '/competitions/$compId/fixtures/'
     | '/competitions/$compId/leagues/'
@@ -698,7 +687,6 @@ export interface FileRouteTypes {
     | '/competitions/$compId/images'
     | '/competitions/$compId/fixtures/review'
     | '/competitions/$compId/players/create'
-    | '/competitions/$compId/stats/teams'
     | '/competitions/$compId/fixtures'
     | '/competitions/$compId/leagues'
     | '/competitions/$compId/players'
@@ -759,7 +747,6 @@ export interface FileRouteTypes {
     | '/_dashboard/_content/competitions/$compId/_settings/images'
     | '/_dashboard/_content/competitions/$compId/fixtures/review'
     | '/_dashboard/_content/competitions/$compId/players/create'
-    | '/_dashboard/_content/competitions/$compId/stats/teams'
     | '/_dashboard/_content/competitions/$compId/_settings/'
     | '/_dashboard/_content/competitions/$compId/fixtures/'
     | '/_dashboard/_content/competitions/$compId/leagues/'
@@ -1131,13 +1118,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardContentCompetitionsCompIdStatsIndexRouteImport
       parentRoute: typeof DashboardContentCompetitionsCompIdStatsRouteRoute
     }
-    '/_dashboard/_content/competitions/$compId/stats/teams': {
-      id: '/_dashboard/_content/competitions/$compId/stats/teams'
-      path: '/teams'
-      fullPath: '/competitions/$compId/stats/teams'
-      preLoaderRoute: typeof DashboardContentCompetitionsCompIdStatsTeamsRouteImport
-      parentRoute: typeof DashboardContentCompetitionsCompIdStatsRouteRoute
-    }
     '/_dashboard/_content/competitions/$compId/teams/': {
       id: '/_dashboard/_content/competitions/$compId/teams/'
       path: '/teams'
@@ -1271,14 +1251,11 @@ const DashboardContentCompetitionsCompIdSettingsRouteRouteWithChildren =
   )
 
 interface DashboardContentCompetitionsCompIdStatsRouteRouteChildren {
-  DashboardContentCompetitionsCompIdStatsTeamsRoute: typeof DashboardContentCompetitionsCompIdStatsTeamsRoute
   DashboardContentCompetitionsCompIdStatsIndexRoute: typeof DashboardContentCompetitionsCompIdStatsIndexRoute
 }
 
 const DashboardContentCompetitionsCompIdStatsRouteRouteChildren: DashboardContentCompetitionsCompIdStatsRouteRouteChildren =
   {
-    DashboardContentCompetitionsCompIdStatsTeamsRoute:
-      DashboardContentCompetitionsCompIdStatsTeamsRoute,
     DashboardContentCompetitionsCompIdStatsIndexRoute:
       DashboardContentCompetitionsCompIdStatsIndexRoute,
   }
