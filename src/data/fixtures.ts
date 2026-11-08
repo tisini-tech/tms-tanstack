@@ -1,6 +1,6 @@
 import { apiService } from '#/lib/api'
-import { authFnMiddleware } from '#/middlewares/auth'
 import { queryOptions } from '@tanstack/react-query'
+import { authFnMiddleware } from '#/middlewares/auth'
 import { createServerFn } from '@tanstack/react-start'
 
 import type {
@@ -139,11 +139,30 @@ export const getFixtureTypesFn = createServerFn({ method: 'GET' })
 
 export const getFixturesFn = createServerFn({ method: 'GET' })
   .middleware([authFnMiddleware])
-  .validator((data?: { pageSize?: number }) => data ?? {})
+  .validator(
+    (data?: {
+      compId?: string
+      seasonId?: number
+      divisionId?: number
+      categoryId?: number
+      matchDate?: string
+      matchType?: number
+    }) => data ?? {},
+  )
   .handler(async ({ data }) => {
-    const pageSize = data.pageSize ?? 100
+    const params = new URLSearchParams()
+
+    params.set('page_size', '500')
+
+    if (data.compId) params.set('comp_id', data.compId)
+    if (data.seasonId) params.set('season_id', data.seasonId.toString())
+    if (data.divisionId) params.set('division_id', data.divisionId.toString())
+    if (data.categoryId) params.set('category_id', data.categoryId.toString())
+    if (data.matchDate) params.set('match_date', data.matchDate)
+    if (data.matchType) params.set('match_type', data.matchType.toString())
+
     const fixtures = await apiService.get<PaginatedResponse<Fixture>>(
-      `/fixtures?page_size=${pageSize}`,
+      `/fixtures?${params.toString()}`,
     )
 
     return fixtures

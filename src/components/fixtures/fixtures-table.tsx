@@ -1,10 +1,7 @@
 import { useState } from 'react'
-import { Link, useParams } from '@tanstack/react-router'
 import type { ColumnDef } from '@tanstack/react-table'
 
 import { Input } from '../ui/input'
-import { Button } from '../ui/button'
-import type { Fixture } from '#/lib/types'
 import {
   flexRender,
   getCoreRowModel,
@@ -20,7 +17,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { PlusIcon } from 'lucide-react'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -31,8 +27,6 @@ export function DataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
-  const { compId } = useParams({ strict: false }) as { compId?: string }
-  const [rowSelection, setRowSelection] = useState({})
   const [globalFilter, setGlobalFilter] = useState<string>('')
 
   const table = useReactTable({
@@ -40,51 +34,22 @@ export function DataTable<TData, TValue>({
     columns,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    onRowSelectionChange: setRowSelection,
     onGlobalFilterChange: setGlobalFilter,
     state: {
-      rowSelection,
       globalFilter,
     },
     globalFilterFn: 'includesString',
   })
 
-  const getSelectedFixtures = () => {
-    return table.getSelectedRowModel().flatRows.map((row) => row.original)
-  }
-
-  const getReviewableFixtureIds = (): number[] => {
-    return (getSelectedFixtures() as Fixture[])
-      .filter((fixture) => fixture.match_status !== 'notstarted')
-      .map((fixture) => fixture.id)
-  }
-
   return (
     <>
-      <div className="flex items-center justify-between py-4 gap-4">
+      <div className="flex items-center py-4">
         <Input
           value={globalFilter ?? ''}
           onChange={(e) => setGlobalFilter(String(e.target.value))}
           placeholder="Search all columns..."
           className="max-w-sm"
         />
-
-        <Button
-          type="button"
-          disabled={getReviewableFixtureIds().length === 0 || !compId}
-          render={
-            <Link
-              to="/competitions/$compId/fixtures/review"
-              params={{ compId: compId ?? '' }}
-              search={{
-                ids: getReviewableFixtureIds().join(','),
-              }}
-            />
-          }
-          nativeButton={false}
-        >
-          Review Selected
-        </Button>
       </div>
 
       <div className="overflow-hidden rounded-md border">
@@ -110,10 +75,7 @@ export function DataTable<TData, TValue>({
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
-                >
+                <TableRow key={row.id}>
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
                       {flexRender(

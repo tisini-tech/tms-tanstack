@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import { z } from 'zod'
 
+import { getFixtureReviewStatsFn } from '#/data/fixtures'
 import { AgentsReviewButton } from '#/components/fixtures/agents-btn'
 import { AgentsReviewTable } from '#/components/fixtures/review/agents-table'
 import {
@@ -16,9 +17,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '#/components/ui/select'
-import { getFixtureReviewStatsFn } from '#/data/fixtures'
 
-export const Route = createFileRoute('/_dashboard/_content/competitions/$compId/fixtures/review')(
+export const Route = createFileRoute('/_dashboard/_content/admin/fixtures/review')(
   {
     validateSearch: z.object({
       ids: z.string().optional(),

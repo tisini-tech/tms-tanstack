@@ -2,10 +2,9 @@ import type { Fixture } from '#/lib/types'
 import type { ColumnDef } from '@tanstack/react-table'
 import { Button } from '../ui/button'
 import { Link, useSearch } from '@tanstack/react-router'
-import { Checkbox } from '../ui/checkbox'
 
 function FixtureMoreLink({ fixture }: { fixture: Fixture }) {
-  const { teamId, teamName, seasonId, divisionId, categoryId } = useSearch({
+  const { seasonId, divisionId, categoryId } = useSearch({
     from: '/_dashboard/_content/competitions/$compId/fixtures/',
   })
 
@@ -19,13 +18,7 @@ function FixtureMoreLink({ fixture }: { fixture: Fixture }) {
             compId: String(fixture.competition.id),
             fixId: fixture.id.toString(),
           }}
-          search={{
-            seasonId,
-            divisionId,
-            categoryId,
-            teamId,
-            teamName,
-          }}
+          search={{ seasonId, divisionId, categoryId }}
         />
       }
       nativeButton={false}
@@ -36,28 +29,6 @@ function FixtureMoreLink({ fixture }: { fixture: Fixture }) {
 }
 
 export const columns: ColumnDef<Fixture>[] = [
-  {
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={table.getIsAllPageRowsSelected()}
-        indeterminate={
-          table.getIsSomePageRowsSelected() && !table.getIsAllPageRowsSelected()
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
   {
     accessorKey: 'id',
     header: 'ID',

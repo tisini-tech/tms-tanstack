@@ -2,6 +2,7 @@ import type { ColumnDef } from '@tanstack/react-table'
 import { Link } from '@tanstack/react-router'
 
 import { Button } from '#/components/ui/button'
+import { Checkbox } from '#/components/ui/checkbox'
 import type { Fixture } from '#/lib/types'
 
 function label(value: { name: string } | null | undefined) {
@@ -17,6 +18,29 @@ function schedule(fixture: Fixture) {
 }
 
 export const adminFixtureColumns: ColumnDef<Fixture>[] = [
+  {
+    id: 'select',
+    enableSorting: false,
+    enableHiding: false,
+    enableGlobalFilter: false,
+    header: ({ table }) => (
+      <Checkbox
+        checked={table.getIsAllPageRowsSelected()}
+        indeterminate={
+          table.getIsSomePageRowsSelected() && !table.getIsAllPageRowsSelected()
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+      />
+    ),
+  },
   {
     id: 'match',
     accessorFn: (row) =>

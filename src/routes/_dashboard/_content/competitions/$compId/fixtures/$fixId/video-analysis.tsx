@@ -45,11 +45,14 @@ function RouteComponent() {
   const allowedTeamIds = reportSidesForRole({
     role,
     userId: user?.id,
+    userName: user?.name,
     teamIds,
     homeTeamId: fixture.home_team_id,
     awayTeamId: fixture.away_team_id,
     homeAgentId: homeAgent?.agent_id,
     awayAgentId: awayAgent?.agent_id,
+    homeAgentName: homeAgent?.agent_name,
+    awayAgentName: awayAgent?.agent_name,
   }).map((side) =>
     side === 'home' ? fixture.home_team_id : fixture.away_team_id,
   )

@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import {
   flexRender,
   getCoreRowModel,
@@ -10,6 +10,7 @@ import {
   type ColumnFiltersState,
   type FilterFn,
   type PaginationState,
+  type RowSelectionState,
   type SortingState,
 } from '@tanstack/react-table'
 
@@ -37,6 +38,9 @@ interface DataTableProps<TData, TValue> {
   /** When set, the search box calls this instead of filtering the loaded rows. */
   onSearchChange?: (value: string) => void
   searching?: boolean
+  enableRowSelection?: boolean
+  getRowId?: (row: TData) => string
+  onSelectedRowsChange?: (rows: TData[]) => void
 }
 
 export function DataTable<TData, TValue>({
@@ -50,11 +54,15 @@ export function DataTable<TData, TValue>({
   pageSize,
   onSearchChange,
   searching = false,
+  enableRowSelection = false,
+  getRowId,
+  onSelectedRowsChange,
 }: DataTableProps<TData, TValue>) {
   const manualSearch = onSearchChange != null
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [globalFilter, setGlobalFilter] = useState('')
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: pageSize ?? 20,
@@ -63,6 +71,8 @@ export function DataTable<TData, TValue>({
   const table = useReactTable({
     data,
     columns,
+    getRowId,
+    enableRowSelection,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -75,14 +85,32 @@ export function DataTable<TData, TValue>({
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onGlobalFilterChange: setGlobalFilter,
+    ...(enableRowSelection ? { onRowSelectionChange: setRowSelection } : {}),
     globalFilterFn: globalFilterFn ?? 'includesString',
     state: {
       sorting,
       columnFilters,
       globalFilter: manualSearch ? '' : globalFilter,
       ...(pageSize ? { pagination } : {}),
+      ...(enableRowSelection ? { rowSelection } : {}),
     },
   })
+
+  const selectedKey = enableRowSelection
+    ? table
+        .getSelectedRowModel()
+        .rows.map((row) => row.id)
+        .join(',')
+    : ''
+
+  useEffect(() => {
+    if (!enableRowSelection || !onSelectedRowsChange) return
+    onSelectedRowsChange(
+      table.getSelectedRowModel().rows.map((row) => row.original),
+    )
+    // `selectedKey` is the selection identity. `table` is read from this render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [enableRowSelection, onSelectedRowsChange, selectedKey])
 
   const filteredCount = table.getFilteredRowModel().rows.length
   const pageStart =
@@ -151,7 +179,10 @@ export function DataTable<TData, TValue>({
           <TableBody>
             {table.getRowModel().rows.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() ? 'selected' : undefined}
+                >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
                       key={cell.id}

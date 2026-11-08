@@ -32,6 +32,7 @@ import type {
 interface MatchReportDownloadProps {
   role: string
   userId?: number
+  userName?: string
   teamIds: number[]
   teamStats: FixtureTeamStats
   playerStats: FixturePlayerStats[]
@@ -169,11 +170,14 @@ export function MatchReportDownload(props: MatchReportDownloadProps) {
   const sides = reportSidesForRole({
     role,
     userId,
+    userName: props.userName,
     teamIds,
     homeTeamId: teamStats.fixture.home_team_id,
     awayTeamId: teamStats.fixture.away_team_id,
     homeAgentId: homeAgent?.agent_id,
     awayAgentId: awayAgent?.agent_id,
+    homeAgentName: homeAgent?.agent_name,
+    awayAgentName: awayAgent?.agent_name,
   })
 
   if (sides.length === 0) return null
