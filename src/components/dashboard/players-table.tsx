@@ -248,14 +248,17 @@ export default function PlayersTable({
     [playerStats, filters],
   )
 
+  const selectedEventIds = [
+    ...new Set(filters.events.map((item) => item.eventId)),
+  ]
+  const stackBySubEvent =
+    (selectedEventIds.length === 1 &&
+      filters.events.every((item) => item.subEventId == null)) ||
+    filters.events.some((item) => item.subEventId != null)
+
   const { rows, legend } = useMemo(
-    () =>
-      buildBars(
-        filteredStats,
-        nameById,
-        filters.events.some((item) => item.subEventId != null),
-      ),
-    [filteredStats, nameById, filters.events],
+    () => buildBars(filteredStats, nameById, stackBySubEvent),
+    [filteredStats, nameById, stackBySubEvent],
   )
 
   const maxTotal = rows[0]?.total ?? 0
@@ -277,11 +280,13 @@ export default function PlayersTable({
   }
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-xl border border-border bg-card">
+    <div className="flex h-[min(70dvh,36rem)] min-h-48 min-w-0 flex-col overflow-hidden rounded-xl border border-border bg-card">
       <div className="shrink-0 border-b border-border px-4 py-3">
         <h2 className="text-sm font-medium text-heading">Totals by player</h2>
         <p className="text-xs text-muted-foreground">
-          Stacked event totals for the season, sorted by volume.
+          {stackBySubEvent
+            ? 'Stacked by sub-event for the season, sorted by volume.'
+            : 'Stacked event totals for the season, sorted by volume.'}
         </p>
       </div>
 

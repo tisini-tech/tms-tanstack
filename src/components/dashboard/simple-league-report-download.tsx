@@ -24,24 +24,19 @@ const ON_TARGET_SUB_IDS = new Set([606, 610, 422, 405])
 
 export function SimpleLeagueReportDownload({
   dashboard,
-  seqPointsByTeamId = {},
   competitionName,
   seasonName,
   divisionName,
   categoryName,
 }: {
   dashboard: LeagueDashboard
-  seqPointsByTeamId?: Record<number, number>
   competitionName?: string
   seasonName?: string
   divisionName?: string
   categoryName?: string
 }) {
   const [ready, setReady] = useState(false)
-  const report = useMemo(
-    () => buildLeagueVisPdfData(dashboard, seqPointsByTeamId),
-    [dashboard, seqPointsByTeamId],
-  )
+  const report = useMemo(() => buildLeagueVisPdfData(dashboard), [dashboard])
 
   useEffect(() => {
     let cancelled = false
@@ -90,25 +85,21 @@ export function SimpleLeagueReportDownload({
   )
 }
 
-function buildLeagueVisPdfData(
-  dashboard: LeagueDashboard,
-  seqPointsByTeamId: Record<number, number>,
-): {
+function buildLeagueVisPdfData(dashboard: LeagueDashboard): {
   season: SimpleLeagueSeasonKpis
   teams: SimpleLeagueTeamRow[]
 } {
   const shot = shotEvent(dashboard.events)
+  const faced = shotEvent(opponentEvents(dashboard.opponent_stats))
   const fouls = foulEvent(dashboard.events)?.teams ?? []
   const foulThrows = foulThrowTeams(dashboard.events)
 
   const teams: SimpleLeagueTeamRow[] = dashboard.teams
     .map((team) => {
-      const shotOn = shot
-        ? shot.sub_events
-            .filter(isOnTarget)
-            .reduce((sum, sub) => sum + totalFor(sub.teams, team.team_id), 0)
-        : 0
+      const shotOn = onTargetFor(shot, team.team_id)
       const shotTotal = shot ? totalFor(shot.teams, team.team_id) : 0
+      const facedOn = onTargetFor(faced, team.team_id)
+      const facedTotal = faced ? totalFor(faced.teams, team.team_id) : 0
 
       return {
         name: team.name,
@@ -119,9 +110,10 @@ function buildLeagueVisPdfData(
         over10: team.sequences?.over10 ?? 0,
         seqTotal: team.sequences?.total ?? 0,
         seqAverage: team.sequences?.average ?? 0,
-        seqPoints: seqPointsByTeamId[team.team_id] ?? 0,
         shotOn,
         shotTotal,
+        facedOn,
+        facedTotal,
         fouls: totalFor(fouls, team.team_id),
         foulThrows: totalFor(foulThrows, team.team_id),
       }
@@ -135,7 +127,6 @@ function buildLeagueVisPdfData(
   const seqTotal = teams.reduce((sum, team) => sum + team.seqTotal, 0)
   const seqAverage =
     teams.reduce((sum, team) => sum + team.seqAverage, 0) / teamCount
-  const seqPointsTotal = teams.reduce((sum, team) => sum + team.seqPoints, 0)
   const shotOn = teams.reduce((sum, team) => sum + team.shotOn, 0)
   const shotTotal = teams.reduce((sum, team) => sum + team.shotTotal, 0)
   const foulsTotal = teams.reduce((sum, team) => sum + team.fouls, 0)
@@ -146,8 +137,6 @@ function buildLeagueVisPdfData(
       gamesMax: Math.max(...teams.map((team) => team.games), 0),
       seqAverage,
       seqTotal,
-      seqPointsTotal,
-      seqPointsAvg: seqPointsTotal / teamCount,
       shotOn,
       shotTotal,
       fouls: foulsTotal,
@@ -158,6 +147,20 @@ function buildLeagueVisPdfData(
 
 function shotEvent(events: LeagueDashboardEvent[]) {
   return events.find((event) => event.event_id === SHOT)
+}
+
+function opponentEvents(
+  value: LeagueDashboardEvent[] | LeagueDashboardEvent | null | undefined,
+) {
+  if (!value) return []
+  return Array.isArray(value) ? value : [value]
+}
+
+function onTargetFor(event: LeagueDashboardEvent | undefined, teamId: number) {
+  if (!event) return 0
+  return event.sub_events
+    .filter(isOnTarget)
+    .reduce((sum, sub) => sum + totalFor(sub.teams, teamId), 0)
 }
 
 function foulEvent(events: LeagueDashboardEvent[]) {

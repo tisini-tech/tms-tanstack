@@ -8,8 +8,6 @@ export type SimpleTeamSeasonKpis = {
   games: number
   seqAverage: number
   seqTotal: number
-  seqPointsTotal: number
-  seqPointsAvg: number
   shotOn: number
   shotTotal: number
   fouls: number
@@ -24,7 +22,6 @@ export type SimpleTeamMatchOverview = {
   over10: number
   seqTotal: number
   seqAverage: number
-  seqPoints: number
   shotOn: number
   shotTotal: number
   facedOn: number
@@ -46,7 +43,7 @@ const weightings = [
   0.06, // 4-6
   0.06, // 7-9
   0.06, // 10+
-  0.14, // seq (pts · tot · avg)
+  0.12, // seq (tot · avg)
   0.13, // attempts
   0.14, // attempts faced
   0.07, // fouls
@@ -85,11 +82,6 @@ export const GenSimpleTeamPDF: FC<GenSimpleTeamPDFProps> = ({
               label="Seq. average"
               value={formatNumber(season.seqAverage, true)}
               hint={`${season.seqTotal} sequences`}
-            />
-            <KpiCard
-              label="Seq. points"
-              value={String(season.seqPointsTotal)}
-              hint={`avg ${formatNumber(season.seqPointsAvg, true)} / game`}
             />
             <KpiCard
               label="Shot on target"
@@ -139,7 +131,9 @@ export const GenSimpleTeamPDF: FC<GenSimpleTeamPDFProps> = ({
                   <TD style={rowStyle}>{match.btwn7to9}</TD>
                   <TD style={rowStyle}>{match.over10}</TD>
                   <TD style={styles.tdSeq}>
-                    <Text style={styles.seqPts}>{match.seqPoints} pts</Text>
+                    <Text style={styles.seqPts}>
+                      {formatNumber(match.seqAverage, true)}
+                    </Text>
                     <Text style={styles.seqMeta}>
                       {match.seqTotal} tot · avg{' '}
                       {formatNumber(match.seqAverage, true)}

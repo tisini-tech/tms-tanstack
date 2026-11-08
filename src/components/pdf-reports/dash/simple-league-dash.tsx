@@ -9,8 +9,6 @@ export type SimpleLeagueSeasonKpis = {
   gamesMax: number
   seqAverage: number
   seqTotal: number
-  seqPointsTotal: number
-  seqPointsAvg: number
   shotOn: number
   shotTotal: number
   fouls: number
@@ -25,9 +23,10 @@ export type SimpleLeagueTeamRow = {
   over10: number
   seqTotal: number
   seqAverage: number
-  seqPoints: number
   shotOn: number
   shotTotal: number
+  facedOn: number
+  facedTotal: number
   fouls: number
   foulThrows: number
 }
@@ -46,10 +45,10 @@ const weightings = [
   0.05, // 7-9
   0.05, // 10+
   0.11, // seq
-  0.08, // seq pts
-  0.14, // attempts
-  0.09, // fouls
-  0.09, // throwin
+  0.12, // attempts
+  0.12, // attempts faced
+  0.08, // fouls
+  0.08, // throwin
 ]
 
 export const GenSimpleLeaguePDF: FC<LeaguePDFProps> = ({
@@ -83,11 +82,6 @@ export const GenSimpleLeaguePDF: FC<LeaguePDFProps> = ({
               hint={`${season.seqTotal} sequences`}
             />
             <KpiCard
-              label="Seq. points"
-              value={String(season.seqPointsTotal)}
-              hint={`avg ${formatNumber(season.seqPointsAvg, true)} / team`}
-            />
-            <KpiCard
               label="Shot on target"
               value={`${shotPct}%`}
               hint={`${season.shotOn}/${season.shotTotal}`}
@@ -113,14 +107,15 @@ export const GenSimpleLeaguePDF: FC<LeaguePDFProps> = ({
                 <TD style={styles.th}>7–9</TD>
                 <TD style={styles.th}>10+</TD>
                 <TD style={styles.th}>Seq</TD>
-                <TD style={styles.th}>Seq pts</TD>
                 <TD style={styles.th}>Attempts</TD>
+                <TD style={styles.th}>Att faced</TD>
                 <TD style={styles.th}>Fouls</TD>
                 <TD style={styles.th}>Throw-in</TD>
               </TH>
               {teams.map((team, index) => {
                 const rowStyle = index % 2 === 1 ? styles.tdAlt : styles.td
                 const attempts = `${team.shotOn}/${team.shotTotal} (${percent(team.shotTotal, team.shotOn)}%)`
+                const faced = `${team.facedOn}/${team.facedTotal} (${percent(team.facedTotal, team.facedOn)}%)`
                 return (
                   <TR key={team.name}>
                     <TD style={styles.tdTeam}>
@@ -137,17 +132,8 @@ export const GenSimpleLeaguePDF: FC<LeaguePDFProps> = ({
                         avg {formatNumber(team.seqAverage, true)}
                       </Text>
                     </TD>
-                    <TD style={styles.tdStack}>
-                      <Text style={styles.stackMain}>{team.seqPoints}</Text>
-                      <Text style={styles.stackMeta}>
-                        avg{' '}
-                        {formatNumber(
-                          team.games > 0 ? team.seqPoints / team.games : 0,
-                          true,
-                        )}
-                      </Text>
-                    </TD>
                     <TD style={rowStyle}>{attempts}</TD>
+                    <TD style={rowStyle}>{faced}</TD>
                     <TD style={styles.tdStack}>
                       <Text style={styles.stackMain}>{team.fouls}</Text>
                       <Text style={styles.stackMeta}>
@@ -198,18 +184,15 @@ export const GenSimpleLeaguePDF: FC<LeaguePDFProps> = ({
                     avg {formatNumber(averages.seqAverage, true)}
                   </Text>
                 </TD>
-                <TD style={styles.tdAvgStack}>
-                  <Text style={styles.stackMain}>
-                    {formatNumber(averages.seqPoints, true)}
-                  </Text>
-                  <Text style={styles.stackMeta}>
-                    avg {formatNumber(averages.seqPointsPerGame, true)}
-                  </Text>
-                </TD>
                 <TD style={styles.tdAvg}>
                   {formatNumber(averages.shotOn, true)}/
                   {formatNumber(averages.shotTotal, true)} (
                   {percent(averages.shotTotal, averages.shotOn)}%)
+                </TD>
+                <TD style={styles.tdAvg}>
+                  {formatNumber(averages.facedOn, true)}/
+                  {formatNumber(averages.facedTotal, true)} (
+                  {percent(averages.facedTotal, averages.facedOn)}%)
                 </TD>
                 <TD style={styles.tdAvgStack}>
                   <Text style={styles.stackMain}>
@@ -267,12 +250,10 @@ function averageRow(teams: SimpleLeagueTeamRow[]) {
     over10: sum((row) => row.over10),
     seqTotal: sum((row) => row.seqTotal),
     seqAverage: sum((row) => row.seqAverage),
-    seqPoints: sum((row) => row.seqPoints),
-    seqPointsPerGame: sum((row) =>
-      row.games > 0 ? row.seqPoints / row.games : 0,
-    ),
     shotOn: sum((row) => row.shotOn),
     shotTotal: sum((row) => row.shotTotal),
+    facedOn: sum((row) => row.facedOn),
+    facedTotal: sum((row) => row.facedTotal),
     fouls: sum((row) => row.fouls),
     foulThrows: sum((row) => row.foulThrows),
     foulsPerGame: sum((row) => (row.games > 0 ? row.fouls / row.games : 0)),

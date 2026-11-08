@@ -128,7 +128,7 @@ export default function TeamDashboardSimple({
   }
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto">
+    <div className="flex min-w-0 flex-col gap-4">
       <div className="shrink-0 space-y-4">
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <KpiCard
@@ -181,11 +181,11 @@ export default function TeamDashboardSimple({
       </div>
 
       <Section
-        className="flex min-h-0 flex-1 flex-col overflow-visible"
+        className="min-w-0"
         title="Match board"
         subtitle="Compare every game — select a match to filter the overview"
       >
-        <div className="min-h-0 flex-1 overflow-x-auto overflow-y-hidden pb-1">
+        <div className="scrollbar-thin overflow-x-auto pb-1">
           <div className="min-w-[52rem]">
             <MatchBoardHeader />
             {matchRows.map((row) => (

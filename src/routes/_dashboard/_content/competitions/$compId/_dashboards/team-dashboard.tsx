@@ -220,7 +220,7 @@ function RouteComponent() {
 
   if (compId === '252') {
     return (
-      <div className="flex h-[calc(100dvh-7rem)] flex-col gap-2 overflow-y-auto">
+      <div className="flex min-w-0 flex-col gap-2">
         <div className="ml-auto flex flex-wrap items-center justify-end gap-2">
           <SimpleTeamReportDownload
             teamName={
@@ -240,7 +240,7 @@ function RouteComponent() {
         </div>
         <div
           className={cn(
-            'flex min-h-0 flex-1 flex-col overflow-y-auto transition-opacity',
+            'min-w-0 transition-opacity',
             isLoading && 'pointer-events-none opacity-50',
           )}
         >
@@ -256,8 +256,8 @@ function RouteComponent() {
   }
 
   return (
-    <div className="flex h-[calc(100dvh-7rem)] flex-col gap-2 overflow-y-auto">
-      <div className="flex w-full shrink-0 flex-wrap items-end justify-between gap-2">
+    <div className="flex min-w-0 flex-col gap-2">
+      <div className="flex w-full min-w-0 flex-wrap items-end justify-between gap-2">
         <DashboardKpiCards
           teamStats={teamStats}
           matches={matches}
@@ -280,7 +280,7 @@ function RouteComponent() {
 
       <div
         className={cn(
-          'flex min-h-0 flex-1 flex-col transition-opacity',
+          'min-w-0 transition-opacity',
           isLoading && 'pointer-events-none opacity-50',
         )}
       >

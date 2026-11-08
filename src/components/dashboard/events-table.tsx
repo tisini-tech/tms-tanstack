@@ -149,7 +149,7 @@ export default function EventsTable({
   }
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-xl border border-border bg-card">
+    <div className="flex h-[min(70dvh,42rem)] min-h-64 min-w-0 flex-col overflow-hidden rounded-xl border border-border bg-card">
       <div className="flex shrink-0 flex-wrap items-start justify-between gap-3 border-b border-border px-4 py-2.5">
         <div className="min-w-0">
           <h2 className="text-sm font-medium text-heading">Team events</h2>
@@ -199,13 +199,13 @@ export default function EventsTable({
         filters={filters}
       />
 
-      <div className="scrollbar-thin min-h-0 flex-1 overflow-y-auto overflow-x-hidden [&_[data-slot=table-container]]:overflow-x-hidden">
+      <div className="scrollbar-thin min-h-0 min-w-0 flex-1 overflow-auto [&_[data-slot=table-container]]:overflow-visible">
         {visibleMatches.length === 0 ? (
           <div className="flex h-full items-center justify-center p-8 text-center text-sm text-muted-foreground">
             Select at least one match to show columns.
           </div>
         ) : (
-          <Table className="w-full table-fixed">
+          <Table className="w-max min-w-full">
             <TableHeader className="sticky top-0 z-30 bg-muted/95 backdrop-blur">
               <TableRow className="bg-muted/40 hover:bg-muted/40">
                 <TableHead className="sticky left-0 z-20 w-[108px] bg-muted/95 px-2 text-xs">
@@ -218,7 +218,7 @@ export default function EventsTable({
                       key={match.match_id}
                       title={`${match.label} — click to filter`}
                       className={cn(
-                        'cursor-pointer px-0.5 text-center text-[10px] font-semibold whitespace-normal transition-colors',
+                        'min-w-[3.25rem] cursor-pointer px-1 text-center text-[10px] font-semibold whitespace-normal transition-colors',
                         selected
                           ? 'bg-accent text-accent-foreground'
                           : 'hover:bg-muted/80',

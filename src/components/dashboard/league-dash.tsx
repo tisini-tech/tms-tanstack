@@ -150,6 +150,8 @@ type TeamRow = {
   seqAverage: number
   shotOn: number
   shotTotal: number
+  facedOn: number
+  facedTotal: number
   fouls: number
   foulThrows: number
 }
@@ -163,13 +165,14 @@ type SortKey =
   | 'over10'
   | 'seqAverage'
   | 'shotPct'
+  | 'facedPct'
   | 'fouls'
   | 'foulThrows'
 
 type SortDir = 'asc' | 'desc'
 
 const BOARD_COLS =
-  'grid-cols-[minmax(8.5rem,1.45fr)_minmax(2.4rem,0.4fr)_repeat(4,minmax(2.5rem,0.5fr))_minmax(5.5rem,0.85fr)_minmax(3.5rem,0.65fr)_minmax(6rem,0.95fr)_minmax(3.25rem,0.6fr)_minmax(3.25rem,0.6fr)]'
+  'grid-cols-[minmax(8.5rem,1.45fr)_minmax(2.4rem,0.4fr)_repeat(4,minmax(2.5rem,0.5fr))_minmax(5.5rem,0.85fr)_minmax(6rem,0.95fr)_minmax(6rem,0.95fr)_minmax(3.25rem,0.6fr)_minmax(3.25rem,0.6fr)]'
 
 const STICKY_TEAM =
   'sticky left-0 z-[1] pr-2 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.35)]'
@@ -228,7 +231,7 @@ export default function LeagueDashboardTable({
   }
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto">
+    <div className="flex min-w-0 flex-col gap-4">
       <div className="grid shrink-0 gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <KpiCard
           label="Teams"
@@ -277,7 +280,7 @@ export default function LeagueDashboardTable({
         <OverviewPanel row={focus} isLeague={isLeague} teamCount={teamCount} />
       </section>
 
-      <section className="flex min-h-0 flex-1 flex-col overflow-visible rounded-xl border border-border bg-card p-4">
+      <section className="min-w-0 rounded-xl border border-border bg-card p-4">
         <div className="mb-3 shrink-0">
           <h2 className="text-sm font-semibold tracking-tight">Team board</h2>
           <p className="text-xs text-muted-foreground">
@@ -286,8 +289,8 @@ export default function LeagueDashboardTable({
           </p>
         </div>
 
-        <div className="min-h-0 flex-1 overflow-x-auto overflow-y-hidden pb-1">
-          <div className="min-w-[52rem]">
+        <div className="scrollbar-thin overflow-x-auto pb-1">
+          <div className="min-w-[60rem]">
             <div
               className={cn(
                 'sticky top-0 z-10 grid gap-2 border-b border-border bg-card px-2 py-2 text-[10px] tracking-wide text-muted-foreground uppercase',
@@ -354,6 +357,13 @@ export default function LeagueDashboardTable({
                 onSort={toggleSort}
               />
               <SortHeader
+                label="Att faced"
+                sortKey="facedPct"
+                activeKey={sortKey}
+                dir={sortDir}
+                onSort={toggleSort}
+              />
+              <SortHeader
                 label="Fouls"
                 sortKey="fouls"
                 activeKey={sortKey}
@@ -371,6 +381,7 @@ export default function LeagueDashboardTable({
 
             {rows.map((row, index) => {
               const shotPct = percent(row.shotTotal, row.shotOn)
+              const facedPct = percent(row.facedTotal, row.facedOn)
               const isSelected = row.id === selectedId
               return (
                 <button
@@ -426,6 +437,10 @@ export default function LeagueDashboardTable({
                     {row.shotOn}/{row.shotTotal}{' '}
                     <span className="text-muted-foreground">({shotPct}%)</span>
                   </div>
+                  <div className="text-center text-sm tabular-nums">
+                    {row.facedOn}/{row.facedTotal}{' '}
+                    <span className="text-muted-foreground">({facedPct}%)</span>
+                  </div>
                   <div className="text-center">
                     <div className="text-sm font-semibold tabular-nums">
                       {row.fouls}
@@ -456,7 +471,7 @@ export default function LeagueDashboardTable({
 
             <div
               className={cn(
-                'sticky bottom-0 z-[2] grid items-center gap-2 border-t border-border bg-muted px-2 py-2.5',
+                'grid items-center gap-2 border-t border-border bg-muted px-2 py-2.5',
                 BOARD_COLS,
               )}
             >
@@ -499,6 +514,13 @@ export default function LeagueDashboardTable({
                   ({percent(averages.shotTotal, averages.shotOn)}%)
                 </span>
               </div>
+              <div className="text-center text-sm font-semibold tabular-nums">
+                {formatNumber(averages.facedOn, true)}/
+                {formatNumber(averages.facedTotal, true)}{' '}
+                <span className="font-normal text-muted-foreground">
+                  ({percent(averages.facedTotal, averages.facedOn)}%)
+                </span>
+              </div>
               <div className="text-center">
                 <div className="text-sm font-semibold tabular-nums">
                   {formatNumber(averages.fouls, true)}
@@ -533,6 +555,7 @@ function OverviewPanel({
   teamCount: number
 }) {
   const shotPct = percent(row.shotTotal, row.shotOn)
+  const facedPct = percent(row.facedTotal, row.facedOn)
   const seqMax = Math.max(
     row.below3,
     row.btwn4to6,
@@ -586,13 +609,23 @@ function OverviewPanel({
       </div>
 
       <div className="space-y-3">
-        <div className="rounded-lg border border-border/70 bg-background/40 px-3 py-2.5">
-          <OnTargetBar
-            label="Attempts"
-            onTarget={row.shotOn}
-            total={row.shotTotal}
-            pct={shotPct}
-          />
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+          <div className="rounded-lg border border-border/70 bg-background/40 px-3 py-2.5">
+            <OnTargetBar
+              label="Attempts"
+              onTarget={row.shotOn}
+              total={row.shotTotal}
+              pct={shotPct}
+            />
+          </div>
+          <div className="rounded-lg border border-border/70 bg-background/40 px-3 py-2.5">
+            <OnTargetBar
+              label="Attempts faced"
+              onTarget={row.facedOn}
+              total={row.facedTotal}
+              pct={facedPct}
+            />
+          </div>
         </div>
         <div className="grid grid-cols-3 gap-2">
           <StatTile
@@ -748,6 +781,8 @@ function leagueAggregate(rows: TeamRow[]): TeamRow {
     seqAverage: rows.reduce((sum, row) => sum + row.seqAverage, 0) / n,
     shotOn: rows.reduce((sum, row) => sum + row.shotOn, 0),
     shotTotal: rows.reduce((sum, row) => sum + row.shotTotal, 0),
+    facedOn: rows.reduce((sum, row) => sum + row.facedOn, 0),
+    facedTotal: rows.reduce((sum, row) => sum + row.facedTotal, 0),
     fouls: rows.reduce((sum, row) => sum + row.fouls, 0),
     foulThrows: rows.reduce((sum, row) => sum + row.foulThrows, 0),
   }
@@ -755,16 +790,15 @@ function leagueAggregate(rows: TeamRow[]): TeamRow {
 
 function buildTeamRows(dashboard: LeagueDashboard): TeamRow[] {
   const shot = shotEvent(dashboard.events)
+  const faced = shotEvent(opponentEvents(dashboard.opponent_stats))
   const fouls = foulEvent(dashboard.events)?.teams ?? []
   const foulThrows = foulThrowTeams(dashboard.events)
 
   return dashboard.teams.map((team) => {
-    const shotOn = shot
-      ? shot.sub_events
-          .filter(isOnTarget)
-          .reduce((sum, sub) => sum + totalFor(sub.teams, team.team_id), 0)
-      : 0
+    const shotOn = onTargetFor(shot, team.team_id)
     const shotTotal = shot ? totalFor(shot.teams, team.team_id) : 0
+    const facedOn = onTargetFor(faced, team.team_id)
+    const facedTotal = faced ? totalFor(faced.teams, team.team_id) : 0
 
     return {
       id: team.team_id,
@@ -778,6 +812,8 @@ function buildTeamRows(dashboard: LeagueDashboard): TeamRow[] {
       seqAverage: team.sequences?.average ?? 0,
       shotOn,
       shotTotal,
+      facedOn,
+      facedTotal,
       fouls: totalFor(fouls, team.team_id),
       foulThrows: totalFor(foulThrows, team.team_id),
     }
@@ -799,6 +835,7 @@ function sortTeamRows(rows: TeamRow[], key: SortKey, dir: SortDir) {
 
 function sortValue(row: TeamRow, key: SortKey): number | string {
   if (key === 'shotPct') return percent(row.shotTotal, row.shotOn)
+  if (key === 'facedPct') return percent(row.facedTotal, row.facedOn)
   if (key === 'name') return row.name
   return row[key]
 }
@@ -818,6 +855,8 @@ function averageRow(rows: TeamRow[]) {
     seqAverage: sum((row) => row.seqAverage),
     shotOn: sum((row) => row.shotOn),
     shotTotal: sum((row) => row.shotTotal),
+    facedOn: sum((row) => row.facedOn),
+    facedTotal: sum((row) => row.facedTotal),
     fouls: sum((row) => row.fouls),
     foulThrows: sum((row) => row.foulThrows),
     foulsPerGame: sum((row) =>
@@ -840,6 +879,20 @@ function otherEvents(events: LeagueDashboardEvent[]) {
 
 function shotEvent(events: LeagueDashboardEvent[]) {
   return events.find((event) => event.event_id === SHOT)
+}
+
+function opponentEvents(
+  value: LeagueDashboardEvent[] | LeagueDashboardEvent | null | undefined,
+) {
+  if (!value) return []
+  return Array.isArray(value) ? value : [value]
+}
+
+function onTargetFor(event: LeagueDashboardEvent | undefined, teamId: number) {
+  if (!event) return 0
+  return event.sub_events
+    .filter(isOnTarget)
+    .reduce((sum, sub) => sum + totalFor(sub.teams, teamId), 0)
 }
 
 function foulEvent(events: LeagueDashboardEvent[]) {

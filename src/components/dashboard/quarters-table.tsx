@@ -164,8 +164,8 @@ export default function QuartersTable({
   }
 
   return (
-    <div className="h-full min-h-0 overflow-hidden rounded-xl border border-border bg-card [&_[data-slot=table-container]]:h-full [&_table]:h-full">
-      <Table className="table-fixed">
+    <div className="scrollbar-thin min-w-0 overflow-x-auto rounded-xl border border-border bg-card [&_[data-slot=table-container]]:overflow-visible">
+      <Table className="w-max min-w-full">
         <TableHeader>
           <TableRow className="bg-muted/40 hover:bg-muted/40">
             <TableHead className="sticky left-0 z-20 h-7 w-[72px] bg-muted/95 px-2 text-xs">

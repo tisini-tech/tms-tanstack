@@ -13,7 +13,6 @@ import type {
   DashboardMatch,
   DashboardSequences,
   DashboardTeamStats,
-  MatchSequence,
 } from '#/lib/types'
 
 const SHOT = 238
@@ -21,11 +20,6 @@ const FOUL = 11
 const THROW_IN = 12
 const FOUL_THROW_SUB = 521
 const ON_TARGET_SUB_IDS = new Set([606, 610, 422, 405])
-
-type SeqSlice = Pick<
-  MatchSequence,
-  'below3' | 'btwn4to6' | 'btwn7to9' | 'over10' | 'total' | 'average'
->
 
 export function SimpleTeamReportDownload({
   teamName,
@@ -134,7 +128,6 @@ function buildSimpleTeamVisPdfData({
       over10: sequence?.over10 ?? 0,
       seqTotal: sequence?.total ?? 0,
       seqAverage: sequence?.average ?? 0,
-      seqPoints: seqPoints(sequence),
       shotOn: subTotal(teamStats, SHOT, ON_TARGET_SUB_IDS, matchId),
       shotTotal: eventTotal(teamStats, SHOT, matchId),
       facedOn: subTotal(opponents, SHOT, ON_TARGET_SUB_IDS, matchId),
@@ -149,11 +142,6 @@ function buildSimpleTeamVisPdfData({
     }
   })
 
-  const games = matchOverviews.length || 1
-  const totalSeqPoints = matchOverviews.reduce(
-    (sum, match) => sum + match.seqPoints,
-    0,
-  )
   const shotOn = subTotal(teamStats, SHOT, ON_TARGET_SUB_IDS)
   const shotTotal = eventTotal(teamStats, SHOT)
   const fouls = eventTotal(teamStats, FOUL)
@@ -163,24 +151,12 @@ function buildSimpleTeamVisPdfData({
       games: matchOverviews.length,
       seqAverage: sequences?.average ?? 0,
       seqTotal: sequences?.total ?? 0,
-      seqPointsTotal: totalSeqPoints,
-      seqPointsAvg: matchOverviews.length > 0 ? totalSeqPoints / games : 0,
       shotOn,
       shotTotal,
       fouls,
     },
     matches: matchOverviews,
   }
-}
-
-/** Presence rule: ≥1 in 4–6 → +1, ≥1 in 7–9 → +2, ≥1 over 10 → +1. */
-function seqPoints(sequence?: SeqSlice | null) {
-  if (!sequence) return 0
-  return (
-    ((sequence.btwn4to6 ?? 0) > 0 ? 1 : 0) +
-    ((sequence.btwn7to9 ?? 0) > 0 ? 2 : 0) +
-    ((sequence.over10 ?? 0) > 0 ? 1 : 0)
-  )
 }
 
 function opponentList(

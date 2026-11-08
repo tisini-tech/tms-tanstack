@@ -28,9 +28,9 @@ export default function TeamDashboard({
   playerAppearances: PlayerAppearance[]
 }) {
   return (
-    <div className="grid min-h-0 flex-1 grid-cols-1 items-stretch gap-4 lg:grid-cols-5">
-      <div className="flex min-h-0 min-w-0 flex-col gap-4 lg:col-span-4">
-        <div className="min-h-0 flex-1">
+    <div className="grid min-w-0 grid-cols-1 items-start gap-4 lg:grid-cols-5">
+      <div className="flex min-w-0 flex-col gap-4 lg:col-span-4">
+        <div className="min-w-0">
           <EventsTable
             matches={matches}
             teamStats={teamStats}
@@ -38,7 +38,7 @@ export default function TeamDashboard({
             onFiltersChange={setFilters}
           />
         </div>
-        <div className="min-h-0 basis-[28%] shrink-0 grow-0">
+        <div className="min-w-0">
           <QuartersTable
             matches={matches}
             quarterStats={quarterStats}
@@ -47,7 +47,7 @@ export default function TeamDashboard({
         </div>
       </div>
 
-      <div className="min-h-0 min-w-0 lg:col-span-1">
+      <div className="min-w-0 lg:col-span-1">
         <PlayersTable
           playerStats={playerStats}
           appearances={playerAppearances}

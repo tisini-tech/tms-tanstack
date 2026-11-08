@@ -6,18 +6,13 @@ import {
 } from '@tanstack/react-router'
 
 import { cn } from '#/lib/utils'
-import {
-  getCompetitionStandingsFn,
-  getLeagueDashboardFn,
-} from '#/data/competitions'
+import { getLeagueDashboardFn } from '#/data/competitions'
 import LeagueDashboardTable from '#/components/dashboard/league-dash'
 import { SimpleLeagueReportDownload } from '#/components/dashboard/simple-league-report-download'
 import {
   resolveDashboardEventIds,
   simpleDashboardEventIds,
 } from '#/components/dashboard/initial-events'
-import type { CompetitionStandings } from '#/lib/types'
-
 const competitionRoute = getRouteApi(
   '/_dashboard/_content/competitions/$compId',
 )
@@ -51,40 +46,24 @@ export const Route = createFileRoute(
 
     const seasonKey = seasonId?.toString() ?? ''
 
-    const [dashboard, standings] = await Promise.all([
-      getLeagueDashboardFn({
-        data: {
-          competitionId: compId,
-          seasonId: seasonKey,
-          divisionId: divisionId?.toString(),
-          categoryId: categoryId?.toString(),
-          eventIds: resolvedEventIds,
-        },
-      }),
-      seasonKey
-        ? getCompetitionStandingsFn({
-            data: {
-              competitionId: compId,
-              seasonId: seasonKey,
-              divisionId: divisionId?.toString(),
-              categoryId: categoryId?.toString(),
-              addSeqPoints: true,
-            },
-          }).catch(() => null)
-        : Promise.resolve(null),
-    ])
+    const dashboard = await getLeagueDashboardFn({
+      data: {
+        competitionId: compId,
+        seasonId: seasonKey,
+        divisionId: divisionId?.toString(),
+        categoryId: categoryId?.toString(),
+        eventIds: resolvedEventIds,
+      },
+    })
 
-    return {
-      dashboard,
-      seqPointsByTeamId: seqPointsFromStandings(standings),
-    }
+    return { dashboard }
   },
 
   component: RouteComponent,
 })
 
 function RouteComponent() {
-  const { dashboard, seqPointsByTeamId } = Route.useLoaderData()
+  const { dashboard } = Route.useLoaderData()
   const { competition } = competitionRoute.useLoaderData()
   const { seasonId, divisionId, categoryId } = Route.useSearch()
   const isLoading = useRouterState({ select: (state) => state.isLoading })
@@ -100,11 +79,10 @@ function RouteComponent() {
     categories.find((entry) => entry.id === categoryId)?.name ?? ''
 
   return (
-    <div className="flex h-[calc(100dvh-7rem)] flex-col gap-2 overflow-y-auto">
+    <div className="flex min-w-0 flex-col gap-2">
       <div className="ml-auto">
         <SimpleLeagueReportDownload
           dashboard={dashboard}
-          seqPointsByTeamId={seqPointsByTeamId}
           competitionName={competition.name}
           seasonName={seasonName}
           divisionName={divisionName}
@@ -113,7 +91,7 @@ function RouteComponent() {
       </div>
       <div
         className={cn(
-          'flex min-h-0 flex-1 flex-col overflow-y-auto transition-opacity',
+          'min-w-0 transition-opacity',
           isLoading && 'pointer-events-none opacity-50',
         )}
       >
@@ -121,22 +99,4 @@ function RouteComponent() {
       </div>
     </div>
   )
-}
-
-function seqPointsFromStandings(standings: CompetitionStandings | null) {
-  const map: Record<number, number> = {}
-  if (!standings) return map
-
-  const stageStandings = Array.isArray(standings.stages)
-    ? standings.stages.flatMap((stage) =>
-        Array.isArray(stage.standings) ? stage.standings : [],
-      )
-    : []
-  const teams = [...(Array.isArray(standings.standings) ? standings.standings : []), ...stageStandings]
-
-  for (const team of teams) {
-    map[team.id] = team.seq_points ?? 0
-  }
-
-  return map
 }

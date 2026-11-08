@@ -762,6 +762,7 @@ export interface LeagueDashboardEvent {
 export interface LeagueDashboard {
   teams: LeagueDashboardTeam[]
   events: LeagueDashboardEvent[]
+  opponent_stats: LeagueDashboardEvent[]
 }
 
 export interface StandingTeam {
