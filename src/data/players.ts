@@ -20,6 +20,7 @@ export const getPlayersFn = createServerFn({ method: 'GET' })
     const params = new URLSearchParams()
     if (seasonId != null) params.set('season_id', String(seasonId))
     const query = params.toString()
+
     const players = await apiService.get<TeamPlayer[]>(
       `/teams/${teamId}/players${query ? `?${query}` : ''}`,
     )

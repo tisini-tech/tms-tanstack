@@ -125,6 +125,16 @@ export interface FixtureType {
   fix_time: number
 }
 
+export type CreateLineupPayload = {
+  team_id: number
+  player_id: number
+  team_player_id: number
+  role: string
+  lineup_position: number
+  jersey_number: number
+  is_goalkeeper: boolean
+}
+
 export interface Fixture {
   home_team: {
     id: number
@@ -214,6 +224,121 @@ export interface SimpleFixture {
   away_ht_score: number
   video_url: string
   video_url2: string
+}
+
+export interface AgentFixture {
+  id: number
+  team1_id: number
+  team1_name: string
+  team2_id: number
+  team2_name: string
+  home_score: number
+  away_score: number
+  matchday: string
+  status: string
+  game_date: string
+  matchtime: string
+  game_moment: string
+  game_status: string
+  teamview: string
+  collection_mode: string
+  minute: number
+  second: number
+  fixture_type: string
+  hybrid: number
+  hybridhome: string
+  pitchname: string
+  formation1: number
+  formation2: number
+  quarter: string
+  started_at: string
+  started_second_half_at: string
+  started_extra_at: string
+  started_extra_second_half_at: string
+}
+
+export interface MetricDetail {
+  id: number
+  name: string
+  description: string
+  image_url: string
+  video_url: string
+  metric: number
+  position: number
+  strength: number
+  status: number
+  needs_sub_details: number
+}
+
+export interface SubMetricDetail {
+  id: number
+  name: string
+  description: string
+  image_url: string
+  video_url: string
+  position: number
+  strength: number
+  status: number
+}
+
+export interface MatchMetric {
+  details: MetricDetail[]
+  sub_details: SubMetricDetail[]
+  id: number
+  name: string
+  description: string
+  image_url: string
+  video_url: string
+  fixture_type: number
+  is_player: number
+  is_timeline: number
+  is_team: number
+  is_active: number
+  gke: number
+  closewindow: number
+  uploaddata: number
+  ref: number
+  order: number
+  metric_category: number
+  strength: number
+}
+
+export interface FixtureType {
+  id: number
+  type_code: string
+  type_name: string
+}
+
+export interface MetricCategory {
+  fixture_type: FixtureType
+  id: number
+  name: string
+  ranker: number
+  status: number
+}
+
+export interface Zone {
+  id: number
+  name: string
+  fixture_type: string
+  is_available: boolean
+}
+
+export interface TeamLineup {
+  player: Player
+  id: number
+  match: number
+  team: number
+  team_player: number
+  role: string
+  lineup_position: number
+  jersey_number: number
+  is_goalkeeper: boolean
+  is_sent_off: boolean
+  verified: boolean
+  game_strength: number
+  rating: number
+  minutes_played: number
 }
 
 export interface TimelineEvent {

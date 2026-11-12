@@ -117,6 +117,13 @@ export const competitionNavItems: NavItem[] = [
     activeOptions: { exact: true },
   },
   {
+    to: '/competitions/collection',
+    label: 'Collection',
+    icon: FileTextIcon,
+    roles: ['1', '4', '7', '25'],
+    activeOptions: { exact: true },
+  },
+  {
     to: '/competitions/$compId/fixtures',
     label: 'Fixtures',
     icon: CalendarIcon,
