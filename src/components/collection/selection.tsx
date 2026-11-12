@@ -1,4 +1,3 @@
-import { Loader2Icon } from 'lucide-react'
 import { useState, type ReactNode } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 
@@ -7,12 +6,18 @@ import { useStore } from '#/store/store'
 import { toast } from '#/components/ui/toast'
 import { Button } from '#/components/ui/button'
 import { rawEventsQuery } from '#/data/fixtures'
+import { storedPitchPoint } from '#/components/collection/pitch'
 import { useSelectionControls } from '#/hooks/use-selection-controls'
-import { createMatchEvent, teamLineupsQuery } from '#/data/collection'
 import { Dialog, DialogContent, DialogTitle } from '#/components/ui/dialog'
 import type { MatchMetric, MetricCategory, TeamLineup, Zone } from '#/lib/types'
 import {
+  createMatchEvent,
+  teamLineupsQuery,
+  agentFixturesQuery,
+} from '#/data/collection'
+import {
   MOMENTS,
+  parseVideoTime,
   playerLabel,
   SCORE_METRIC_IDS,
   SUBSTITUTE_METRIC_IDS,
@@ -111,19 +116,16 @@ function KeyMark({ children }: { children: string }) {
 function Column({
   title,
   active,
-  wide = false,
   children,
 }: {
   title: string
   active?: boolean
-  wide?: boolean
   children: ReactNode
 }) {
   return (
     <section
       className={cn(
-        'flex min-h-0 shrink-0 flex-col gap-1 rounded-md p-1',
-        wide ? 'min-w-0 flex-1' : 'w-40',
+        'flex min-h-0 min-w-0 flex-1 basis-0 flex-col gap-1 rounded-md p-1',
         active && 'bg-sky-500/10 ring-1 ring-sky-500',
       )}
     >
@@ -158,7 +160,6 @@ export default function SelectionModal({
   const [noLineout, setNoLineout] = useState('')
   const [meterGain, setMeterGain] = useState('')
   const [defendersBeaten, setDefendersBeaten] = useState('')
-  const [saving, setSaving] = useState(false)
   const queryClient = useQueryClient()
   const {
     categoryOptions,
@@ -173,7 +174,6 @@ export default function SelectionModal({
     metricId,
     detailId,
     subDetailId,
-    zoneId,
     playerId,
     subPlayerId,
     metric,
@@ -186,7 +186,6 @@ export default function SelectionModal({
     chooseMetric,
     chooseDetail,
     chooseSubDetail,
-    chooseZone,
     chooseStarter,
     chooseBench,
     reset,
@@ -196,11 +195,12 @@ export default function SelectionModal({
     metrics,
     metricCategories,
     lineups,
-    zones,
   })
 
   const date = new Date().toISOString()
   const localId = `${Math.floor(Math.random() * 1000000)}#${date.split('T')[0]}#${timestamp}`
+
+  const storedPoint = point ? storedPitchPoint(point, moment) : null
 
   const matchEvent = {
     metric_id: metric?.id ?? 0,
@@ -214,9 +214,9 @@ export default function SelectionModal({
     moment,
     quarter: clock?.quarter ?? 'first',
     narration: `${metric?.name ?? ''} for ${playerLabel(player)}`,
-    zone_id: zoneId ?? 0,
-    xper: point ? point.x.toFixed(1) : '',
-    yper: point ? point.y.toFixed(1) : '',
+    // zone_id: '',
+    xper: storedPoint ? storedPoint.x.toFixed(1) : '',
+    yper: storedPoint ? storedPoint.y.toFixed(1) : '',
     video_timestamp: Math.round(timestamp * 1000),
     no_ruck: noRuck,
     no_lineout: noLineout,
@@ -244,19 +244,35 @@ export default function SelectionModal({
   }
 
   async function saveEvent(next: 'another' | 'video') {
-    if (saving) return
-    setSaving(true)
+    const collection = useStore.getState().store.videoCollection
+    const firstHalfReady =
+      collection?.fixtureId === fixId &&
+      parseVideoTime(collection.firstHalfTimestamp) != null
+    if (!firstHalfReady) {
+      toast.add({
+        title: 'Set the 1st half',
+        description: 'Add a first-half start time before tagging.',
+      })
+      return
+    }
     const storedEvent = { ...matchEvent, sync_status: 0 }
+    const ownGoal = Boolean(metric && /^og$|own\s*goal/i.test(metric.name))
+    const savedMetricId = metric?.id
     useStore.getState().updateVideoCollection({
       fixtureId: fixId,
       videoEvents: [...storedEvents(), storedEvent],
     })
+    if (next === 'another') resetBoard()
+    else {
+      onOpenChange(false)
+      onReturnToVideo?.()
+    }
     try {
       const response = await createMatchEvent({
         data: {
           fixId,
           event: storedEvent,
-          is_own_goal: Boolean(metric && /^og$|own\s*goal/i.test(metric.name)),
+          is_own_goal: ownGoal,
         },
       })
       await queryClient.invalidateQueries({
@@ -264,12 +280,15 @@ export default function SelectionModal({
       })
 
       if (
-        metric?.id != null &&
-        (SUBSTITUTE_METRIC_IDS.has(metric.id) ||
-          SCORE_METRIC_IDS.has(metric.id))
+        savedMetricId != null &&
+        (SUBSTITUTE_METRIC_IDS.has(savedMetricId) ||
+          SCORE_METRIC_IDS.has(savedMetricId))
       ) {
         await queryClient.invalidateQueries({
           queryKey: teamLineupsQuery(fixId, teamId).queryKey,
+        })
+        await queryClient.invalidateQueries({
+          queryKey: agentFixturesQuery().queryKey,
         })
       }
 
@@ -277,11 +296,6 @@ export default function SelectionModal({
         title: 'Event saved',
         description: response.message || 'Match event added.',
       })
-      if (next === 'another') resetBoard()
-      else {
-        onOpenChange(false)
-        onReturnToVideo?.()
-      }
     } catch (error) {
       useStore.getState().updateVideoCollection({
         fixtureId: fixId,
@@ -294,8 +308,6 @@ export default function SelectionModal({
       const message =
         error instanceof Error ? error.message : 'Failed to save event'
       toast.add({ title: 'Save failed', description: message })
-    } finally {
-      setSaving(false)
     }
   }
 
@@ -313,9 +325,9 @@ export default function SelectionModal({
             {String(Math.floor(Math.max(0, timestamp)) % 60).padStart(2, '0')}
           </span>
           <span className="mx-2">·</span>
-          Keys 1–9 pick the highlighted column. Player lists continue with A–Z.
+          Keys 1–9 pick the highlighted column. Longer lists continue with A–Z.
           Up and down move inside it. Left and right change column. Esc closes.
-          N saves another. Enter saves and returns to the video.
+          N saves another. Enter saves, closes, and plays the video.
         </p>
 
         <div className="flex flex-wrap items-center gap-2">
@@ -444,21 +456,7 @@ export default function SelectionModal({
             ))}
           </Column>
 
-          <Column title="Zone" active={focus === 'zone'}>
-            {zones.map((item, index) => (
-              <TagButton
-                key={item.id}
-                column="zone"
-                hotkey={hotkeyFor('zone', index)}
-                selected={zoneId === item.id}
-                onClick={() => chooseZone(item.id)}
-              >
-                {item.name}
-              </TagButton>
-            ))}
-          </Column>
-
-          <Column title="First 11" active={focus === 'player'} wide>
+          <Column title="First 11" active={focus === 'player'}>
             {starters.length === 0 ? (
               <p className="px-2 py-6 text-xs text-muted-foreground">
                 No lineup yet.
@@ -505,7 +503,6 @@ export default function SelectionModal({
           <Button
             type="button"
             variant="outline"
-            disabled={saving}
             onClick={() => onOpenChange(false)}
           >
             <KeyMark>Esc</KeyMark>
@@ -514,26 +511,17 @@ export default function SelectionModal({
           <Button
             type="button"
             variant="secondary"
-            disabled={saving}
             onClick={() => void saveEvent('another')}
           >
-            {saving ? (
-              <Loader2Icon className="size-4 animate-spin" />
-            ) : (
-              <KeyMark>N</KeyMark>
-            )}
+            <KeyMark>N</KeyMark>
             Save and save another
           </Button>
           <Button
             type="button"
-            disabled={saving}
+            variant="secondary"
             onClick={() => void saveEvent('video')}
           >
-            {saving ? (
-              <Loader2Icon className="size-4 animate-spin" />
-            ) : (
-              <KeyMark>Enter</KeyMark>
-            )}
+            <KeyMark>Enter</KeyMark>
             Save and tag more
           </Button>
         </div>

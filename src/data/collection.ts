@@ -63,6 +63,11 @@ export const getAgentFixtures = createServerFn({ method: 'GET' })
     return fixtures
   })
 
+export const agentFixturesQuery = () => ({
+  queryKey: ['agentFixtures'],
+  queryFn: () => getAgentFixtures(),
+})
+
 export const getZones = createServerFn({ method: 'GET' })
   .middleware([authFnMiddleware])
   .validator((data: { fixType: string }) => data)

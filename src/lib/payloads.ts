@@ -15,7 +15,7 @@ export interface CreateMatchEventPayload {
   moment: string
   quarter: string
   narration: string
-  zone_id: number
+  // zone_id: number | string
   xper: string
   yper: string
   video_timestamp: number

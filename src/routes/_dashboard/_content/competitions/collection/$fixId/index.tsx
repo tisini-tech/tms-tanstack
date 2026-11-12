@@ -3,9 +3,9 @@ import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 
 import { useStore } from '#/store/store'
+import { toast } from '#/components/ui/toast'
 import type { AgentFixture } from '#/lib/types'
 import { teamPlayersQuery } from '#/data/players'
-import { getAgentFixtures } from '#/data/collection'
 import { matchMetricsQuery } from '#/data/collection'
 import PitchModal from '#/components/collection/pitch'
 import VideoPlayer from '#/components/collection/video-player'
@@ -17,6 +17,7 @@ import {
   teamLineupsQuery,
   zonesQuery,
   metricCategoriesQuery,
+  agentFixturesQuery,
 } from '#/data/collection'
 import {
   teamContext,
@@ -33,7 +34,7 @@ export const Route = createFileRoute(
 )({
   loader: async ({ context, params }) => {
     const [fixtures, fixtureTypes] = await Promise.all([
-      getAgentFixtures(),
+      context.queryClient.ensureQueryData(agentFixturesQuery()),
       getFixtureTypesFn(),
       context.queryClient.ensureQueryData(rawEventsQuery(params.fixId)),
     ])
@@ -96,7 +97,12 @@ function MatchScoreline({ fixture }: { fixture: AgentFixture | null }) {
 
 function RouteComponent() {
   const { fixId } = Route.useParams()
-  const { fixture, fixtureTypes } = Route.useLoaderData()
+  const { fixtureTypes } = Route.useLoaderData()
+
+  const { data: fixtures } = useSuspenseQuery(agentFixturesQuery())
+
+  const fixture = fixtures.find((item) => String(item.id) === fixId) ?? null
+
   const { data: matchEvents } = useSuspenseQuery(rawEventsQuery(fixId))
   const { data: homePlayers } = useSuspenseQuery(
     teamPlayersQuery(fixture?.team1_id ?? 0),
@@ -159,6 +165,21 @@ function RouteComponent() {
     sport,
   )
 
+  function commitHalf(
+    field: 'firstHalfTimestamp' | 'secondHalfTimestamp',
+    typed: string,
+  ) {
+    const trimmed = typed.trim()
+    const parsed = parseVideoTime(trimmed)
+    const value =
+      parsed != null
+        ? formatVideoTime(parsed)
+        : trimmed
+          ? trimmed
+          : formatVideoTime(videoTime)
+    updateVideoCollection({ fixtureId: fixtureNumber, [field]: value })
+  }
+
   return (
     <div className="flex h-[calc(100dvh-6.5rem)] min-h-[28rem] flex-col gap-3">
       <div className="flex items-center justify-between gap-2">
@@ -191,12 +212,7 @@ function RouteComponent() {
             <button
               type="button"
               className="h-8 rounded-md border border-border bg-background px-2 text-xs text-foreground"
-              onClick={() =>
-                updateVideoCollection({
-                  fixtureId: fixtureNumber,
-                  firstHalfTimestamp: formatVideoTime(videoTime),
-                })
-              }
+              onClick={() => commitHalf('firstHalfTimestamp', firstHalf)}
             >
               Set
             </button>
@@ -219,12 +235,7 @@ function RouteComponent() {
             <button
               type="button"
               className="h-8 rounded-md border border-border bg-background px-2 text-xs text-foreground"
-              onClick={() =>
-                updateVideoCollection({
-                  fixtureId: fixtureNumber,
-                  secondHalfTimestamp: formatVideoTime(videoTime),
-                })
-              }
+              onClick={() => commitHalf('secondHalfTimestamp', secondHalf)}
             >
               Set
             </button>
@@ -283,6 +294,13 @@ function RouteComponent() {
           suspended={tagOpen || pitchOpen}
           focusKey={videoFocusKey}
           onTime={setVideoTime}
+          canTag={firstHalfSeconds != null}
+          onTagBlocked={() =>
+            toast.add({
+              title: 'Set the 1st half',
+              description: 'Add a first-half start time before tagging.',
+            })
+          }
           onTag={(timestamp) => {
             setTagAt(timestamp)
             setTagKey((key) => key + 1)

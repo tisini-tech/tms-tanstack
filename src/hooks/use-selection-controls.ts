@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 
-import type { MatchMetric, MetricCategory, TeamLineup, Zone } from '#/lib/types'
+import type { MatchMetric, MetricCategory, TeamLineup } from '#/lib/types'
 import {
   OTHER_CATEGORY,
   PLAYER_KEYS,
@@ -16,7 +16,6 @@ type UseSelectionControlsArgs = {
   metrics: MatchMetric[]
   metricCategories: MetricCategory[]
   lineups: TeamLineup[]
-  zones: Zone[]
 }
 
 export function useSelectionControls({
@@ -24,7 +23,6 @@ export function useSelectionControls({
   metrics,
   metricCategories,
   lineups,
-  zones,
 }: UseSelectionControlsArgs) {
   const [categoryId, setCategoryId] = useState<number | null>(null)
   const [focusColumn, setFocusColumn] = useState<ColumnKey>('category')
@@ -33,7 +31,6 @@ export function useSelectionControls({
   const [subDetailId, setSubDetailId] = useState<number | null>(null)
   const [playerId, setPlayerId] = useState<number | null>(null)
   const [subPlayerId, setSubPlayerId] = useState<number | null>(null)
-  const [zoneId, setZoneId] = useState<number | null>(null)
 
   const categories = useMemo(
     () =>
@@ -103,7 +100,6 @@ export function useSelectionControls({
     next.push('metric')
     if (details.length > 0) next.push('detail')
     if (subDetails.length > 0) next.push('subdetail')
-    if (zones.length > 0) next.push('zone')
     if (starters.length > 0) next.push('player')
     if (showSubs && substitutes.length > 0) next.push('bench')
     return next
@@ -114,16 +110,24 @@ export function useSelectionControls({
     starters.length,
     subDetails.length,
     substitutes.length,
-    zones.length,
   ])
   const focus = columns.includes(focusColumn)
     ? focusColumn
     : (columns[0] ?? 'metric')
 
+  function usesLetterKeys(column: ColumnKey) {
+    return (
+      column === 'metric' ||
+      column === 'detail' ||
+      column === 'subdetail' ||
+      column === 'player' ||
+      column === 'bench'
+    )
+  }
+
   function hotkeyFor(column: ColumnKey, index: number) {
     if (focus !== column) return undefined
-    const letters = column === 'player' || column === 'bench'
-    const key = letters
+    const key = usesLetterKeys(column)
       ? PLAYER_KEYS[index]
       : index < 9
         ? String(index + 1)
@@ -140,7 +144,6 @@ export function useSelectionControls({
   function afterMetric(item: MatchMetric | undefined): ColumnKey {
     if (byOrder(item?.details ?? []).length > 0) return 'detail'
     if (byOrder(item?.sub_details ?? []).length > 0) return 'subdetail'
-    if (zones.length > 0) return 'zone'
     return afterPlayers() ?? 'metric'
   }
 
@@ -149,7 +152,6 @@ export function useSelectionControls({
     if (column === 'metric') return metricList.length
     if (column === 'detail') return details.length
     if (column === 'subdetail') return subDetails.length
-    if (column === 'zone') return zones.length
     if (column === 'player') return starters.length
     return substitutes.length
   }
@@ -166,9 +168,6 @@ export function useSelectionControls({
     }
     if (column === 'subdetail') {
       return subDetails.findIndex((item) => item.id === subDetailId)
-    }
-    if (column === 'zone') {
-      return zones.findIndex((item) => item.id === zoneId)
     }
     if (column === 'player') {
       return starters.findIndex((item) => item.id === playerId)
@@ -197,7 +196,6 @@ export function useSelectionControls({
   function chooseDetail(id: number) {
     setDetailId(id)
     if (subDetails.length > 0) setFocusColumn('subdetail')
-    else if (zones.length > 0) setFocusColumn('zone')
     else {
       const next = afterPlayers()
       if (next) setFocusColumn(next)
@@ -206,15 +204,6 @@ export function useSelectionControls({
 
   function chooseSubDetail(id: number) {
     setSubDetailId(id)
-    if (zones.length > 0) setFocusColumn('zone')
-    else {
-      const next = afterPlayers()
-      if (next) setFocusColumn(next)
-    }
-  }
-
-  function chooseZone(id: number) {
-    setZoneId(id)
     const next = afterPlayers()
     if (next) setFocusColumn(next)
   }
@@ -247,11 +236,6 @@ export function useSelectionControls({
     if (focus === 'subdetail') {
       const item = subDetails[index]
       if (item) chooseSubDetail(item.id)
-      return
-    }
-    if (focus === 'zone') {
-      const item = zones[index]
-      if (item) chooseZone(item.id)
       return
     }
     if (focus === 'player') {
@@ -305,11 +289,6 @@ export function useSelectionControls({
       if (item) setSubDetailId(item.id)
       return
     }
-    if (focus === 'zone') {
-      const item = zones[next]
-      if (item) setZoneId(item.id)
-      return
-    }
     if (focus === 'player') {
       const entry = starters[next]
       if (entry) setPlayerId(entry.id)
@@ -320,7 +299,7 @@ export function useSelectionControls({
   }
 
   function tryKey(key: string) {
-    const letters = focus === 'player' || focus === 'bench'
+    const letters = usesLetterKeys(focus)
     const index = shortcutIndex(key, letters)
     if (index == null || index >= listLength(focus)) return false
     pick(index)
@@ -334,7 +313,6 @@ export function useSelectionControls({
     setSubDetailId(null)
     setPlayerId(null)
     setSubPlayerId(null)
-    setZoneId(null)
     setFocusColumn('category')
   }
 
@@ -442,7 +420,6 @@ export function useSelectionControls({
     metricId,
     detailId,
     subDetailId,
-    zoneId,
     playerId,
     subPlayerId,
   ])
@@ -460,7 +437,6 @@ export function useSelectionControls({
     metricId,
     detailId,
     subDetailId,
-    zoneId,
     playerId,
     subPlayerId,
     metric,
@@ -473,7 +449,6 @@ export function useSelectionControls({
     chooseMetric,
     chooseDetail,
     chooseSubDetail,
-    chooseZone,
     chooseStarter,
     chooseBench,
     reset,

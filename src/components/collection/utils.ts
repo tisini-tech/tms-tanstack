@@ -13,7 +13,7 @@ export const SCORE_METRIC_IDS = new Set([19, 31, 253, 276])
 export const PLAYER_KEYS = '123456789abcdefghijklmnopqrstuvwxyz'
 
 export type ColumnKey =
-  'category' | 'metric' | 'detail' | 'subdetail' | 'zone' | 'player' | 'bench'
+  'category' | 'metric' | 'detail' | 'subdetail' | 'player' | 'bench'
 
 export function playerLabel(entry: TeamLineup | undefined) {
   if (!entry) return ''
