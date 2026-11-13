@@ -239,6 +239,7 @@ function answersFor(
 
 export function ResponseResults({
   title,
+  quiz = false,
   questions,
   responses,
   date,
@@ -251,6 +252,7 @@ export function ResponseResults({
   onShowAll,
 }: {
   title: string
+  quiz?: boolean
   questions: EngagementQuestion[]
   responses: EngResponse[]
   date: string
@@ -322,17 +324,52 @@ export function ResponseResults({
             No questions for this engagement.
           </p>
         ) : (
-          <QuestionFocus questions={ordered} responses={responses} />
+          <QuestionFocus
+            quiz={quiz}
+            questions={ordered}
+            responses={responses}
+          />
         )}
       </div>
     </div>
   )
 }
 
+function correctAnswer(question: EngagementQuestion, answers: EngAnswer[]) {
+  const labels = new Map(
+    (question.choices ?? []).map((choice) => [choice.id, choice.text]),
+  )
+  const choiceIds = new Set<number>()
+  const written = new Set<string>()
+  let points: number | null = null
+
+  for (const answer of answers) {
+    if (answer.marker !== 'IC') continue
+    if (points == null) points = answer.points_awarded
+    if (answer.choice_id != null) choiceIds.add(answer.choice_id)
+    for (const choiceId of answer.selected_choice_ids ?? []) {
+      choiceIds.add(choiceId)
+    }
+    const text = answer.text_answer?.trim()
+    if (text) written.add(text)
+  }
+
+  const names = [
+    ...[...choiceIds].map(
+      (choiceId) => labels.get(choiceId) ?? `Choice ${choiceId}`,
+    ),
+    ...written,
+  ]
+
+  return { choiceIds, names, points }
+}
+
 function QuestionFocus({
+  quiz,
   questions,
   responses,
 }: {
+  quiz: boolean
   questions: EngagementQuestion[]
   responses: EngResponse[]
 }) {
@@ -341,6 +378,12 @@ function QuestionFocus({
   const current = Math.min(index, questions.length - 1)
   const question = questions[current]
   const matched = answersFor(question.id, responses)
+  const correct = quiz
+    ? correctAnswer(
+        question,
+        matched.map((row) => row.answer),
+      )
+    : null
   const items = questions.map((item, itemIndex) => ({
     value: String(item.id),
     label: `${itemIndex + 1}. ${item.text}`,
@@ -403,6 +446,15 @@ function QuestionFocus({
       <section className="w-full rounded-xl border border-border bg-card">
         <div className="border-b border-border px-6 py-4">
           <p className="text-lg font-medium text-heading">{question.text}</p>
+          {correct?.names.length ? (
+            <p className="mt-1 text-sm text-muted-foreground">
+              Correct answer:{' '}
+              <span className="font-medium text-foreground">
+                {correct.names.join(', ')}
+              </span>
+              {correct.points != null ? ` · ${correct.points} points` : ''}
+            </p>
+          ) : null}
         </div>
         <div className="p-6">
           {question.answer_type === 'FT' ? (
@@ -411,6 +463,7 @@ function QuestionFocus({
             <ChoiceBreakdown
               question={question}
               answers={matched.map((row) => row.answer)}
+              correctIds={correct?.choiceIds}
               chart={question.answer_type === 'SA' ? chart : 'bar'}
               onChartChange={
                 question.answer_type === 'SA' ? setChart : undefined
@@ -426,11 +479,13 @@ function QuestionFocus({
 function ChoiceBreakdown({
   question,
   answers,
+  correctIds,
   chart,
   onChartChange,
 }: {
   question: EngagementQuestion
   answers: EngAnswer[]
+  correctIds?: Set<number>
   chart: 'bar' | 'pie'
   onChartChange?: (chart: 'bar' | 'pie') => void
 }) {
@@ -440,6 +495,7 @@ function ChoiceBreakdown({
     ...row,
     color: BAR_COLORS[rowIndex % BAR_COLORS.length],
     share: total === 0 ? 0 : Math.round((row.count / total) * 100),
+    correct: correctIds?.has(row.id) ?? false,
   }))
 
   return (
@@ -505,7 +561,13 @@ function ChoiceBreakdown({
 function ChoiceLabel({
   row,
 }: {
-  row: { label: string; count: number; share: number; color: string }
+  row: {
+    label: string
+    count: number
+    share: number
+    color: string
+    correct?: boolean
+  }
 }) {
   return (
     <div className="flex items-baseline justify-between gap-3 text-sm">
@@ -515,6 +577,11 @@ function ChoiceLabel({
           style={{ background: row.color }}
         />
         <span className="truncate">{row.label}</span>
+        {row.correct ? (
+          <span className="shrink-0 rounded-full bg-emerald-500/15 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700 dark:text-emerald-400">
+            Correct
+          </span>
+        ) : null}
       </span>
       <span className="shrink-0 tabular-nums text-muted-foreground">
         {row.count} · {row.share}%
@@ -532,6 +599,7 @@ function PieBreakdown({
     count: number
     share: number
     color: string
+    correct?: boolean
   }>
 }) {
   const total = rows.reduce((sum, row) => sum + row.count, 0)

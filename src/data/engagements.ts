@@ -86,10 +86,30 @@ export const getEngLeaderboardFn = createServerFn({ method: 'GET' })
   .middleware([authFnMiddleware])
   .validator((data: { engId: string }) => data)
   .handler(async ({ data }) => {
-    return apiService.get<EngLeaderboard[]>(
-      `/engagements/${data.engId}/leaderboard`,
-      { withApiKey: true },
-    )
+    const results: EngLeaderboard[] = []
+    const seen = new Set<number>()
+    let path: string | null = `/engagements/${data.engId}/leaderboard`
+    let pages = 0
+
+    while (path && pages < RESPONSES_MAX_PAGES) {
+      const page = await apiService.get<PaginatedResponse<EngLeaderboard>>(
+        path,
+        { withApiKey: true },
+      )
+      pages += 1
+      const before = results.length
+
+      for (const entry of page.results ?? []) {
+        if (seen.has(entry.id)) continue
+        seen.add(entry.id)
+        results.push(entry)
+      }
+
+      if (!page.next || results.length === before) break
+      path = pathFromCursorUrl(page.next)
+    }
+
+    return { previous: '', next: '', results }
   })
 
 export const getEngAnswersFn = createServerFn({ method: 'GET' })

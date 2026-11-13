@@ -70,6 +70,7 @@ function RouteComponent() {
   return (
     <ResponseResults
       title={engagement?.title || 'Engagement'}
+      quiz={engagement?.type === 'QZ'}
       questions={engagement?.questions ?? []}
       responses={responses ?? []}
       date={date}

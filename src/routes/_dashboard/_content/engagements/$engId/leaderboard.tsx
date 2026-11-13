@@ -29,7 +29,7 @@ function formatTime(seconds: number | null | undefined) {
 
 function RouteComponent() {
   const { leaderboard } = Route.useLoaderData() ?? {}
-  const rows = [...(leaderboard ?? [])].sort((left, right) => {
+  const rows = [...(leaderboard?.results ?? [])].sort((left, right) => {
     if (right.score !== left.score) return right.score - left.score
     return (
       (left.time_used ?? Number.POSITIVE_INFINITY) -
