@@ -491,6 +491,11 @@ export interface FixturePassMatrix {
   away: PassMatrix
 }
 
+export interface MatrixDashboard {
+  fixture: SimpleFixture
+  pass_matrix: PassMatrix
+}
+
 export interface Country {
   id: number
   name: string

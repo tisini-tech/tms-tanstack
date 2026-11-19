@@ -2,8 +2,13 @@ import { queryOptions } from '@tanstack/react-query'
 import { createServerFn } from '@tanstack/react-start'
 
 import { apiService } from '#/lib/api'
-import type { PaginatedResponse, Team, TeamDashboard } from '#/lib/types'
 import { authFnMiddleware } from '#/middlewares/auth'
+import type {
+  MatrixDashboard,
+  PaginatedResponse,
+  Team,
+  TeamDashboard,
+} from '#/lib/types'
 
 function teamsPath(opts?: {
   competitionId?: string
@@ -34,14 +39,14 @@ export const getTeamsFn = createServerFn({ method: 'GET' })
     (
       data:
         | {
-          competitionId?: string
-          seasonId?: string
-          divisionId?: string
-          categoryId?: string
-          search?: string
-          pageSize?: number
-          teamType?: string
-        }
+            competitionId?: string
+            seasonId?: string
+            divisionId?: string
+            categoryId?: string
+            search?: string
+            pageSize?: number
+            teamType?: string
+          }
         | undefined,
     ) => ({
       competitionId: data?.competitionId?.trim() || undefined,
@@ -68,13 +73,18 @@ export const getTeamsFn = createServerFn({ method: 'GET' })
     return response.results
   })
 
-export const teamsQueryOptions = (competitionId: string, seasonId: string, divisionId?: string, categoryId?: string) =>
+export const teamsQueryOptions = (
+  competitionId: string,
+  seasonId: string,
+  divisionId?: string,
+  categoryId?: string,
+) =>
   queryOptions({
     queryKey: ['teams', competitionId, seasonId, divisionId, categoryId],
-    queryFn: () => getTeamsFn({ data: { competitionId, seasonId, divisionId, categoryId } }),
+    queryFn: () =>
+      getTeamsFn({ data: { competitionId, seasonId, divisionId, categoryId } }),
     enabled: competitionId.length > 0 && seasonId.length > 0,
   })
-
 
 export const teamsByTypeQuery = (teamType: string) =>
   queryOptions({
@@ -161,5 +171,16 @@ export const getTeamDashboardFn = createServerFn({ method: 'GET' })
     const query = params.toString()
     return apiService.get<TeamDashboard>(
       `/competitions/${data.competitionId}/seasons/${data.seasonId}/teams/${data.teamId}/dashboard${query ? `?${query}` : ''}`,
+    )
+  })
+
+export const getMatrixDashboardFn = createServerFn({ method: 'GET' })
+  .middleware([authFnMiddleware])
+  .validator(
+    (data: { competitionId: string; seasonId: string; teamId: string }) => data,
+  )
+  .handler(async ({ data }) => {
+    return apiService.get<MatrixDashboard[]>(
+      `/competitions/${data.competitionId}/seasons/${data.seasonId}/teams/${data.teamId}/matrix-dashboard`,
     )
   })

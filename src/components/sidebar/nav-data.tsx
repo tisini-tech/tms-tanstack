@@ -173,6 +173,13 @@ export const competitionNavItems: NavItem[] = [
     needsCompId: true,
   },
   {
+    to: '/competitions/$compId/matrix-dashboard',
+    label: 'Matrix Dashboard',
+    icon: Table2Icon,
+    activeOptions: { exact: false },
+    needsCompId: true,
+  },
+  {
     to: '/competitions/$compId/league-dashboard',
     label: 'League Dashboard',
     icon: Table2Icon,

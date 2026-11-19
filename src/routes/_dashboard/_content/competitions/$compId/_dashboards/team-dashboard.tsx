@@ -316,13 +316,13 @@ async function categoryNameFor(compId: string, categoryId: number | undefined) {
   )
 }
 
-function teamsInCategory(teams: Team[], categoryName: string) {
+export function teamsInCategory(teams: Team[], categoryName: string) {
   const needle = categoryName.trim().toUpperCase()
   if (!needle) return teams
   return teams.filter((team) => team.name.toUpperCase().includes(needle))
 }
 
-function TeamSelect({
+export function TeamSelect({
   items,
   value,
   onValueChange,
