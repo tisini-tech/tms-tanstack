@@ -7,17 +7,17 @@ import {
 } from '@tanstack/react-router'
 
 import { cn } from '#/lib/utils'
+import { teamsInCategory } from './team-dashboard'
 import { getMatrixDashboardFn } from '#/data/teams'
 import type { MatrixDashboard, Team } from '#/lib/types'
-import { TeamSelect, teamsInCategory } from './team-dashboard'
-
+import { TeamSelect } from '#/components/dashboard/team-select'
+import { FixtureMenu } from '#/components/dashboard/fixtures-menu'
 import {
   categoryNameFor,
   PassMatrixGrid,
   sumMatrices,
   topCombinations,
 } from '#/components/dashboard/matrix'
-import { FixtureMenu } from '#/components/dashboard/fixtures-menu'
 
 export const Route = createFileRoute(
   '/_dashboard/_content/competitions/$compId/_dashboards/matrix-dashboard',

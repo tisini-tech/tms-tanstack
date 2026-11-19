@@ -13,6 +13,7 @@ import type { Team } from '#/lib/types'
 import { getMetricsFn } from '#/data/metrics'
 import { getTeamDashboardFn } from '#/data/teams'
 import { getCompetitionsFn } from '#/data/competitions'
+import { TeamSelect } from '#/components/dashboard/team-select'
 import TeamDashboard from '#/components/dashboard/team-dashboard'
 import TeamDashboardSimple from '#/components/dashboard/team-dash'
 import { DashboardKpiCards } from '#/components/dashboard/dashboard-kpi-cards'
@@ -27,13 +28,6 @@ import {
   EMPTY_FILTERS,
   type DashboardFilters,
 } from '#/components/dashboard/dashboard-filters'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '#/components/ui/select'
 
 const dashboardLayoutRoute = getRouteApi(
   '/_dashboard/_content/competitions/$compId/_dashboards',
@@ -320,31 +314,4 @@ export function teamsInCategory(teams: Team[], categoryName: string) {
   const needle = categoryName.trim().toUpperCase()
   if (!needle) return teams
   return teams.filter((team) => team.name.toUpperCase().includes(needle))
-}
-
-export function TeamSelect({
-  items,
-  value,
-  onValueChange,
-}: {
-  items: { value: string; label: string }[]
-  value?: string
-  onValueChange: (value: string | null) => void
-}) {
-  if (items.length === 0) return null
-
-  return (
-    <Select value={value} items={items} onValueChange={onValueChange}>
-      <SelectTrigger className="min-w-52 max-w-72">
-        <SelectValue placeholder="Select a team" />
-      </SelectTrigger>
-      <SelectContent align="end">
-        {items.map((team) => (
-          <SelectItem key={team.value} value={team.value}>
-            {team.label}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  )
 }
