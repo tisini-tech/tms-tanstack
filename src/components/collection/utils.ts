@@ -16,8 +16,8 @@ export type ColumnKey =
   'category' | 'metric' | 'detail' | 'subdetail' | 'player' | 'bench'
 
 export function playerLabel(entry: TeamLineup | undefined) {
-  if (!entry) return ''
-  return `${entry.jersey_number} -> ${entry.player.name}`
+  if (!entry?.player) return ''
+  return `${entry.jersey_number ?? ''} -> ${entry.player.name ?? ''}`
 }
 
 export function byOrder<
@@ -30,11 +30,11 @@ export function byOrder<
   )
 }
 
-function roleKey(role: string) {
-  return role.trim().toLowerCase()
+function roleKey(role: string | null | undefined) {
+  return (role ?? '').trim().toLowerCase()
 }
 
-export function isSubRole(role: string) {
+export function isSubRole(role: string | null | undefined) {
   const key = roleKey(role)
   return key === 'sub' || key === 'substitute' || key === 'subs'
 }

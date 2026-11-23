@@ -1,3 +1,4 @@
+import { z } from 'zod'
 import { useState } from 'react'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
@@ -13,6 +14,7 @@ import SelectionModal from '#/components/collection/selection'
 import CreateLineupModal from '#/components/collection/lineups'
 import MatchEventsList from '#/components/collection/events-list'
 import { getFixtureTypesFn, rawEventsQuery } from '#/data/fixtures'
+import EditCollectionModal from '#/components/collection/edit-collection'
 import {
   teamLineupsQuery,
   zonesQuery,
@@ -32,6 +34,9 @@ import {
 export const Route = createFileRoute(
   '/_dashboard/_content/competitions/collection/$fixId/',
 )({
+  validateSearch: z.object({
+    mode: z.enum(['collect', 'edit']).catch('collect'),
+  }),
   loader: async ({ context, params }) => {
     const [fixtures, fixtureTypes] = await Promise.all([
       context.queryClient.ensureQueryData(agentFixturesQuery()),
@@ -96,6 +101,7 @@ function MatchScoreline({ fixture }: { fixture: AgentFixture | null }) {
 }
 
 function RouteComponent() {
+  const { mode } = Route.useSearch()
   const { fixId } = Route.useParams()
   const { fixtureTypes } = Route.useLoaderData()
 
@@ -134,10 +140,11 @@ function RouteComponent() {
   const [seekTo, setSeekTo] = useState<number | null>(null)
   const [seekKey, setSeekKey] = useState(0)
   const [tagOpen, setTagOpen] = useState(false)
+  const [editOpen, setEditOpen] = useState(false)
   const [tagAt, setTagAt] = useState(0)
   const [tagKey, setTagKey] = useState(0)
   const [side, setSide] = useState<TeamSide>('home')
-  const [locate, setLocate] = useState(false)
+  const [locate, setLocate] = useState(true)
   const [pitchOpen, setPitchOpen] = useState(false)
   const [point, setPoint] = useState<{ x: number; y: number } | null>(null)
   const [videoFocusKey, setVideoFocusKey] = useState(0)
@@ -291,7 +298,7 @@ function RouteComponent() {
         <VideoPlayer
           seekTo={seekTo}
           seekKey={seekKey}
-          suspended={tagOpen || pitchOpen}
+          suspended={tagOpen || pitchOpen || editOpen}
           focusKey={videoFocusKey}
           onTime={setVideoTime}
           canTag={firstHalfSeconds != null}
@@ -306,7 +313,8 @@ function RouteComponent() {
             setTagKey((key) => key + 1)
             setPoint(null)
             if (locate) setPitchOpen(true)
-            else setTagOpen(true)
+            else if (mode === 'collect') setTagOpen(true)
+            else setEditOpen(true)
           }}
         />
 
@@ -318,7 +326,8 @@ function RouteComponent() {
           onMark={(next) => {
             setPoint(next)
             setPitchOpen(false)
-            setTagOpen(true)
+            if (mode === 'collect') setTagOpen(true)
+            else setEditOpen(true)
           }}
         />
 
@@ -339,8 +348,29 @@ function RouteComponent() {
           onReturnToVideo={() => setVideoFocusKey((key) => key + 1)}
         />
 
+        <EditCollectionModal
+          key={`edit-${tagKey}`}
+          open={editOpen}
+          onOpenChange={setEditOpen}
+          metrics={matchMetrics ?? []}
+          metricCategories={metricCategories ?? []}
+          lineups={contextLineups ?? []}
+          events={matchEvents ?? []}
+          teamView={fixture?.teamview ?? '0'}
+          fixId={fixtureNumber}
+          timestamp={tagAt}
+          point={point}
+          clock={clock}
+          onReturnToVideo={() => setVideoFocusKey((key) => key + 1)}
+          onCreateNew={() => {
+            setEditOpen(false)
+            setTagOpen(true)
+          }}
+        />
+
         <MatchEventsList
           fixId={fixtureNumber}
+          mode={mode}
           matchEvents={matchEvents ?? []}
           activeId={activeId}
           onSelect={(event) => {

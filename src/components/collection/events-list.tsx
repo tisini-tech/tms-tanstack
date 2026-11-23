@@ -3,20 +3,22 @@ import { useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 
 import { cn } from '#/lib/utils'
-import { useStore } from '#/store/store'
 import { toast } from '#/components/ui/toast'
 import { Input } from '#/components/ui/input'
 import { Button } from '#/components/ui/button'
-import { rawEventsQuery } from '#/data/fixtures'
 import { createMatchEvent } from '#/data/collection'
 import { MOMENTS } from '#/components/collection/utils'
 import type { CreateMatchEventPayload } from '#/lib/payloads'
 import type { RawFixtureEvent, TypeObject } from '#/lib/types'
+import { useStore, type EditedMatchEvent } from '#/store/store'
+import { rawEventsQuery, updateFixtureEventFn } from '#/data/fixtures'
 
 const EMPTY_EVENTS: CreateMatchEventPayload[] = []
+const EMPTY_EDITS: EditedMatchEvent[] = []
 
 type MatchEventsListProps = {
   fixId: number
+  mode: 'collect' | 'edit'
   matchEvents: RawFixtureEvent[]
   activeId?: number | null
   onSelect?: (event: RawFixtureEvent) => void
@@ -64,6 +66,7 @@ function eventText(event: RawFixtureEvent) {
 
 export default function MatchEventsList({
   fixId,
+  mode,
   matchEvents,
   activeId,
   onSelect,
@@ -77,8 +80,20 @@ export default function MatchEventsList({
       ? state.store.videoCollection.videoEvents
       : EMPTY_EVENTS,
   )
+  const editedEvents = useStore((state) => {
+    const collection = state.store.videoCollection
+    if (collection?.fixtureId !== fixId) return EMPTY_EDITS
+    return collection.editedEvents ?? EMPTY_EDITS
+  })
   const total = videoEvents.length
   const sent = videoEvents.filter((event) => event.sync_status === 0).length
+  const edited = editedEvents.filter(
+    (item) => item.body.sync_status === 0,
+  ).length
+  const editsWaiting = editedEvents.filter(
+    (item) => item.body.sync_status === 1,
+  ).length
+  const waiting = mode === 'edit' ? total - sent + editsWaiting : total - sent
   const query = search.trim().toLowerCase()
   const moments = [
     ...MOMENTS.filter((value) =>
@@ -101,7 +116,11 @@ export default function MatchEventsList({
   async function syncFailed() {
     if (syncing) return
     const pending = videoEvents.filter((event) => event.sync_status === 1)
-    if (pending.length === 0) return
+    const pendingEdits =
+      mode === 'edit'
+        ? editedEvents.filter((item) => item.body.sync_status === 1)
+        : []
+    if (pending.length === 0 && pendingEdits.length === 0) return
     setSyncing(true)
     let synced = 0
     let failed = 0
@@ -118,14 +137,39 @@ export default function MatchEventsList({
           })
           synced += 1
           const current = useStore.getState().store.videoCollection
-          const stored =
-            current?.fixtureId === fixId ? current.videoEvents : []
+          const stored = current?.fixtureId === fixId ? current.videoEvents : []
           useStore.getState().updateVideoCollection({
             fixtureId: fixId,
             videoEvents: stored.map((item) =>
               item.localid === event.localid
                 ? { ...item, sync_status: 0 }
                 : item,
+            ),
+          })
+        } catch (error) {
+          failed += 1
+          lastError = error instanceof Error ? error.message : lastError
+        }
+      }
+      for (const item of pendingEdits) {
+        try {
+          await updateFixtureEventFn({
+            data: {
+              fixtureId: String(fixId),
+              eventId: item.eventId,
+              body: { ...item.body, sync_status: 0 },
+            },
+          })
+          synced += 1
+          const current = useStore.getState().store.videoCollection
+          const stored =
+            current?.fixtureId === fixId ? (current.editedEvents ?? []) : []
+          useStore.getState().updateVideoCollection({
+            fixtureId: fixId,
+            editedEvents: stored.map((edit) =>
+              edit.eventId === item.eventId
+                ? { ...edit, body: { ...edit.body, sync_status: 0 } }
+                : edit,
             ),
           })
         } catch (error) {
@@ -161,11 +205,26 @@ export default function MatchEventsList({
       <div className="flex shrink-0 items-center justify-between gap-2 border-b border-border px-2.5 py-2">
         <p
           className="text-xs font-medium tabular-nums text-foreground"
-          title={`${sent} sent of ${total} collected`}
+          title={
+            mode === 'edit'
+              ? `${edited} edited of ${matchEvents.length} events. ${total} added.`
+              : `${sent} sent of ${total} collected`
+          }
         >
-          {sent} / {total}
+          {mode === 'edit' ? (
+            <>
+              {edited} / {matchEvents.length}
+              <span className="ml-2 font-normal text-muted-foreground">
+                {total} added
+              </span>
+            </>
+          ) : (
+            <>
+              {sent} / {total}
+            </>
+          )}
         </p>
-        {sent !== total ? (
+        {waiting > 0 ? (
           <Button
             type="button"
             size="xs"
@@ -214,10 +273,7 @@ export default function MatchEventsList({
           <ul className="space-y-1">
             {events.map((event) => {
               const selected = event.id === activeId
-              const period = joined([
-                momentLabel(event.moment),
-                event.quarter,
-              ])
+              const period = joined([momentLabel(event.moment), event.quarter])
               const metric = joined([
                 nameOf(event.metric),
                 nameOf(event.metric_detail),

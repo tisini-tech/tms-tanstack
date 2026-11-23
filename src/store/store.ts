@@ -1,13 +1,20 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
+import type { UpdateFixtureEventPayload } from '#/data/fixtures'
 import type { CreateMatchEventPayload } from '#/lib/payloads'
+
+export type EditedMatchEvent = {
+  eventId: number
+  body: UpdateFixtureEventPayload
+}
 
 export type VideoCollection = {
   fixtureId: number
   firstHalfTimestamp: string
   secondHalfTimestamp: string
   videoEvents: CreateMatchEventPayload[]
+  editedEvents?: EditedMatchEvent[]
 }
 
 export type Store = {
@@ -47,6 +54,7 @@ export const useStore = create<State & Actions>()(
                   firstHalfTimestamp: '',
                   secondHalfTimestamp: '',
                   videoEvents: [],
+                  editedEvents: [],
                 }
 
           return {

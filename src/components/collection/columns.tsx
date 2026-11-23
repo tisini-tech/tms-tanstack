@@ -1,8 +1,8 @@
+import { Link } from '@tanstack/react-router'
 import type { ColumnDef } from '@tanstack/react-table'
 
-import type { AgentFixture } from '#/lib/types'
 import { Button } from '../ui/button'
-import { Link, useSearch } from '@tanstack/react-router'
+import type { AgentFixture } from '#/lib/types'
 
 function clock(fixture: AgentFixture) {
   const status = fixture.game_status?.toLowerCase().replace(/\s+/g, '') ?? ''
@@ -45,20 +45,43 @@ function FixtureMoreLink({ fixture }: { fixture: AgentFixture }) {
   // })
 
   return (
-    <Button
-      variant="outline"
-      render={
-        <Link
-          to="/competitions/collection/$fixId"
-          params={{
-            fixId: fixture.id.toString(),
-          }}
-        />
-      }
-      nativeButton={false}
-    >
-      More
-    </Button>
+    <div className="flex items-center gap-2">
+      <Button
+        variant="outline"
+        render={
+          <Link
+            to="/competitions/collection/$fixId"
+            search={{
+              mode: 'collect',
+            }}
+            params={{
+              fixId: fixture.id.toString(),
+            }}
+          />
+        }
+        nativeButton={false}
+      >
+        Collect
+      </Button>
+
+      <Button
+        variant="default"
+        render={
+          <Link
+            to="/competitions/collection/$fixId"
+            params={{
+              fixId: fixture.id.toString(),
+            }}
+            search={{
+              mode: 'edit',
+            }}
+          />
+        }
+        nativeButton={false}
+      >
+        Edit
+      </Button>
+    </div>
   )
 }
 

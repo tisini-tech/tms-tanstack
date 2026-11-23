@@ -554,8 +554,8 @@ export interface RawFixtureEvent {
   quarter: string
   narration: string
   zone_id: number
-  xper: string
-  yper: string
+  xper: string | null
+  yper: string | null
   video_timestamp: number
   no_ruck: string
   no_lineout: string
