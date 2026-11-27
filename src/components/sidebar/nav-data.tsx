@@ -15,6 +15,7 @@ import {
   Table2Icon,
   TrophyIcon,
   UserIcon,
+  VoteIcon,
   WalletIcon,
 } from 'lucide-react'
 
@@ -25,7 +26,13 @@ const moduleMeta: Record<
   string,
   {
     logo: React.ReactNode
-    nav: 'administration' | 'competition' | 'content' | 'engagement' | 'wallet'
+    nav:
+      | 'administration'
+      | 'competition'
+      | 'content'
+      | 'engagement'
+      | 'wallet'
+      | 'voting'
   }
 > = {
   Competition: {
@@ -43,6 +50,10 @@ const moduleMeta: Record<
   Engagement: {
     logo: <SparklesIcon />,
     nav: 'engagement',
+  },
+  Voting: {
+    logo: <VoteIcon />,
+    nav: 'voting',
   },
   Payment: {
     logo: <WalletIcon />,
@@ -231,5 +242,14 @@ export const adminNavItems: NavItem[] = linkOptions([
     label: 'Fixtures',
     icon: CalendarIcon,
     activeOptions: { exact: false },
+  },
+])
+
+export const votingNavItems: NavItem[] = linkOptions([
+  {
+    to: '/votes',
+    label: 'Voting',
+    icon: VoteIcon,
+    activeOptions: { exact: true },
   },
 ])

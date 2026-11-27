@@ -4,7 +4,7 @@ export const MODULE_ROUTES: Record<string, string> = {
   Content: '/articles',
   Administration: '/admin',
   Engagement: '/engagements',
-  Voting: '/voting',
+  Voting: '/votes',
   Payment: '/wallet',
 }
 

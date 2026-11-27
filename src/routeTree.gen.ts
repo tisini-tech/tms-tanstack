@@ -28,6 +28,7 @@ import { Route as DashboardContentCompetitionsCompIdRouteRouteImport } from './r
 import { Route as DashboardContentEngagementsIndexRouteImport } from './routes/_dashboard/_content/engagements/index'
 import { Route as DashboardContentEngagementsEngIdRouteRouteImport } from './routes/_dashboard/_content/engagements/$engId/route'
 import { Route as DashboardContentTicketsIndexRouteImport } from './routes/_dashboard/_content/tickets/index'
+import { Route as DashboardContentVotesIndexRouteImport } from './routes/_dashboard/_content/votes/index'
 import { Route as DashboardContentWalletIndexRouteImport } from './routes/_dashboard/_content/wallet/index'
 import { Route as DashboardContentWalletEstimatesRouteImport } from './routes/_dashboard/_content/wallet/estimates'
 import { Route as DashboardContentWalletPaymentsRouteImport } from './routes/_dashboard/_content/wallet/payments'
@@ -47,6 +48,7 @@ import { Route as DashboardContentEngagementsEngIdIndexRouteImport } from './rou
 import { Route as DashboardContentEngagementsEngIdActionsRouteImport } from './routes/_dashboard/_content/engagements/$engId/actions'
 import { Route as DashboardContentEngagementsEngIdLeaderboardRouteImport } from './routes/_dashboard/_content/engagements/$engId/leaderboard'
 import { Route as DashboardContentEngagementsEngIdResponsesRouteImport } from './routes/_dashboard/_content/engagements/$engId/responses'
+import { Route as DashboardContentVotesVoteIdIndexRouteImport } from './routes/_dashboard/_content/votes/$voteId/index'
 import { Route as DashboardContentCompetitionsCompIdDashboardsLeagueDashboardRouteImport } from './routes/_dashboard/_content/competitions/$compId/_dashboards/league-dashboard'
 import { Route as DashboardContentCompetitionsCompIdDashboardsMatrixDashboardRouteImport } from './routes/_dashboard/_content/competitions/$compId/_dashboards/matrix-dashboard'
 import { Route as DashboardContentCompetitionsCompIdDashboardsTeamDashboardRouteImport } from './routes/_dashboard/_content/competitions/$compId/_dashboards/team-dashboard'
@@ -172,6 +174,12 @@ const DashboardContentTicketsIndexRoute =
     path: '/tickets/',
     getParentRoute: () => DashboardContentRouteRoute,
   } as any)
+const DashboardContentVotesIndexRoute =
+  DashboardContentVotesIndexRouteImport.update({
+    id: '/votes/',
+    path: '/votes/',
+    getParentRoute: () => DashboardContentRouteRoute,
+  } as any)
 const DashboardContentWalletIndexRoute =
   DashboardContentWalletIndexRouteImport.update({
     id: '/wallet/',
@@ -283,6 +291,12 @@ const DashboardContentEngagementsEngIdResponsesRoute =
     id: '/responses',
     path: '/responses',
     getParentRoute: () => DashboardContentEngagementsEngIdRouteRoute,
+  } as any)
+const DashboardContentVotesVoteIdIndexRoute =
+  DashboardContentVotesVoteIdIndexRouteImport.update({
+    id: '/votes/$voteId/',
+    path: '/votes/$voteId/',
+    getParentRoute: () => DashboardContentRouteRoute,
   } as any)
 const DashboardContentCompetitionsCompIdDashboardsLeagueDashboardRoute =
   DashboardContentCompetitionsCompIdDashboardsLeagueDashboardRouteImport.update(
@@ -468,6 +482,7 @@ export interface FileRoutesByFullPath {
   '/competitions/': typeof DashboardContentCompetitionsIndexRoute
   '/engagements/': typeof DashboardContentEngagementsIndexRoute
   '/tickets/': typeof DashboardContentTicketsIndexRoute
+  '/votes/': typeof DashboardContentVotesIndexRoute
   '/wallet/': typeof DashboardContentWalletIndexRoute
   '/competitions/$compId/stats': typeof DashboardContentCompetitionsCompIdStatsRouteRouteWithChildren
   '/admin/fixtures/add': typeof DashboardContentAdminFixturesAddRoute
@@ -481,6 +496,7 @@ export interface FileRoutesByFullPath {
   '/articles/create/': typeof DashboardContentArticlesCreateIndexRoute
   '/competitions/collection/': typeof DashboardContentCompetitionsCollectionIndexRoute
   '/engagements/$engId/': typeof DashboardContentEngagementsEngIdIndexRoute
+  '/votes/$voteId/': typeof DashboardContentVotesVoteIdIndexRoute
   '/competitions/$compId/fixtures/$fixId': typeof DashboardContentCompetitionsCompIdFixturesFixIdRouteRouteWithChildren
   '/competitions/$compId/league-dashboard': typeof DashboardContentCompetitionsCompIdDashboardsLeagueDashboardRoute
   '/competitions/$compId/matrix-dashboard': typeof DashboardContentCompetitionsCompIdDashboardsMatrixDashboardRoute
@@ -526,6 +542,7 @@ export interface FileRoutesByTo {
   '/competitions': typeof DashboardContentCompetitionsIndexRoute
   '/engagements': typeof DashboardContentEngagementsIndexRoute
   '/tickets': typeof DashboardContentTicketsIndexRoute
+  '/votes': typeof DashboardContentVotesIndexRoute
   '/wallet': typeof DashboardContentWalletIndexRoute
   '/admin/fixtures/add': typeof DashboardContentAdminFixturesAddRoute
   '/admin/fixtures/review': typeof DashboardContentAdminFixturesReviewRoute
@@ -538,6 +555,7 @@ export interface FileRoutesByTo {
   '/articles/create': typeof DashboardContentArticlesCreateIndexRoute
   '/competitions/collection': typeof DashboardContentCompetitionsCollectionIndexRoute
   '/engagements/$engId': typeof DashboardContentEngagementsEngIdIndexRoute
+  '/votes/$voteId': typeof DashboardContentVotesVoteIdIndexRoute
   '/competitions/$compId/league-dashboard': typeof DashboardContentCompetitionsCompIdDashboardsLeagueDashboardRoute
   '/competitions/$compId/matrix-dashboard': typeof DashboardContentCompetitionsCompIdDashboardsMatrixDashboardRoute
   '/competitions/$compId/team-dashboard': typeof DashboardContentCompetitionsCompIdDashboardsTeamDashboardRoute
@@ -586,6 +604,7 @@ export interface FileRoutesById {
   '/_dashboard/_content/competitions/': typeof DashboardContentCompetitionsIndexRoute
   '/_dashboard/_content/engagements/': typeof DashboardContentEngagementsIndexRoute
   '/_dashboard/_content/tickets/': typeof DashboardContentTicketsIndexRoute
+  '/_dashboard/_content/votes/': typeof DashboardContentVotesIndexRoute
   '/_dashboard/_content/wallet/': typeof DashboardContentWalletIndexRoute
   '/_dashboard/_content/competitions/$compId/_dashboards': typeof DashboardContentCompetitionsCompIdDashboardsRouteRouteWithChildren
   '/_dashboard/_content/competitions/$compId/_settings': typeof DashboardContentCompetitionsCompIdSettingsRouteRouteWithChildren
@@ -601,6 +620,7 @@ export interface FileRoutesById {
   '/_dashboard/_content/articles/create/': typeof DashboardContentArticlesCreateIndexRoute
   '/_dashboard/_content/competitions/collection/': typeof DashboardContentCompetitionsCollectionIndexRoute
   '/_dashboard/_content/engagements/$engId/': typeof DashboardContentEngagementsEngIdIndexRoute
+  '/_dashboard/_content/votes/$voteId/': typeof DashboardContentVotesVoteIdIndexRoute
   '/_dashboard/_content/competitions/$compId/fixtures/$fixId': typeof DashboardContentCompetitionsCompIdFixturesFixIdRouteRouteWithChildren
   '/_dashboard/_content/competitions/$compId/_dashboards/league-dashboard': typeof DashboardContentCompetitionsCompIdDashboardsLeagueDashboardRoute
   '/_dashboard/_content/competitions/$compId/_dashboards/matrix-dashboard': typeof DashboardContentCompetitionsCompIdDashboardsMatrixDashboardRoute
@@ -649,6 +669,7 @@ export interface FileRouteTypes {
     | '/competitions/'
     | '/engagements/'
     | '/tickets/'
+    | '/votes/'
     | '/wallet/'
     | '/competitions/$compId/stats'
     | '/admin/fixtures/add'
@@ -662,6 +683,7 @@ export interface FileRouteTypes {
     | '/articles/create/'
     | '/competitions/collection/'
     | '/engagements/$engId/'
+    | '/votes/$voteId/'
     | '/competitions/$compId/fixtures/$fixId'
     | '/competitions/$compId/league-dashboard'
     | '/competitions/$compId/matrix-dashboard'
@@ -707,6 +729,7 @@ export interface FileRouteTypes {
     | '/competitions'
     | '/engagements'
     | '/tickets'
+    | '/votes'
     | '/wallet'
     | '/admin/fixtures/add'
     | '/admin/fixtures/review'
@@ -719,6 +742,7 @@ export interface FileRouteTypes {
     | '/articles/create'
     | '/competitions/collection'
     | '/engagements/$engId'
+    | '/votes/$voteId'
     | '/competitions/$compId/league-dashboard'
     | '/competitions/$compId/matrix-dashboard'
     | '/competitions/$compId/team-dashboard'
@@ -766,6 +790,7 @@ export interface FileRouteTypes {
     | '/_dashboard/_content/competitions/'
     | '/_dashboard/_content/engagements/'
     | '/_dashboard/_content/tickets/'
+    | '/_dashboard/_content/votes/'
     | '/_dashboard/_content/wallet/'
     | '/_dashboard/_content/competitions/$compId/_dashboards'
     | '/_dashboard/_content/competitions/$compId/_settings'
@@ -781,6 +806,7 @@ export interface FileRouteTypes {
     | '/_dashboard/_content/articles/create/'
     | '/_dashboard/_content/competitions/collection/'
     | '/_dashboard/_content/engagements/$engId/'
+    | '/_dashboard/_content/votes/$voteId/'
     | '/_dashboard/_content/competitions/$compId/fixtures/$fixId'
     | '/_dashboard/_content/competitions/$compId/_dashboards/league-dashboard'
     | '/_dashboard/_content/competitions/$compId/_dashboards/matrix-dashboard'
@@ -950,6 +976,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardContentTicketsIndexRouteImport
       parentRoute: typeof DashboardContentRouteRoute
     }
+    '/_dashboard/_content/votes/': {
+      id: '/_dashboard/_content/votes/'
+      path: '/votes'
+      fullPath: '/votes/'
+      preLoaderRoute: typeof DashboardContentVotesIndexRouteImport
+      parentRoute: typeof DashboardContentRouteRoute
+    }
     '/_dashboard/_content/wallet/': {
       id: '/_dashboard/_content/wallet/'
       path: '/wallet'
@@ -1082,6 +1115,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/engagements/$engId/responses'
       preLoaderRoute: typeof DashboardContentEngagementsEngIdResponsesRouteImport
       parentRoute: typeof DashboardContentEngagementsEngIdRouteRoute
+    }
+    '/_dashboard/_content/votes/$voteId/': {
+      id: '/_dashboard/_content/votes/$voteId/'
+      path: '/votes/$voteId'
+      fullPath: '/votes/$voteId/'
+      preLoaderRoute: typeof DashboardContentVotesVoteIdIndexRouteImport
+      parentRoute: typeof DashboardContentRouteRoute
     }
     '/_dashboard/_content/competitions/$compId/_dashboards/league-dashboard': {
       id: '/_dashboard/_content/competitions/$compId/_dashboards/league-dashboard'
@@ -1449,6 +1489,7 @@ interface DashboardContentRouteRouteChildren {
   DashboardContentCompetitionsIndexRoute: typeof DashboardContentCompetitionsIndexRoute
   DashboardContentEngagementsIndexRoute: typeof DashboardContentEngagementsIndexRoute
   DashboardContentTicketsIndexRoute: typeof DashboardContentTicketsIndexRoute
+  DashboardContentVotesIndexRoute: typeof DashboardContentVotesIndexRoute
   DashboardContentWalletIndexRoute: typeof DashboardContentWalletIndexRoute
   DashboardContentAdminFixturesAddRoute: typeof DashboardContentAdminFixturesAddRoute
   DashboardContentAdminFixturesReviewRoute: typeof DashboardContentAdminFixturesReviewRoute
@@ -1457,6 +1498,7 @@ interface DashboardContentRouteRouteChildren {
   DashboardContentArticlesAuthorsIndexRoute: typeof DashboardContentArticlesAuthorsIndexRoute
   DashboardContentArticlesCreateIndexRoute: typeof DashboardContentArticlesCreateIndexRoute
   DashboardContentCompetitionsCollectionIndexRoute: typeof DashboardContentCompetitionsCollectionIndexRoute
+  DashboardContentVotesVoteIdIndexRoute: typeof DashboardContentVotesVoteIdIndexRoute
   DashboardContentCompetitionsCollectionFixIdIndexRoute: typeof DashboardContentCompetitionsCollectionFixIdIndexRoute
 }
 
@@ -1477,6 +1519,7 @@ const DashboardContentRouteRouteChildren: DashboardContentRouteRouteChildren = {
     DashboardContentCompetitionsIndexRoute,
   DashboardContentEngagementsIndexRoute: DashboardContentEngagementsIndexRoute,
   DashboardContentTicketsIndexRoute: DashboardContentTicketsIndexRoute,
+  DashboardContentVotesIndexRoute: DashboardContentVotesIndexRoute,
   DashboardContentWalletIndexRoute: DashboardContentWalletIndexRoute,
   DashboardContentAdminFixturesAddRoute: DashboardContentAdminFixturesAddRoute,
   DashboardContentAdminFixturesReviewRoute:
@@ -1491,6 +1534,7 @@ const DashboardContentRouteRouteChildren: DashboardContentRouteRouteChildren = {
     DashboardContentArticlesCreateIndexRoute,
   DashboardContentCompetitionsCollectionIndexRoute:
     DashboardContentCompetitionsCollectionIndexRoute,
+  DashboardContentVotesVoteIdIndexRoute: DashboardContentVotesVoteIdIndexRoute,
   DashboardContentCompetitionsCollectionFixIdIndexRoute:
     DashboardContentCompetitionsCollectionFixIdIndexRoute,
 }
